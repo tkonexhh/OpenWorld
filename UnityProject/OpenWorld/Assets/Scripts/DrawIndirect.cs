@@ -57,6 +57,11 @@ public class DrawIndirect
 
     private void UpdateBuffer()
     {
+        if (instanceMaterial == null)
+        {
+            return;
+        }
+
         if (allInstancesDataBuffer != null)
             allInstancesDataBuffer.Release();
         allInstancesDataBuffer = new ComputeBuffer(allInstaneDataList.Count, sizeof(float) * 9); //3 个Vector3
@@ -74,7 +79,10 @@ public class DrawIndirect
     public void Render()
     {
         if (instanceMaterial == null || mesh == null)
+        {
+
             return;
+        }
 
         Bounds renderBound = new Bounds();
         renderBound.SetMinMax(Vector3.one * -1000, Vector3.one * 1000);
