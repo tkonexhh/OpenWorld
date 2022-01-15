@@ -9,7 +9,7 @@ public class DrawIndirect
 
     private ComputeBuffer argsBuffer;
     private ComputeBuffer allInstancesDataBuffer;
-    private List<InstanceData> allInstaneDataList;
+    private List<InstanceTRSData> allInstaneDataList;
 
     private const int MESH_INDEX = 0;
 
@@ -20,10 +20,10 @@ public class DrawIndirect
     {
         this.mesh = mesh;
         this.instanceMaterial = material;
-        allInstaneDataList = new List<InstanceData>();
+        allInstaneDataList = new List<InstanceTRSData>();
     }
 
-    public void AddInstanceData(InstanceData instanceData)
+    public void AddInstanceData(InstanceTRSData instanceData)
     {
         allInstaneDataList.Add(instanceData);
         OnDrawNumChanged();
@@ -66,7 +66,7 @@ public class DrawIndirect
             allInstancesDataBuffer.Release();
         allInstancesDataBuffer = new ComputeBuffer(allInstaneDataList.Count, sizeof(float) * 9); //3 个Vector3
 
-        InstanceData[] instanceDatas = new InstanceData[allInstaneDataList.Count];
+        InstanceTRSData[] instanceDatas = new InstanceTRSData[allInstaneDataList.Count];
         for (int i = 0; i < instanceDatas.Length; i++)
         {
             instanceDatas[i] = allInstaneDataList[i];

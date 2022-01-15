@@ -11,7 +11,7 @@ public class DrawIndirectSO : SerializedScriptableObject
 }
 
 
-public struct InstanceData
+public struct InstanceTRSData
 {
     public Vector3 position;
     public Vector3 rotation;

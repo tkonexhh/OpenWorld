@@ -2,28 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GPUDrivenModule : MonoBehaviour
+namespace XHH
 {
-    public DrawIndirectSO drawIndirectSO;
-
-    private DrawIndirect m_DrawIndirect;
-
-    void Start()
+    public class GPUDrivenModule : MonoBehaviour
     {
-        m_DrawIndirect = new DrawIndirect(drawIndirectSO.mesh, drawIndirectSO.material);
-        for (int i = 0; i < 1000; i++)
+        public DrawIndirectSO drawIndirectSO;
+
+        private DrawIndirect m_DrawIndirect;
+        public IndirectInstanceData indirectInstanceData;
+        private IndirectRenderer m_IndirectRenderer;
+
+
+
+        void Start()
         {
-            InstanceData instanceData;
-            instanceData.rotation = Random.rotation.eulerAngles;
-            instanceData.position = Random.insideUnitSphere * 10;
-            instanceData.scale = Vector3.one * Random.Range(0, 5);
-            m_DrawIndirect.AddInstanceData(instanceData);
-        }
-    }
+            m_DrawIndirect = new DrawIndirect(drawIndirectSO.mesh, drawIndirectSO.material);
+            for (int i = 0; i < 100000; i++)
+            {
+                InstanceTRSData instanceData;
+                instanceData.rotation = Random.rotation.eulerAngles;
+                instanceData.position = Random.insideUnitSphere * 1000;
+                instanceData.scale = Vector3.one * Random.Range(0, 5);
+                m_DrawIndirect.AddInstanceData(instanceData);
+            }
 
-    // Update is called once per frame
-    void Update()
-    {
-        m_DrawIndirect.Render();
+            m_IndirectRenderer = new IndirectRenderer("Demo", indirectInstanceData);
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            m_DrawIndirect.Render();
+        }
     }
 }
