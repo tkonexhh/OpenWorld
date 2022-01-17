@@ -1,0 +1,367 @@
+#pragma kernel TraverseQuadTree
+#pragma kernel BuildLodMap
+#pragma kernel BuildPatches
+
+
+//Keywords
+#pragma multi_compile_local __ _REVERSE_Z
+#pragma multi_compile_local __ NODE_BOUNDS_DEBUG //开启NODE BOUNDS 调式
+#pragma multi_compile_local __ PATCH_BOUNDS_DEBUG //开启Patch BOUNDS 调式
+#pragma multi_compile_local __ _CULL
+
+#include "./TerrainInput.hlsl"
+
+
+//*******TraverseQuadTree*******/
+//代表当前LOD下Node的二维索引
+ConsumeStructuredBuffer<uint2> ConsumeNodeList;
+AppendStructuredBuffer<uint2> AppendNodeList;
+//其中z表示Node的LOD，xy代表二维索引
+AppendStructuredBuffer<uint3> AppendFinalNodeList;
+//四叉树遍历完成后，合适的节点存放在这里
+StructuredBuffer<uint3> FinalNodeList;
+uniform uint PassLOD;//表示TraverseQuadTree kernel执行的LOD级别
+
+
+//*******NodeDescriptors*******/
+//保存了Node的一些信息，通过NodeId来访问
+RWStructuredBuffer<NodeDescriptor> NodeDescriptors;
+uniform uint NodeIDOffsetOfLOD[TERRAIN_MAX_LOD + 1];
+//不同LOD Node的数量
+
+//*******BuildLodMap相关*******/
+RWTexture2D<float4> _LodMap;
+
+//*******裁剪相关变量*******/
+uniform float4 _CameraFrustumPlanes[6];//摄像机6个平面 xyz法线方向  w距离
+AppendStructuredBuffer<RenderPatch> CulledPatchList;//最终显示出的patch
+
+
+//*******调试可视化相关变量*******/
+#if NODE_BOUNDS_DEBUG
+AppendStructuredBuffer<BoundsDebug> NodeBoundsList;
+#endif
+#if PATCH_BOUNDS_DEBUG
+    AppendStructuredBuffer<BoundsDebug> PatchBoundsList;
+#endif
+
+//*******世界参数********//
+uniform float3 _WorldSize;//世界大小
+uniform float3 _CameraPositionWS;//相机的位置
+/*记录了每个Lod级别的(nodeSize,patchHalfSize,nodeCount,sectorCountPerNode) 目前0-5 6层
+其中:
+- nodeSize为Node的边长(米)
+- patchHalfSize等于nodeSize/8/2
+- nodeCount等于WorldSize/nodeSize
+- sectorCountPerNode等于2^lod*/
+uniform float4 WorldLodParams[TERRAIN_MAX_LOD + 1];
+
+//==========================================================================================================================================
+
+
+//获取当前LOD下Node大小
+float GetNodeSize(uint lod)
+{
+    return WorldLodParams[lod].x;
+}
+
+//获取当前LOD下Node数量
+float GetNodeCount(uint lod)
+{
+    return WorldLodParams[lod].z;
+}
+
+// 获取当前LOD下 单个Patch宽度的一半
+float GetPatchExtent(uint lod)
+{
+    return WorldLodParams[lod].y;
+}
+
+uint GetSectorCountPerNode(uint lod)
+{
+    return(uint)WorldLodParams[lod].w;
+}
+
+float2 GetNodePositionWS2(uint2 nodeLoc, uint mip)
+{
+    float nodeMeterSize = GetNodeSize(mip);
+    float nodeCount = GetNodeCount(mip);
+    float2 nodePositionWS = ((float2)nodeLoc - (nodeCount - 1) * 0.5) * nodeMeterSize;
+    return nodePositionWS;
+}
+
+float3 GetNodePositionWS(uint2 nodeLoc, uint lod)
+{
+    float2 nodePositionWS = GetNodePositionWS2(nodeLoc, lod);
+    // float2 minMaxHeight = float2(0, _WorldSize.y);//  MinMaxHeightTexture.mips[lod + 3][nodeLoc].xy;
+    // float y = (minMaxHeight.x + minMaxHeight.y) * 0.5 * _WorldSize.y;
+    float y = _CameraPositionWS.y;
+    return float3(nodePositionWS.x, y, nodePositionWS.y);
+}
+
+//决定是否细分Node
+/*f = d / (n * c);
+d=摄像机到节点中心距离
+n=节点边长
+c=用户控制系数*/
+bool EvaluateNode(uint2 nodeLoc, uint lod)
+{
+    // return false;
+    float3 positionWS = GetNodePositionWS(nodeLoc, lod);
+    float dis = distance(_CameraPositionWS, positionWS);
+    float nodeSize = GetNodeSize(lod);
+    float f = dis / (nodeSize * NodeEvaluationC);
+    if (f < 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+uint GetNodeId(uint3 nodeLoc)
+{
+    return NodeIDOffsetOfLOD[nodeLoc.z] + nodeLoc.y * GetNodeCount(nodeLoc.z) + nodeLoc.x;
+}
+
+uint GetNodeId(uint2 nodeLoc, uint mip)
+{
+    return GetNodeId(uint3(nodeLoc, mip));
+}
+
+[numthreads(1, 1, 1)]
+void TraverseQuadTree(uint3 id: SV_DispatchThreadID)
+{
+    uint2 nodeLoc = ConsumeNodeList.Consume();//从缓冲区末尾移除值
+    uint nodeId = GetNodeId(nodeLoc, PassLOD);
+    NodeDescriptor desc = NodeDescriptors[nodeId];
+    // float2 nodePositionWS = GetNodePositionWS2(nodeLoc, nodeId);
+    // desc.renderLoc = nodePositionWS / (_WorldSize.xz / RENDER_TILE_COUNT);
+    // desc.nodeLoc = nodeLoc;//Node坐标
+    // desc.nodeID = nodeID;
+
+    //进行节点评价,决定是否细分
+    if (PassLOD > 0 && EvaluateNode(nodeLoc, PassLOD))
+    {
+        //divide
+        AppendNodeList.Append(nodeLoc * 2);
+        AppendNodeList.Append(nodeLoc * 2 + uint2(1, 0));
+        AppendNodeList.Append(nodeLoc * 2 + uint2(0, 1));
+        AppendNodeList.Append(nodeLoc * 2 + uint2(1, 1));
+        desc.branch = 1;
+    }
+    else
+    {
+        AppendFinalNodeList.Append(uint3(nodeLoc, PassLOD));
+        desc.branch = 0;
+
+        #if NODE_BOUNDS_DEBUG
+            float nodeExtent = GetPatchExtent(PassLOD) * PATCH_COUNT_PER_NODE;//一个Node有8*8个Patch组成
+            float2 nodePositionWS = GetNodePositionWS2(nodeLoc, PassLOD);
+            float2 minMaxHeight = float2(0, _WorldSize.y);// GetMinMaxHeight(PassLOD + 3, nodeLoc) * _WorldSize.y;
+            // float s = (minMaxHeight.y - minMaxHeight.x);
+            Bounds bounds;
+            float3 boundsMin, boundsMax;
+            boundsMin.xz = nodePositionWS - nodeExtent;
+            boundsMax.xz = nodePositionWS + nodeExtent;
+            boundsMin.y = minMaxHeight.x ;
+            boundsMax.y = minMaxHeight.y ;
+
+            bounds.minPosition = boundsMin;
+            bounds.maxPosition = boundsMax;
+
+            BoundsDebug boundsDebug;
+            boundsDebug.bounds = bounds;
+            boundsDebug.color = float4((bounds.minPosition + _WorldSize * 0.5) / _WorldSize, 1);
+            NodeBoundsList.Append(boundsDebug);
+        #endif
+    }
+    NodeDescriptors[nodeId] = desc;
+
+
+    uint count = 0;
+    uint stride = 0;
+    AppendFinalNodeList.GetDimensions(count, stride);
+}
+
+//kernel BuildLodMap///////////////////////////////////////////////////////////
+[numthreads(8, 8, 1)]
+void BuildLodMap(uint3 id: SV_DispatchThreadID)
+{
+    uint2 sectorLoc = id.xy;
+    [unroll]
+    for (uint lod = TERRAIN_MAX_LOD; lod >= 0; lod--)
+    {
+        uint sectorCount = GetSectorCountPerNode(lod);
+        uint2 nodeLoc = sectorLoc / sectorCount;
+        uint nodeId = GetNodeId(nodeLoc, lod);
+        NodeDescriptor desc = NodeDescriptors[nodeId];
+        if (desc.branch == 0)
+        {
+            _LodMap[sectorLoc] = lod * 1.0 / TERRAIN_MAX_LOD;
+            return;
+        }
+    }
+    _LodMap[sectorLoc] = 0;
+}
+
+//kernel BuildPatches///////////////////////////////////////////////////////////
+
+bool IsOutSidePlane(float4 plane, float3 position)
+{
+    return dot(plane.xyz, position) + plane.w < 0;
+}
+
+//判断一个包围盒是否全在平面外面 八个点都在外面
+bool IsAABBOutSidePlane(float4 plane, float3 boundsMin, float3 boundsMax)
+{
+    return IsOutSidePlane(plane, boundsMin) &&
+    IsOutSidePlane(plane, boundsMax) &&
+    IsOutSidePlane(plane, float3(boundsMin.x, boundsMin.y, boundsMax.z)) &&
+    IsOutSidePlane(plane, float3(boundsMin.x, boundsMax.y, boundsMin.z)) &&
+    IsOutSidePlane(plane, float3(boundsMin.x, boundsMax.y, boundsMax.z)) &&
+    IsOutSidePlane(plane, float3(boundsMax.x, boundsMin.y, boundsMax.z)) &&
+    IsOutSidePlane(plane, float3(boundsMax.x, boundsMax.y, boundsMin.z)) &&
+    IsOutSidePlane(plane, float3(boundsMax.x, boundsMin.y, boundsMin.z));
+}
+
+bool IsBoundsOutSidePlane(float4 plane, Bounds bounds)
+{
+    return IsAABBOutSidePlane(plane, bounds.minPosition, bounds.maxPosition);
+}
+
+//视锥裁剪
+bool FrustumCull(float4 planes[6], Bounds bounds)
+{
+    return IsBoundsOutSidePlane(planes[0], bounds) ||
+    IsBoundsOutSidePlane(planes[1], bounds) ||
+    IsBoundsOutSidePlane(planes[2], bounds) ||
+    IsBoundsOutSidePlane(planes[3], bounds) ||
+    IsBoundsOutSidePlane(planes[4], bounds) ||
+    IsBoundsOutSidePlane(planes[5], bounds);
+}
+
+//裁剪
+bool Cull(Bounds bounds)
+{
+    #if _CULL
+        if (FrustumCull(_CameraFrustumPlanes, bounds))
+        {
+            return true;
+        }
+    #endif
+    return false;
+}
+
+
+
+RenderPatch CreatePatch(uint3 nodeLoc, uint2 patchOffset)
+{
+    uint lod = nodeLoc.z;
+    //当前LOD下的Node大小
+    float nodeMeterSize = GetNodeSize(lod);
+    //当前LOD下的Patch大小 一排是8个
+    float patchMeterSize = nodeMeterSize / PATCH_COUNT_PER_NODE;
+    //得到当前Node的坐标
+    float2 nodePositionWS = GetNodePositionWS2(nodeLoc.xy, lod);
+
+    uint2 patchLoc = nodeLoc.xy * PATCH_COUNT_PER_NODE + patchOffset;
+    //经测试，当min和max相差较小时，RG32似乎还是存在精度问题
+    float2 minMaxHeight = float2(0, _WorldSize.y);//  GetMinMaxHeight(lod, patchLoc) * _WorldSize.y + float2(-_BoundsHeightRedundance, _BoundsHeightRedundance);
+    RenderPatch patch;
+    patch.lod = lod;
+    //局部坐标+node世界坐标
+    patch.position = nodePositionWS + (patchOffset - (PATCH_COUNT_PER_NODE - 1) * 0.5) * patchMeterSize;
+    patch.minMaxHeight = minMaxHeight;
+    // patch.lodTrans = 0;
+    return patch;
+}
+
+
+//返回一个node节点覆盖的Sector矩形范围
+uint4 GetSectorBounds(uint3 nodeLoc)
+{
+    uint sectorCountPerNode = GetSectorCountPerNode(nodeLoc.z);
+    uint2 sectorMin = nodeLoc.xy * sectorCountPerNode;
+    return uint4(sectorMin, sectorMin + sectorCountPerNode - 1);
+}
+
+
+//Sector图的LOD
+uint GetLod(uint2 sectorLoc)
+{
+    if (sectorLoc.x < 0 || sectorLoc.y < 0 || sectorLoc.x >= SECTOR_COUNT_WORLD || sectorLoc.y >= SECTOR_COUNT_WORLD)
+    {
+        return 0;
+    }
+    //r的范围是 0-1 需要还原成对应整数
+    return round(_LodMap[sectorLoc].r * TERRAIN_MAX_LOD);
+}
+
+
+void SetLodTrans(inout RenderPatch patch, uint3 nodeLoc, uint2 patchOffset)
+{
+    uint lod = nodeLoc.z;//自身的LOD
+    uint4 sectorBounds = GetSectorBounds(nodeLoc);//0-160
+    int4 lodTrans = 0;//int4(0, 0, 0, 0);
+
+    //左边缘 需要判断左边Node的LOD级别
+    if (patchOffset.x == 0)
+        lodTrans.x = GetLod(sectorBounds.xy + int2(-1, 0)) - lod;
+
+    //下边缘 需要判断下边Node的LOD级别
+    if (patchOffset.y == 0)
+        lodTrans.y = GetLod(sectorBounds.xy + int2(0, -1)) - lod;
+    
+    //右边缘
+    if (patchOffset.x == PATCH_COUNT_PER_NODE - 1)
+        lodTrans.z = GetLod(sectorBounds.zw + int2(1, 0)) - lod;
+
+    //上边缘
+    if (patchOffset.y == PATCH_COUNT_PER_NODE - 1)
+        lodTrans.w = GetLod(sectorBounds.zw + int2(0, 1)) - lod;
+    
+    patch.lodTrans = (uint4)max(0, lodTrans);
+}
+
+//获取Patch的包围盒
+Bounds GetPatchBounds(RenderPatch patch)
+{
+    float halfPachSize = GetPatchExtent(patch.lod);
+    Bounds bounds;
+    float3 boundsMin, boundsMax;
+    boundsMin.xz = patch.position - halfPachSize;
+    boundsMax.xz = patch.position + halfPachSize;
+    boundsMin.y = patch.minMaxHeight.x;
+    boundsMax.y = patch.minMaxHeight.y;
+
+    bounds.minPosition = boundsMin;
+    bounds.maxPosition = boundsMax;
+    return bounds;
+}
+
+// 8,8 的原因是 一个Node由8*8个Patch组成
+[numthreads(PATCH_COUNT_PER_NODE, PATCH_COUNT_PER_NODE, 1)]
+void BuildPatches(uint3 id: SV_DispatchThreadID, uint3 groupId: SV_GroupID, uint3 groupThreadId: SV_GroupThreadID)
+{
+    uint3 nodeLoc = FinalNodeList[groupId.x];//??
+    uint2 patchOffset = groupThreadId.xy;//线程组中的XY
+    //生成Patch
+    RenderPatch patch = CreatePatch(nodeLoc, patchOffset);
+
+    //裁剪
+    Bounds bounds = GetPatchBounds(patch);
+    if (Cull(bounds))
+    {
+        return;
+    }
+    SetLodTrans(patch, nodeLoc, patchOffset);
+    CulledPatchList.Append(patch);
+
+    //构建每个Patch的包围盒 由两个V3坐标组成
+    #if PATCH_BOUNDS_DEBUG
+        BoundsDebug boundsDebug;
+        boundsDebug.bounds = bounds;
+        boundsDebug.color = float4((bounds.minPosition + _WorldSize * 0.5) / _WorldSize, 1);
+        PatchBoundsList.Append(boundsDebug);
+    #endif
+}

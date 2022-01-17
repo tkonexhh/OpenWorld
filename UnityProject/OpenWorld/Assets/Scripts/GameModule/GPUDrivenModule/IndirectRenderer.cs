@@ -179,18 +179,10 @@ namespace XHH
                 indirectRenderingMesh.lod1MatPropBlock.SetBuffer(ShaderConstants.AllInstancesTransformBuffer, m_AllInstancesTRSBuffer);
                 indirectRenderingMesh.lod2MatPropBlock.SetBuffer(ShaderConstants.AllInstancesTransformBuffer, m_AllInstancesTRSBuffer);
 
-                indirectRenderingMesh.lod0MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + 5 * 0 + 4);
-                indirectRenderingMesh.lod1MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + 5 * 1 + 4);
-                indirectRenderingMesh.lod2MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + 5 * 2 + 4);
+                indirectRenderingMesh.lod0MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 4);
+                indirectRenderingMesh.lod1MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 4);
+                indirectRenderingMesh.lod2MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 4);
 
-
-                indirectRenderingMesh.lod0MatPropBlock.SetBuffer("_VisibleInstanceOnlyTransformIDBuffer", m_OutputDataBuffer);
-                indirectRenderingMesh.lod1MatPropBlock.SetBuffer("_VisibleInstanceOnlyTransformIDBuffer", m_OutputDataBuffer);
-                indirectRenderingMesh.lod2MatPropBlock.SetBuffer("_VisibleInstanceOnlyTransformIDBuffer", m_OutputDataBuffer);
-
-                indirectRenderingMesh.lod0MatPropBlock.SetColor("_ColorTop", new Color(1, 0, 0, 1));
-                indirectRenderingMesh.lod1MatPropBlock.SetColor("_ColorTop", new Color(0, 1, 0, 1));
-                indirectRenderingMesh.lod2MatPropBlock.SetColor("_ColorTop", new Color(0, 0, 1, 1));
             }
 
         }

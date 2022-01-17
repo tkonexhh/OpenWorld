@@ -72,6 +72,17 @@ namespace XHH
             lod2MatPropBlock = new MaterialPropertyBlock();
         }
 
+        public MaterialPropertyBlock this[int mpbIndex]
+        {
+            get
+            {
+                if (mpbIndex == 0) return lod0MatPropBlock;
+                else if (mpbIndex == 1) return lod1MatPropBlock;
+                else return lod2MatPropBlock;
+                // if (mpbIndex == 0) return lod0MatPropBlock;
+            }
+        }
     }
+
 
 }

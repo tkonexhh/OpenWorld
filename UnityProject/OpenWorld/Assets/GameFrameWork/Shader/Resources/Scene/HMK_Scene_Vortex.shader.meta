@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9c6f1cffc61d8394fa020b985c8b750f
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _Cubemap: {fileID: 8900000, guid: 49dec98ab673f02459605b55ef275e8a, type: 2}
+  - _Normal: {fileID: 2800000, guid: a6b025576fde69d40adf6df65605f19d, type: 3}
+  - _DisturbNoise: {fileID: 2800000, guid: 2ce2423c0c228fe40a309371417d9d7b, type: 3}
+  - _WaveNoise: {fileID: 2800000, guid: 7b593a03d27c95d429fbe813d62471e9, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

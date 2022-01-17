@@ -1,0 +1,244 @@
+#pragma kernel CSInit
+#pragma kernel CSFillBlock
+#pragma kernel CSMain
+#pragma kernel CSMove
+
+
+#include "./HMK_RuntimeGIInput.hlsl"
+
+
+RWTexture3D<float4> _GIVolumeTex0;
+RWTexture3D<float4> _GIVolumeTex1;
+
+StructuredBuffer<GIData> _GIDatas;
+half3 _GIGridPos;//格子中的坐标
+half3 _GIVolumeSize;//GI覆盖世界大小
+half3 _GIVolumeBoxSize;//GI 单个格子大小
+int _GIVolumeRange;
+
+//CSMove相关
+int _GIMoveDir;
+
+
+//第一次初始化
+[numthreads(1, 1, 1)]
+void CSInit(uint3 id: SV_DispatchThreadID)
+{
+    GIData data = _GIDatas[0];
+    for (int y = 0; y < _GIVolumeSize.y; y++)
+    {
+        for (int x = 0; x < _GIVolumeSize.x; x++)
+        {
+            for (int z = 0; z < _GIVolumeSize.z; z++)
+            {
+                int3 pos = int3(x, y, z);
+                _GIVolumeTex0[pos] = half4(data.sh0, data.ao);
+                _GIVolumeTex1[pos] = half4(data.sh123, 1);
+            }
+        }
+    }
+}
+//////////////////////////////////
+
+
+int3 GetGridPos(half3 gridPos)
+{
+    int pixelX = (gridPos.x + _GIVolumeRange) * (int)_GIVolumeBoxSize.x + 1;
+    int pixelY = (gridPos.y + _GIVolumeRange) * (int)_GIVolumeBoxSize.y + 1;
+    int pixelZ = (gridPos.z + _GIVolumeRange) * (int)_GIVolumeBoxSize.z + 1;
+    return int3(pixelX, pixelY, pixelZ);
+}
+
+//一个块只有一个颜色
+[numthreads(1, 1, 1)]
+void CSFillBlock(uint3 id: SV_DispatchThreadID)
+{
+    GIData data = _GIDatas[0];
+    for (int y = 0; y < _GIVolumeBoxSize.y; y++)
+    {
+        for (int x = 0; x < _GIVolumeBoxSize.x; x++)
+        {
+            for (int z = 0; z < _GIVolumeBoxSize.z; z++)
+            {
+                int3 pos = int3(x, y, z) + GetGridPos(_GIGridPos);
+                _GIVolumeTex0[pos] = half4(data.sh0, data.ao);
+                _GIVolumeTex1[pos] = half4(data.sh123, 1);
+            }
+        }
+    }
+}
+
+//更新一个块
+[numthreads(1, 1, 1)]
+void CSMain(uint3 id: SV_DispatchThreadID)
+{
+    int index = 0;
+    for (uint y = 0; y < _GIVolumeBoxSize.y; y++)
+    {
+        for (uint x = 0; x < _GIVolumeBoxSize.x; x++)
+        {
+            for (uint z = 0; z < _GIVolumeBoxSize.z; z++)
+            {
+                GIData data = _GIDatas[index];
+                int3 pos = int3(x, y, z) + GetGridPos(_GIGridPos);
+                _GIVolumeTex0[pos] = half4(data.sh0, data.ao);
+                _GIVolumeTex1[pos] = half4(data.sh123, 1);
+                index++;
+            }
+        }
+    }
+}
+
+///////////////////
+//
+[numthreads(1, 1, 1)]
+void CSMove(uint3 id: SV_DispatchThreadID)
+{
+    int x = id.x;
+    int startX, endX, startY, endY, startZ, endZ;
+    //根据传入的防线做出移动
+    //Up
+    if (_GIMoveDir == 0)
+    {
+        startX = 1; endX = _GIVolumeSize.x - 1;
+        startZ = 1; endZ = _GIVolumeSize.z - 1;
+        startY = 1; endY = _GIVolumeSize.y - _GIVolumeBoxSize.y - 1;
+
+        for (int pixelY = startY; pixelY < endY; pixelY++)
+        {
+            for (int pixelX = startX; pixelX < endX; pixelX++)
+            {
+                for (int pixelZ = startZ; pixelZ < endZ; pixelZ++)
+                {
+                    int3 oldPos = int3(pixelX, pixelY + _GIVolumeBoxSize.y, pixelZ);
+                    float4 color1 = _GIVolumeTex0[oldPos];
+                    float4 color2 = _GIVolumeTex1[oldPos];
+                    
+                    int3 newPos = int3(pixelX, pixelY, pixelZ);
+                    _GIVolumeTex0[newPos] = color1;
+                    _GIVolumeTex1[newPos] = color2;
+                }
+            }
+        }
+    }
+    //Down
+    else if (_GIMoveDir == 1)
+    {
+        startX = 1; endX = _GIVolumeSize.x - 1;
+        startZ = 1; endZ = _GIVolumeSize.z - 1;
+        startY = _GIVolumeSize.y - 2; endY = _GIVolumeBoxSize.y;
+
+        for (int pixelY = startY; pixelY >= endY; pixelY--)
+        {
+            for (int pixelX = startX; pixelX < endX; pixelX++)
+            {
+                for (int pixelZ = startZ; pixelZ < endZ; pixelZ++)
+                {
+                    int3 oldPos = int3(pixelX, pixelY - _GIVolumeBoxSize.y, pixelZ);
+                    float4 color1 = _GIVolumeTex0[oldPos];
+                    float4 color2 = _GIVolumeTex1[oldPos];
+                    
+                    int3 newPos = int3(pixelX, pixelY, pixelZ);
+                    _GIVolumeTex0[newPos] = color1;
+                    _GIVolumeTex1[newPos] = color2;
+                }
+            }
+        }
+    }
+    //Left
+    else if (_GIMoveDir == 2)
+    {
+        startY = 1; endY = _GIVolumeSize.y - 1;
+        startZ = 1; endZ = _GIVolumeSize.z - 1;
+        startX = _GIVolumeSize.x - 2; endX = _GIVolumeBoxSize.x;
+
+        //需要处理边界问题
+        for (int pixelY = startY; pixelY < endY; pixelY++)
+        {
+            for (int pixelX = startX; pixelX > endX; pixelX--)
+            {
+                for (int pixelZ = startZ; pixelZ < endZ; pixelZ++)
+                {
+                    int3 oldPos = int3(pixelX - _GIVolumeBoxSize.x, pixelY, pixelZ);
+                    float4 color1 = _GIVolumeTex0[oldPos];
+                    float4 color2 = _GIVolumeTex1[oldPos];
+                    
+                    int3 newPos = int3(pixelX, pixelY, pixelZ);
+                    _GIVolumeTex0[newPos] = color1;
+                    _GIVolumeTex1[newPos] = color2;
+                }
+            }
+        }
+    }
+    //Right
+    else if (_GIMoveDir == 3)
+    {
+        startY = 1; endY = _GIVolumeSize.y - 1;
+        startZ = 1; endZ = _GIVolumeSize.z - 1;
+        startX = 1; endX = _GIVolumeSize.x - _GIVolumeBoxSize.x - 1;
+
+        //需要处理边界问题
+        for (int pixelY = startY; pixelY < endY; pixelY++)
+        {
+            for (int pixelX = startX; pixelX < endX; pixelX++)
+            {
+                for (int pixelZ = startZ; pixelZ < endZ; pixelZ++)
+                {
+                    int3 oldPos = int3(pixelX + _GIVolumeBoxSize.x, pixelY, pixelZ);
+                    float4 color1 = _GIVolumeTex0[oldPos];
+                    float4 color2 = _GIVolumeTex1[oldPos];
+
+                    int3 newPos = int3(pixelX, pixelY, pixelZ);
+                    _GIVolumeTex0[newPos] = color1;
+                    _GIVolumeTex1[newPos] = color2;
+                }
+            }
+        }
+    }//Forward
+    else if (_GIMoveDir == 4)
+    {
+        startX = 1; endX = _GIVolumeSize.x - 1;
+        startY = 1; endY = _GIVolumeSize.y - 1;
+        startZ = 1; endZ = _GIVolumeSize.z - _GIVolumeBoxSize.z - 1;
+
+        for (int pixelY = startY; pixelY < endY; pixelY++)
+        {
+            for (int pixelX = startX; pixelX < endX; pixelX++)
+            {
+                for (int pixelZ = startZ; pixelZ < endZ; pixelZ++)
+                {
+                    int3 oldPos = int3(pixelX, pixelY, pixelZ + _GIVolumeBoxSize.z);
+                    float4 color1 = _GIVolumeTex0[oldPos];
+                    float4 color2 = _GIVolumeTex1[oldPos];
+
+                    int3 newPos = int3(pixelX, pixelY, pixelZ);
+                    _GIVolumeTex0[newPos] = color1;
+                    _GIVolumeTex1[newPos] = color2;
+                }
+            }
+        }
+    }//Backward
+    else if (_GIMoveDir == 5)
+    {
+        startX = 1; endX = _GIVolumeSize.x - 1;
+        startY = 1; endY = _GIVolumeSize.y - 1;
+        startZ = _GIVolumeSize.z - 2; endZ = _GIVolumeBoxSize.z;
+
+        for (int pixelY = startY; pixelY < endY; pixelY++)
+        {
+            for (int pixelX = startX; pixelX < endX; pixelX++)
+            {
+                for (int pixelZ = startZ; pixelZ >= endZ; pixelZ--)
+                {
+                    int3 oldPos = int3(pixelX, pixelY, pixelZ - _GIVolumeBoxSize.z);
+                    float4 color1 = _GIVolumeTex0[oldPos];
+                    float4 color2 = _GIVolumeTex1[oldPos];
+
+                    int3 newPos = int3(pixelX, pixelY, pixelZ);
+                    _GIVolumeTex0[newPos] = color1;
+                    _GIVolumeTex1[newPos] = color2;
+                }
+            }
+        }
+    }
+}

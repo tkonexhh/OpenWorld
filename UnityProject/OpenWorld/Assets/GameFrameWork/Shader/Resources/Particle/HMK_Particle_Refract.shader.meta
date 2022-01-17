@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 87d85837b422b6d4cbc99b3136c6868e
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _RefracNoise: {fileID: 2800000, guid: 778139152bd330048b7082c151249b84, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

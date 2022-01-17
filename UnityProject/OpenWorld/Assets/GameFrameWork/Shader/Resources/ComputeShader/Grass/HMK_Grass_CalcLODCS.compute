@@ -1,0 +1,118 @@
+#include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+
+
+//-------------------------------------------------------------
+//        Constants
+//----------------------------------------
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+
+
+uint _StartOffset;
+float4x4 _VPMatrix;
+
+//草分3级lod
+//r:lod0 distance  g: lod1 distance else lod2
+float3 _LODDistance;
+float3 _CenterPos;//中间位置
+
+
+StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//全部草的信息
+AppendStructuredBuffer<uint2> _VisibleInfoBuffer;//可见的信息Buffer
+RWStructuredBuffer<uint> _ArgsBuffer;
+
+AppendStructuredBuffer<uint> _LOD0Buffer;//可见的信息Buffer
+AppendStructuredBuffer<uint> _LOD1Buffer;//可见的信息Buffer
+AppendStructuredBuffer<uint> _LOD2Buffer;//可见的信息Buffer
+
+//计算LOD temp
+uint CalcLOD(float3 positionWS)
+{
+    uint lod = 0;
+    float dist = distance(positionWS, _CenterPos);
+    
+    if (dist < _LODDistance.x)
+    {
+        lod = 0;
+    }
+    else if (dist < _LODDistance.y)
+    {
+        lod = 1;
+    }
+    else
+    {
+        lod = 2;
+    }
+    return lod;
+}
+
+uint IsVisibleAfterFrustumCulling(float4 clipPos)
+{
+    return(clipPos.z <= clipPos.w &&
+    clipPos.y <= clipPos.w * 1.5 &&
+    clipPos.x <= clipPos.w * 1.1 &&
+    clipPos.w <= _LODDistance.z)
+        ?1: 0;
+
+    // return(clipPos.z > clipPos.w
+    // || clipPos.x < - clipPos.w
+    // || clipPos.x > clipPos.w
+    // || clipPos.y < - clipPos.w
+    // || clipPos.y > clipPos.w)
+    //     ? 0: 1;
+
+}
+
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 id: SV_DispatchThreadID)
+{
+    //posWS -> posCS
+    int grassIndex = id.x + _StartOffset;
+    GrassTRS trs = _AllInstancesTransformBuffer[grassIndex];
+    float4 absPosCS = abs(mul(_VPMatrix, float4(trs.position, 1.0)));
+
+    uint isVisible = IsVisibleAfterFrustumCulling(absPosCS);
+    
+    if (isVisible >= 1)
+    {
+        //可见的
+        //计算LOD等级
+        float3 positionWS = trs.position;
+        uint lod = CalcLOD(positionWS);
+
+        uint argsIndex = 1;
+        argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 0);
+        argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 1);
+
+        //这里是得到了各级LOD可见的总个数
+        // _VisibleCountBuffer[lod].totalCount++;//这里有问题啊... 这里的数量取出来并不对
+        InterlockedAdd(_ArgsBuffer[argsIndex], isVisible);//这下对了
+        
+        if (lod == 0)
+        {
+            _LOD0Buffer.Append(grassIndex);
+        }
+        else if (lod == 1)
+        {
+            _LOD1Buffer.Append(grassIndex);
+        }
+        else
+        {
+            _LOD2Buffer.Append(grassIndex);
+        }
+        
+        uint2 visibleInfo;
+        visibleInfo.x = grassIndex;
+        visibleInfo.y = lod;
+        _VisibleInfoBuffer.Append(visibleInfo);
+    }
+}
+
+
