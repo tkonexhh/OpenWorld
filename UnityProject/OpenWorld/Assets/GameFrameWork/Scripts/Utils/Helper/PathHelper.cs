@@ -15,4 +15,15 @@ public class PathHelper
         string assetRootPath = System.IO.Path.GetFullPath(Application.dataPath);
         return assetRootPath.Substring(0, assetRootPath.Length - 6) + assetsPath;
     }
+
+    /// <summary>
+    /// 将文件路径转成文件夹路径
+    /// </summary>
+    /// <param name="filepath"></param>
+    /// <returns></returns>
+    public static string FileNameToPath(string filepath)
+    {
+        int index = filepath.LastIndexOf("/");
+        return filepath.Substring(0, index);
+    }
 }

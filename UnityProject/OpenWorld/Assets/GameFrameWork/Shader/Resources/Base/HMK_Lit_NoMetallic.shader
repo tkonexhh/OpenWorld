@@ -4,11 +4,6 @@ Shader "HMK/Lit_NoMetallic"
 {
     Properties
     {
-        [Header(Option)]
-        [Toggle(_ALPHATEST_ON)] _AlphaClip ("__clip", Float) = 0.0
-        [Enum(UnityEngine.Rendering.CullMode)]  _Cull ("__Cull", float) = 2.0
-
-        
         _Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         [Header(Base Color)]
         [MainColor]_BaseColor ("固有色", color) = (1, 1, 1, 1)
@@ -17,6 +12,16 @@ Shader "HMK/Lit_NoMetallic"
         _BumpScale ("Bump Scale", range(0, 3)) = 1
         _RoughnessScale ("RoughnessScale", range(0, 3)) = 1
         _OcclusionScale ("OcclusionScale", range(0, 3)) = 1
+
+
+        [Header(Option)]
+        [HideInInspector] _Surface ("__surface", Float) = 0.0
+        [HideInInspector] _Blend ("__blend", Float) = 0.0
+        [HideInInspector] _SrcBlend ("__src", Float) = 1.0
+        [HideInInspector] _DstBlend ("__dst", Float) = 0.0
+        [HideInInspector] _ZWrite ("__zw", Float) = 1.0
+        [Toggle(_ALPHATEST_ON)] _AlphaClip ("__clip", Float) = 0.0
+        [Enum(UnityEngine.Rendering.CullMode)]  _Cull ("__Cull", float) = 2.0
     }
     SubShader
     {
@@ -26,7 +31,9 @@ Shader "HMK/Lit_NoMetallic"
         {
             Tags { "LightMode" = "UniversalForward" }
             
-            Cull Back
+            Cull[_Cull]
+            Blend[_SrcBlend][_DstBlend]
+            ZWrite[_ZWrite]
             
             HLSLPROGRAM
 
@@ -233,4 +240,5 @@ Shader "HMK/Lit_NoMetallic"
         }
     }
     FallBack "Diffuse"
+    CustomEditor "LitNoMetallicShaderGUI"
 }

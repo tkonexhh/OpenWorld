@@ -31,8 +31,18 @@ public class IOHelper
 
     public static void DeleteAssetPath(string assetPath)
     {
-        string path = PathHelper.AssetsPath2ABSPath(assetPath);
-        DeletePath(path);
+        DeletePath(PathHelper.AssetsPath2ABSPath(assetPath));
+    }
+
+    public static void CreatePath(string path)
+    {
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+    }
+
+    public static void CreateAssetPath(string assetPath)
+    {
+        CreatePath(PathHelper.AssetsPath2ABSPath(assetPath));
     }
 
 }

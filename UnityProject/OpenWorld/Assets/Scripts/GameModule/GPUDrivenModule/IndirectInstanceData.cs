@@ -13,9 +13,13 @@ namespace XHH
         public Mesh lod1Mesh;
         public Mesh lod2Mesh;
         public Material indirectMaterial;
+    }
 
+    [System.Serializable]
+    public class GrassIndirectInstanceData : IndirectInstanceData
+    {
 
-        public InstanceTRSData[] itemsTRS;
+        public GrassInstanceData[] itemsTRS;
     }
 
 

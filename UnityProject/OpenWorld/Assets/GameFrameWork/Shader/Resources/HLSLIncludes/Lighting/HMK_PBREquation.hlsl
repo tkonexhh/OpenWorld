@@ -20,7 +20,8 @@ float GGXGSF(float NdotL, float NdotV, float roughness)
     float NdotVSqr = NdotV * NdotV;
     float SmithL = (2 * NdotL) / (NdotL + sqrt(roughnessSqr + (1 - roughnessSqr) * NdotLSqr));
     float SmithV = (2 * NdotV) / (NdotV + sqrt(roughnessSqr + (1 - roughnessSqr) * NdotVSqr));
-    float Gs = (SmithL * SmithV); return Gs;
+    float Gs = (SmithL * SmithV);
+    return Gs;
 }
 
 float D_Function(float roughness, float NdotH)
@@ -48,8 +49,16 @@ float G_Function(float NdotL, float NdotV, float roughness)
     return G_Function(NdotL, NdotV, roughness, kInDirectLight);
 }
 
-float3 F_Function(float VdotH, float3 F0)
+// float3 F_Function(float VdotH, float3 F0)
+// {
+//     float3 F = F0 + (1 - F0) * exp2((-5.55473 * VdotH - 6.98316) * VdotH);//与虚幻一致
+//     return F;
+// }
+
+//F项 直接光
+
+real3 F_Function(float HdotL, float3 F0)
 {
-    float3 F = F0 + (1 - F0) * exp2((-5.55473 * VdotH - 6.98316) * VdotH);//与虚幻一致
-    return F;
+    float Fre = exp2((-5.55473 * HdotL - 6.98316) * HdotL);
+    return lerp(Fre, 1, F0);
 }

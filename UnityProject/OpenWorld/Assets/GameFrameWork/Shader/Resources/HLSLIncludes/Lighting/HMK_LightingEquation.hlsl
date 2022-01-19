@@ -38,8 +38,8 @@ HMKSurfaceData InitSurfaceData(half3 albedo, half alpha, half metallic, half rou
     HMKSurfaceData surfaceData;
     surfaceData.albedo = albedo;
     surfaceData.alpha = alpha;
-    surfaceData.metallic = metallic;
-    surfaceData.roughness = roughness;
+    surfaceData.metallic = saturate(metallic);
+    surfaceData.roughness = saturate(roughness);
     surfaceData.occlusion = occlusion;
     return surfaceData;
 }
@@ -161,10 +161,10 @@ half3 MixSHOrLightmap(HMKLightingData lightingData)
 //PBR中计算的公共变量
 struct HMKPBRParam
 {
-    half NdotV;
-    half kInDirectLight;//G项中的k值
-    half F0;
-    half roughness;
+    float NdotV;
+    float kInDirectLight;//G项中的k值
+    float F0;
+    float roughness;
 };
 
 
@@ -172,9 +172,8 @@ struct HMKPBRParam
 //同PerceptualRoughnessToMipmapLevel
 float CubeMapMip(float roughness)
 {
-    //基于粗糙度计算CubeMap的Mip等级
-    float mip_roughness = (roughness) * (1.7 - 0.7 * roughness);
-    half mip = mip_roughness * UNITY_SPECCUBE_LOD_STEPS;
+    float mip_roughness = (roughness) * (1.7 - 0.7 * roughness);//Unity内部不是线性 调整下拟合曲线求近似
+    half mip = mip_roughness * UNITY_SPECCUBE_LOD_STEPS;//把粗糙度remap到0-6 7个阶级 然后进行lod采样
     return mip;
 }
 
@@ -182,7 +181,12 @@ half3 GlossyEnvironmentReflection(half roughness, half3 reflectVector, half occl
 {
     half mip = CubeMapMip(roughness);
     half4 encodedIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflectVector, mip);
-    half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
+    // half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
+    #if defined(UNITY_USE_NATIVE_HDR)
+        half3 irradiance = encodedIrradiance.rgb;
+    #else
+        half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
+    #endif
     return irradiance * occlusion;
 }
 
@@ -236,25 +240,39 @@ half3 ShadeGlobalIllumination(HMKSurfaceData surfaceData, HMKLightingData lighti
 
 half3 ShadeSingleLightPBR(HMKSurfaceData surfaceData, HMKLightingData lightingData, Light light, HMKPBRParam PBRParam, half3 radiance)
 {
-    half3 H = SafeNormalize(lightingData.viewDirWS + light.direction);
-    half NdotL = dot(lightingData.normalWS, light.direction) * 0.5 + 0.5;
-    // half NdotL = max(saturate(dot(lightingData.normalWS, light.direction)), 0.000001);
-    half VdotH = max(saturate(dot(lightingData.viewDirWS, H)), 0.000001);
-    half NdotH = max(saturate(dot(lightingData.normalWS, H)), 0.000001);
-    half NdotV = PBRParam.NdotV;
-    half roughness = PBRParam.roughness;
-    half F0 = PBRParam.F0;
+    float3 L = normalize(light.direction);
+    float3 V = SafeNormalize(lightingData.viewDirWS);
+    float3 H = SafeNormalize(V + L);
+    // half NdotL = dot(lightingData.normalWS, light.direction) * 0.5 + 0.5;
+    float ndotl = dot(lightingData.normalWS, light.direction);
+    float NdotL = max(saturate(ndotl), 0.000001);
+    float halfNdotL = ndotl * 0.5 + 0.5;
+    
+    float VdotH = max(saturate(dot(lightingData.viewDirWS, H)), 0.000001);
+    float NdotH = max(saturate(dot(lightingData.normalWS, H)), 0.000001);
+    
+    float HdotL = max(saturate(dot(H, L)), 0.000001);
+    float NdotV = PBRParam.NdotV;
+    float roughness = PBRParam.roughness;
+    float F0 = PBRParam.F0;
     
     //********直接光照*********
     //--------直接光照镜面反射---------
     float D = D_Function(roughness, NdotH);
-    float F = F_Function(VdotH, PBRParam.F0);
+    // return D;
+    float F = F_Function(HdotL, PBRParam.F0);
+    // return F;
+    // return(NdotV * NdotL * 4);
+    // return NdotV;
     float G = G_Function(NdotL, NdotV, roughness, PBRParam.kInDirectLight);
+    // return G;
     float3 mainSpecularResult = (D * G * F) / (NdotV * NdotL * 4);
+    // return mainSpecularResult;
 
     //--------直接光照漫反射-----------
     float3 kd = (1 - F) * (1 - surfaceData.metallic);
-    half3 mainDiffColor = kd * surfaceData.albedo * NdotL;
+    half3 mainDiffColor = kd * surfaceData.albedo * halfNdotL;
+    // return mainDiffColor;
 
     //--------直接光部分-------
     half3 lightResult = mainSpecularResult * light.shadowAttenuation + mainDiffColor ;
@@ -317,6 +335,7 @@ half3 CalculateRadiance(Light mainLight, HMKLightingData lightingData)
 {
     // half NdotL = max(saturate(dot(lightingData.normalWS, mainLight.direction)), 0.000001);
     float NdotL = dot(lightingData.normalWS, mainLight.direction) * 0.5 + 0.5;
+
     
     half lightAttenuation = mainLight.distanceAttenuation * mainLight.shadowAttenuation ;
     float halfLambertShadow = NdotL * lightAttenuation;
@@ -326,7 +345,7 @@ half3 CalculateRadiance(Light mainLight, HMKLightingData lightingData)
     lightAttenuation = halfLambertShadow;
     // half3 lerpShadowColor = lerp(_GlobalShadowColorNear, _GlobalShadowColorFar, saturate(lightingData.depth + _GlobalShadowLerp));
     
-    half3 shadowColor = lerp(_GlobalShadowColor.rgb, 1, lightAttenuation);
+    half3 shadowColor = lerp(_GlobalShadowColor.rgb, 1, saturate(lightAttenuation));
     // shadowColor = lerp(shadowColor, lightAttenuation, _GlobalShadowColor.a);
     return shadowColor;
 }
@@ -336,7 +355,7 @@ half3 ShadeAllLightPBR(HMKSurfaceData surfaceData, HMKLightingData lightingData)
     // return lightingData.depth + _GlobalShadowLerp;
     // return saturate(1 - pow(lightingData.depth, _GlobalShadowLerp));
     float roughness = surfaceData.roughness * surfaceData.roughness;
-    float squareRoughness = roughness * roughness;
+    // float squareRoughness = roughness * roughness;
 
     half4 shadowMask = half4(1, 1, 1, 1);
     Light mainLight = GetMainLight(lightingData.shadowCoord, lightingData.positionWS, shadowMask);
@@ -369,6 +388,7 @@ half3 ShadeAllLightPBR(HMKSurfaceData surfaceData, HMKLightingData lightingData)
     // return indirectResult;
     //******额外光照*****
     half3 additionalLightSumResult = ShadeAdditionalLight(surfaceData, lightingData, PBRParam);
+
 
     half3 finalResult = mainLightResult + indirectResult + additionalLightSumResult;
 

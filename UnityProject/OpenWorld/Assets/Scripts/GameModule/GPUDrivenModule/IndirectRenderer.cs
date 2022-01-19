@@ -16,7 +16,7 @@ namespace XHH
     {
         public string name;//key
         //一种草的全部数据
-        private InstanceTRSData[] m_AllTRS = new InstanceTRSData[MAX_COUNT];
+        private GrassInstanceData[] m_AllTRS = new GrassInstanceData[MAX_COUNT];
 
 
         private int m_TRSCount;
@@ -28,7 +28,6 @@ namespace XHH
         private ComputeShader copyInstanceDataCS;
 
 
-
         //Compute Buffers
         private ComputeBuffer m_InstancesArgsBuffer;
         private ComputeBuffer m_AllInstancesTRSBuffer;//全部数据
@@ -36,12 +35,6 @@ namespace XHH
         private ComputeBuffer m_InstancesIsVisibleBuffer;//可见性
         private ComputeBuffer m_OutputDataBuffer;//最终的输出数据
         private ComputeBuffer m_InsertCountBuffer;
-
-
-        private ComputeBuffer m_LOD0Buffer;
-        private ComputeBuffer m_LOD1Buffer;
-        private ComputeBuffer m_LOD2Buffer;
-
 
         //other
         private uint[] m_Args;
@@ -81,26 +74,6 @@ namespace XHH
 
         }
 
-        public void AddRangeInstance(List<InstanceTRSData> trs)
-        {
-            int addCount = trs.Count;
-
-            if (addCount + m_TRSCount >= MAX_COUNT)
-            {
-                addCount = MAX_COUNT - m_TRSCount;
-            }
-
-            if (addCount <= 0)
-            {
-                return;
-            }
-
-            for (int i = 0; i < addCount; ++i)
-            {
-                m_AllTRS[m_TRSCount++] = trs[i];
-            }
-        }
-
 
 
         private void InitBuffer()
@@ -121,14 +94,6 @@ namespace XHH
 
             if (m_OutputDataBuffer == null)
                 m_OutputDataBuffer = new ComputeBuffer(MAX_COUNT, sizeof(uint), ComputeBufferType.Append);
-
-
-            if (m_LOD0Buffer == null)
-            {
-                m_LOD0Buffer = new ComputeBuffer(MAX_COUNT, sizeof(uint), ComputeBufferType.Append);
-                m_LOD1Buffer = new ComputeBuffer(MAX_COUNT, sizeof(uint), ComputeBufferType.Append);
-                m_LOD2Buffer = new ComputeBuffer(MAX_COUNT, sizeof(uint), ComputeBufferType.Append);
-            }
 
 
             if (m_Args == null)
