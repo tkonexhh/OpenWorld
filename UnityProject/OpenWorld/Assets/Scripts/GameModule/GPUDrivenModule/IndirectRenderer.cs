@@ -4,9 +4,27 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Unity.Mathematics;
 
-
 namespace XHH
 {
+
+    // Preferrably want to have all buffer structs in power of 2...
+    // 6 * 4 bytes = 24 bytes
+    [System.Serializable]
+    public struct IndirectInstanceCSInput
+    {
+        public Vector3 boundsCenter;       // 3
+        public Vector3 boundsExtents;      // 6
+    };
+
+
+    public struct InstanceTRS
+    {
+        public float3 position;
+        public float3 rotation;
+        public float3 scale;
+    }
+
+
     /// <summary>
     /// 处理草的LOD 以及 剔除
     /// 然后再下发给下层的InstanceGroup
@@ -15,86 +33,96 @@ namespace XHH
     public class IndirectRenderer
     {
         public string name;//key
-        //一种草的全部数据
-        private GrassInstanceData[] m_AllTRS = new GrassInstanceData[MAX_COUNT];
+
+        ///----------------------
+        ///数据
+        ///----------------------
+        private List<IndirectInstanceCSInput> instancesInputData = new List<IndirectInstanceCSInput>();
+        private List<InstanceTRS> instancesInputTRS = new List<InstanceTRS>();
 
 
-        private int m_TRSCount;
-        private const int MAX_COUNT = 5000000;
-        private IndirectRenderingMesh indirectRenderingMesh;
 
-        //Compute Shader
-        private ComputeShader m_CullComputeShader;
-        private ComputeShader copyInstanceDataCS;
+        private IndirectRenderingMesh m_IndirectRenderingMesh;
 
 
-        //Compute Buffers
+        ///----------------------
+        /// ComputeShader
+        ///----------------------
+        private ComputeShader m_CullCS;
+        private ComputeShader m_CalcIndexOffsetCS;
+
+
+        ///----------------------
+        /// Compute Buffer
+        ///----------------------
+
+        //Cull
+        private ComputeBuffer m_InstanceDataBuffer;
         private ComputeBuffer m_InstancesArgsBuffer;
-        private ComputeBuffer m_AllInstancesTRSBuffer;//全部数据
-        private ComputeBuffer m_VisibleInfoBuffer;//ID lod infos
-        private ComputeBuffer m_InstancesIsVisibleBuffer;//可见性
+        private ComputeBuffer m_VisibleInfoBuffer;//可见ID LOD
+        //CalcIndexOffset
+        private ComputeBuffer m_InsertCountBuffer;//已经插入的数量
         private ComputeBuffer m_OutputDataBuffer;//最终的输出数据
-        private ComputeBuffer m_InsertCountBuffer;
+
+        private ComputeBuffer m_InstanceTRSBuffer;//全部数据
+
+
 
         //other
+        private int m_InstancesCount = 0;
         private uint[] m_Args;
-        private uint[] m_InsertCount = new uint[NUMBER_OF_LOD] { 0, 0, 0 };
 
-        private float m_ShowDistance = 150;//最远距离
+        private float m_ShowDistance = 10;//最远距离
 
-
-        private float m_MinX, m_MinZ, m_MinY, m_MaxY, m_MaxX, m_MaxZ;
-        private float m_Expand = 20;
         private Bounds m_RenderBounds;
 
-        private const int KERNAL_CalcCullAndLOD = 0;
-        private const int MESH_INDEX = 0;
+        private int KERNAL_CalcCullAndLOD;//m_CullComputeShader
+        private int KERNAL_CalcIndexOffset;
+        private int m_CullingGroupX;
 
+
+
+        private Matrix4x4 m_VPMatrix;
 
         // Constants
         private const int NUMBER_OF_LOD = 3; // (LOD00 + LOD01 + LOD02)
         private const int NUMBER_OF_ARGS_PER_DRAW = 5; // (indexCount, instanceCount, startIndex, baseVertex, startInstance)
         private const int NUMBER_OF_ARGS_PER_INSTANCE_TYPE = NUMBER_OF_LOD * NUMBER_OF_ARGS_PER_DRAW; // 3draws * 5args = 15args
         private const int ARGS_BYTE_SIZE_PER_DRAW_CALL = NUMBER_OF_ARGS_PER_DRAW * sizeof(uint); // 5args * 4bytes = 20 bytes
+        private const int MESH_INDEX = 0;
 
 
-        public IndirectRenderer(string name, IndirectInstanceData instanceData)
+        public IndirectRenderer(string name, GrassIndirectInstanceData instanceData)
         {
             this.name = name;
-            indirectRenderingMesh = new IndirectRenderingMesh(instanceData);
 
-            if (m_CullComputeShader == null)
-                m_CullComputeShader = Resources.Load("ComputeShader/Grass/HMK_Grass_CalcLODCS") as ComputeShader;
-            m_CullComputeShader.SetVector(ShaderConstants.LODDistancePID, new Vector3(m_ShowDistance * 0.25f, m_ShowDistance * 0.5f, m_ShowDistance));
+            if (m_CullCS == null)
+                m_CullCS = Resources.Load("Shader/ComputeShader/XHH_GPUDriven_Culling") as ComputeShader;
+            Vector4 lodDistance = new Vector3(m_ShowDistance * 0.25f, m_ShowDistance * 0.5f, m_ShowDistance);
+            // Debug.LogError("lodDistance" + lodDistance);
+            m_CullCS.SetVector(ShaderConstants.LODDistancePID, lodDistance);
 
+            m_CalcIndexOffsetCS = Resources.Load("Shader/ComputeShader/XHH_GPUDriven_CalcIndexOffsetCS") as ComputeShader;
 
-            if (copyInstanceDataCS == null)
-                copyInstanceDataCS = Resources.Load("ComputeShader/Grass/HMk_Grass_CopyInstanceDataCS") as ComputeShader;
-            copyInstanceDataCS.SetInt("_NumOfDrawcalls", NUMBER_OF_LOD);
-
+            InitBuffer(instanceData);
         }
 
 
-
-        private void InitBuffer()
+        private bool TryGetKernels()
         {
-            if (m_AllInstancesTRSBuffer == null)
-                m_AllInstancesTRSBuffer = new ComputeBuffer(MAX_COUNT, sizeof(float) * 5);
+            return TryGetKernel("CSMain", ref m_CullCS, ref KERNAL_CalcCullAndLOD) &&
+                    TryGetKernel("CalcIndexOffsetCS", ref m_CalcIndexOffsetCS, ref KERNAL_CalcIndexOffset);
 
-            if (m_VisibleInfoBuffer == null)
-                m_VisibleInfoBuffer = new ComputeBuffer(MAX_COUNT, sizeof(uint) * 2, ComputeBufferType.Append);
+        }
 
-            if (m_InstancesIsVisibleBuffer == null)
-                m_InstancesIsVisibleBuffer = new ComputeBuffer(MAX_COUNT, sizeof(uint), ComputeBufferType.Append);
+        private void InitBuffer(GrassIndirectInstanceData instanceData)
+        {
+            if (!TryGetKernels())
+            {
+                return;
+            }
 
-
-            if (m_InsertCountBuffer == null)
-                m_InsertCountBuffer = new ComputeBuffer(NUMBER_OF_LOD, sizeof(uint));
-
-
-            if (m_OutputDataBuffer == null)
-                m_OutputDataBuffer = new ComputeBuffer(MAX_COUNT, sizeof(uint), ComputeBufferType.Append);
-
+            m_IndirectRenderingMesh = new IndirectRenderingMesh(instanceData);
 
             if (m_Args == null)
             {
@@ -108,21 +136,21 @@ namespace XHH
                 // 4 - start instance location
 
                 // LOD0
-                m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 0] = indirectRenderingMesh.numOfIndicesLod0;
+                m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 0] = m_IndirectRenderingMesh.numOfIndicesLod0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 1] = 0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 2] = 0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 3] = 0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 4] = 0;
 
                 //LOD1
-                m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 0] = indirectRenderingMesh.numOfIndicesLod1;
+                m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 0] = m_IndirectRenderingMesh.numOfIndicesLod1;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 1] = 0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 2] = m_Args[argsIndex] + m_Args[argsIndex + 2];
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 3] = 0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 4] = 0;
 
                 //LOD2
-                m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 0] = indirectRenderingMesh.numOfIndicesLod2;
+                m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 0] = m_IndirectRenderingMesh.numOfIndicesLod2;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 1] = 0;
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 2] = m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1] + m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 2];
                 m_Args[argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 3] = 0;
@@ -133,64 +161,93 @@ namespace XHH
                 //其中 argsIndex + 4  argsIndex + 9 argsIndex + 14 需要传入Draw中计算起始下标 
 
 
+                Bounds originalBounds = m_IndirectRenderingMesh.bounds;
+
+                for (int i = 0; i < instanceData.itemsTRS.Length; i++)
+                {
+                    Vector3 position = instanceData.itemsTRS[i].position;
+                    Vector3 scale = new float3(instanceData.itemsTRS[i].scale, instanceData.itemsTRS[i].scale, instanceData.itemsTRS[i].scale);
+                    Vector3 rotation = new float3(0, instanceData.itemsTRS[i].rotation / 360.0f, 0);
+
+                    Bounds b = new Bounds();
+                    b.center = position;
+                    Vector3 s = originalBounds.size;
+                    s.Scale(scale);
+                    b.size = s;
+
+                    //这个还没有考虑旋转对包围盒的影响
+                    instancesInputData.Add(new IndirectInstanceCSInput()
+                    {
+                        boundsCenter = b.center,
+                        boundsExtents = b.extents
+                    });
+
+
+                    instancesInputTRS.Add(new InstanceTRS()
+                    {
+                        position = position,
+                        rotation = rotation,
+                        scale = scale
+                    });
+
+                    m_InstancesCount++;
+                }
+
+                OnInstancesCountChange();
+
                 m_InstancesArgsBuffer = new ComputeBuffer(NUMBER_OF_ARGS_PER_INSTANCE_TYPE, sizeof(uint), ComputeBufferType.IndirectArguments);
                 m_InstancesArgsBuffer.SetData(m_Args);
 
-                indirectRenderingMesh.lod0MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
-                indirectRenderingMesh.lod1MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
-                indirectRenderingMesh.lod2MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
 
-                indirectRenderingMesh.lod0MatPropBlock.SetBuffer(ShaderConstants.AllInstancesTransformBuffer, m_AllInstancesTRSBuffer);
-                indirectRenderingMesh.lod1MatPropBlock.SetBuffer(ShaderConstants.AllInstancesTransformBuffer, m_AllInstancesTRSBuffer);
-                indirectRenderingMesh.lod2MatPropBlock.SetBuffer(ShaderConstants.AllInstancesTransformBuffer, m_AllInstancesTRSBuffer);
+                m_InsertCountBuffer = new ComputeBuffer(NUMBER_OF_LOD, sizeof(uint));
 
-                indirectRenderingMesh.lod0MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 4);
-                indirectRenderingMesh.lod1MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 4);
-                indirectRenderingMesh.lod2MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 4);
+                m_IndirectRenderingMesh.lod0MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
+                m_IndirectRenderingMesh.lod1MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
+                m_IndirectRenderingMesh.lod2MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
 
+                m_IndirectRenderingMesh.lod0MatPropBlock.SetBuffer(ShaderConstants.InstanceTRSBufferPID, m_InstanceTRSBuffer);
+                m_IndirectRenderingMesh.lod1MatPropBlock.SetBuffer(ShaderConstants.InstanceTRSBufferPID, m_InstanceTRSBuffer);
+                m_IndirectRenderingMesh.lod2MatPropBlock.SetBuffer(ShaderConstants.InstanceTRSBufferPID, m_InstanceTRSBuffer);
+
+                m_IndirectRenderingMesh.lod0MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 0 + 4);
+                m_IndirectRenderingMesh.lod1MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 4);
+                m_IndirectRenderingMesh.lod2MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 4);
+
+                m_IndirectRenderingMesh.lod0MatPropBlock.SetBuffer("_OutputDataBuffer", m_OutputDataBuffer);
+                m_IndirectRenderingMesh.lod1MatPropBlock.SetBuffer("_OutputDataBuffer", m_OutputDataBuffer);
+                m_IndirectRenderingMesh.lod2MatPropBlock.SetBuffer("_OutputDataBuffer", m_OutputDataBuffer);
+
+
+                m_CullCS.SetInt(ShaderConstants.ShouldFrustumCullPID, 1);
             }
+        }
+
+        private void OnInstancesCountChange()
+        {
+            m_InstanceDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(float) * 6);
+            m_VisibleInfoBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint) * 2, ComputeBufferType.Append);
+
+
+            m_OutputDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint), ComputeBufferType.Append);
+            m_InstanceTRSBuffer = new ComputeBuffer(m_InstancesCount, sizeof(float) * 9);
+            m_InstanceTRSBuffer.SetData(instancesInputTRS, 0, 0, m_InstancesCount);
+
+            m_CullingGroupX = Mathf.Max(1, Mathf.CeilToInt(m_InstancesCount / 64f));
 
         }
 
         public void CalcCullAndLOD()
         {
-            if (m_TRSCount <= 0)
+            if (m_InstancesCount <= 0)
                 return;
+            Debug.LogError("Update");
 
-
-            InitBuffer();
-            //计算包围盒
-            CalculateRenderbound();
-            //计算可见性
+            // 计算可见性
             CalculateVisibleInstances();
+            //根据Offset count 重整
+            CalculateIndexOffset();
         }
 
-        private void CalculateRenderbound()
-        {
-            m_MinX = float.MaxValue;
-            m_MinY = float.MaxValue;
-            m_MinZ = float.MaxValue;
-            m_MaxX = float.MinValue;
-            m_MaxY = float.MinValue;
-            m_MaxZ = float.MinValue;
-
-            for (int i = 0; i < m_TRSCount; i++)
-            {
-                Vector3 target = m_AllTRS[i].position;
-                m_MinX = Mathf.Min(target.x, m_MinX);
-                m_MinY = Mathf.Min(target.y, m_MinY);
-                m_MinZ = Mathf.Min(target.z, m_MinZ);
-                m_MaxX = Mathf.Max(target.x, m_MaxX);
-                m_MaxY = Mathf.Max(target.y, m_MaxY);
-                m_MaxZ = Mathf.Max(target.z, m_MaxZ);
-            }
-
-            if (m_RenderBounds == null)
-                m_RenderBounds = new Bounds();
-
-            m_RenderBounds.SetMinMax(new Vector3(m_MinX - m_Expand, m_MinY - m_Expand, m_MinZ - m_Expand), new Vector3(m_MaxX + m_Expand, m_MaxY + m_Expand, m_MaxZ + m_Expand));
-
-        }
 
         private void CalculateVisibleInstances()
         {
@@ -199,50 +256,65 @@ namespace XHH
             // 获取摄像机参数
             Matrix4x4 v = camera.worldToCameraMatrix;
             Matrix4x4 p = camera.projectionMatrix;
-            Matrix4x4 vp = p * v;
+            m_VPMatrix = p * v;
 
-            m_CullComputeShader.SetMatrix(ShaderConstants.VPMatrixPID, vp);
-            m_CullComputeShader.SetVector(ShaderConstants.CenterPosWSPID, camera.transform.position);
-            m_CullComputeShader.SetVector(ShaderConstants.LODDistancePID, new Vector3(m_ShowDistance * 0.25f, m_ShowDistance * 0.5f, m_ShowDistance));
-
-
-            m_VisibleInfoBuffer.SetCounterValue(0);
-
-
-            m_AllInstancesTRSBuffer.SetData(m_AllTRS, 0, 0, m_TRSCount);
-
+            //////////////////////////////////////////////////////
+            // Reset the arguments buffer
+            //////////////////////////////////////////////////////
             m_InstancesArgsBuffer.SetData(m_Args);
 
-            m_CullComputeShader.SetMatrix(ShaderConstants.VPMatrixPID, vp);
-            m_CullComputeShader.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.AllInstancesTransformBuffer, m_AllInstancesTRSBuffer);
-            m_CullComputeShader.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
-            m_CullComputeShader.SetBuffer(KERNAL_CalcCullAndLOD, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
-            m_CullComputeShader.SetBuffer(KERNAL_CalcCullAndLOD, "_IsVisibleBuffer", m_InstancesIsVisibleBuffer);
+            //////////////////////////////////////////////////////
+            // Culling
+            //////////////////////////////////////////////////////
+            m_CullCS.SetMatrix(ShaderConstants.VPMatrixPID, m_VPMatrix);
+            m_CullCS.SetVector(ShaderConstants.CenterPosWSPID, camera.transform.position);
+            m_CullCS.SetInt("_InstanceCount", m_InstancesCount);
 
-            // int sliceCount = 2000;//TODO 数量待验证
-            // int dispatchCount = m_TRSCount / sliceCount;
-            // for (int i = 0; i < dispatchCount; i++)
-            // {
-            //     m_ComputeShader.SetInt(ShaderConstants.StartOffsetPID, sliceCount * i);
-            //     m_ComputeShader.Dispatch(KERNAL_CalcCullAndLOD, Mathf.CeilToInt(sliceCount / 64f), 1, 1);
-            // }
+            m_VisibleInfoBuffer.SetCounterValue(0);
+            m_InstanceDataBuffer.SetData(instancesInputData, 0, 0, m_InstancesCount);
 
-            int cullGroupX = Mathf.Max(1, Mathf.CeilToInt(m_TRSCount / 64f));
-            // int cullGroupX = Mathf.Min(60000, (int)m_TRSCount);
-            m_CullComputeShader.Dispatch(KERNAL_CalcCullAndLOD, cullGroupX, 1, 1);
+            m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.InstanceDataBufferPID, m_InstanceDataBuffer);
+            m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
+            m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
+
+            m_CullCS.Dispatch(KERNAL_CalcCullAndLOD, m_CullingGroupX, 1, 1);
+
+        }
+
+        private void CalculateIndexOffset()
+        {
+            uint[] insertCount = new uint[NUMBER_OF_LOD];
+            m_InsertCountBuffer.SetData(insertCount);
+            m_CalcIndexOffsetCS.SetInt("_NumOfDrawcalls", NUMBER_OF_LOD);
+            m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
+            m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_OutputDataBuffer", m_OutputDataBuffer);
+            m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
+            m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_InsertCountBuffer", m_InsertCountBuffer);
 
 
+            m_CalcIndexOffsetCS.Dispatch(KERNAL_CalcIndexOffset, m_CullingGroupX, 1, 1);
 
+            // m_InsertCountBuffer.GetData(insertCount);
+            // Debug.LogError("InsertCount:" + insertCount[0] + "-" + insertCount[1] + "-" + insertCount[2]);
+
+            // // 获取可见性
+            // uint[] visibleCount = new uint[NUMBER_OF_ARGS_PER_INSTANCE_TYPE];
+            // m_InstancesArgsBuffer.GetData(visibleCount);
+            // uint totalCount = visibleCount[1] + visibleCount[NUMBER_OF_ARGS_PER_DRAW + 1] + visibleCount[NUMBER_OF_ARGS_PER_DRAW * 2 + 1];
+            // Debug.LogError(m_InstancesCount + "---" + totalCount + "==count" + "0===>" + visibleCount[1] + ":1===>" + visibleCount[NUMBER_OF_ARGS_PER_DRAW + 1] + ":2===>" + visibleCount[NUMBER_OF_ARGS_PER_DRAW * 2 + 1]);
         }
 
 
         public void Render()
         {
+            if (m_InstancesArgsBuffer == null)
+                return;
 
+            m_RenderBounds = new Bounds(Vector3.zero, Vector3.one * 1000);
             //20 =>5*size(uint); 单个args
-            Graphics.DrawMeshInstancedIndirect(indirectRenderingMesh.combineMesh, MESH_INDEX, indirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 0, indirectRenderingMesh.lod0MatPropBlock, ShadowCastingMode.Off);
-            Graphics.DrawMeshInstancedIndirect(indirectRenderingMesh.combineMesh, MESH_INDEX, indirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 1, indirectRenderingMesh.lod1MatPropBlock, ShadowCastingMode.Off);
-            Graphics.DrawMeshInstancedIndirect(indirectRenderingMesh.combineMesh, MESH_INDEX, indirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 2, indirectRenderingMesh.lod2MatPropBlock, ShadowCastingMode.Off);
+            Graphics.DrawMeshInstancedIndirect(m_IndirectRenderingMesh.combineMesh, MESH_INDEX, m_IndirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 0, m_IndirectRenderingMesh.lod0MatPropBlock, ShadowCastingMode.Off);
+            Graphics.DrawMeshInstancedIndirect(m_IndirectRenderingMesh.combineMesh, MESH_INDEX, m_IndirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 1, m_IndirectRenderingMesh.lod1MatPropBlock, ShadowCastingMode.Off);
+            Graphics.DrawMeshInstancedIndirect(m_IndirectRenderingMesh.combineMesh, MESH_INDEX, m_IndirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 2, m_IndirectRenderingMesh.lod2MatPropBlock, ShadowCastingMode.Off);
 
         }
 
@@ -250,12 +322,12 @@ namespace XHH
         public void Destroy()
         {
             ReleaseComputeBuffer();
-
         }
 
         private void ReleaseComputeBuffer()
         {
-            ReleaseComputeBuffer(ref m_AllInstancesTRSBuffer);
+            ReleaseComputeBuffer(ref m_InstanceDataBuffer);
+            ReleaseComputeBuffer(ref m_InstanceTRSBuffer);
         }
 
         private static void ReleaseComputeBuffer(ref ComputeBuffer _buffer)
@@ -269,10 +341,28 @@ namespace XHH
             _buffer = null;
         }
 
+        private static bool TryGetKernel(string kernelName, ref ComputeShader computeShader, ref int kernelID)
+        {
+            if (!computeShader.HasKernel(kernelName))
+            {
+                Debug.LogError(kernelName + " kernel not found in " + computeShader.name + "!");
+                return false;
+            }
+
+            kernelID = computeShader.FindKernel(kernelName);
+            return true;
+        }
+
+        public void DrawGizmos()
+        {
+
+        }
+
 
         private class ShaderConstants
         {
-            public static readonly int AllInstancesTransformBuffer = Shader.PropertyToID("_AllInstancesTransformBuffer");
+            public static readonly int InstanceDataBufferPID = Shader.PropertyToID("_InstanceDataBuffer");
+            public static readonly int InstanceTRSBufferPID = Shader.PropertyToID("_InstanceTRSBuffer");
             public static readonly int VisibleInstanceOnlyTransformIDBuffer = Shader.PropertyToID("_VisibleInstanceOnlyTransformIDBuffer");
 
             public static readonly int LODDistancePID = Shader.PropertyToID("_LODDistance");
@@ -282,21 +372,17 @@ namespace XHH
 
             public static readonly int ArgsBufferPID = Shader.PropertyToID("_ArgsBuffer");
 
-            //copyInstance
-            public static readonly int s = Shader.PropertyToID("");
 
 
             //shader
             public static readonly int ArgsOffsetPID = Shader.PropertyToID("_ArgsOffset");
 
+            //Culling CS
+            public static readonly int ShouldFrustumCullPID = Shader.PropertyToID("_ShouldFrustumCull");
+
 
         }
 
-        public struct VisibleInfo
-        {
-            public uint id;
-            public uint lod;
-        }
 
     }
 

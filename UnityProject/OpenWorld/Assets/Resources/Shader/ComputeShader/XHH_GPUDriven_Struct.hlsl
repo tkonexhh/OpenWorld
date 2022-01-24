@@ -9,3 +9,11 @@ struct InstanceData
 
 };
 
+struct InstanceTRS
+{
+    float3 position;
+    float3 rotation;
+    float3 scale;
+};
+
+#define NUMBER_OF_ARGS_PER_DRAW 5

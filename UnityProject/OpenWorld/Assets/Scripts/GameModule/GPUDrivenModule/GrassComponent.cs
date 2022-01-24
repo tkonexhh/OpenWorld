@@ -13,20 +13,25 @@ namespace XHH
 
         public void Init()
         {
-            string bakePath = "Assets/Res/InstanceConfig/World/Grass/GrassTileSO_0_0.asset";
-            m_GrassTileSO = UnityEditor.AssetDatabase.LoadAssetAtPath<GrassTileSO>(bakePath);
-            Debug.LogError(m_GrassTileSO);
+            StreamingGrassTileSO.LoadAsset(Vector2Int.zero, (so) =>
+            {
+                m_GrassTileSO = so;
+            });
 
             var groups = m_GrassTileSO.tileData.groupDatas;
             byte type = groups[0].type;
+            var instanceDatas = groups[0].instanceDatas;
 
-            GrassPrefabInfoSO grassPrefabInfoSO = Resources.Load<GrassPrefabInfoSO>("ScriptableObject/Grass/GrassPrefabInfoSO");
-            var grassPrefabInfo = grassPrefabInfoSO.GetGrassPrefabInfo(type);
 
-            IndirectInstanceData indirectInstanceData = new IndirectInstanceData();
+            var grassPrefabInfo = GrassPrefabInfoSO.S.GetGrassPrefabInfo(type);
+
+            GrassIndirectInstanceData indirectInstanceData = new GrassIndirectInstanceData();
             indirectInstanceData.lod0Mesh = grassPrefabInfo.indirectDrawSO.meshLOD0;
             indirectInstanceData.lod1Mesh = grassPrefabInfo.indirectDrawSO.meshLOD1;
             indirectInstanceData.lod2Mesh = grassPrefabInfo.indirectDrawSO.meshLOD2;
+            indirectInstanceData.itemsTRS = instanceDatas;
+            indirectInstanceData.indirectMaterial = grassPrefabInfo.indirectDrawSO.instanceMaterial;
+            indirectInstanceData.bounds = grassPrefabInfo.bounds;
 
             m_IndirectRenderer = new IndirectRenderer(grassPrefabInfo.resPath, indirectInstanceData);
         }
@@ -36,6 +41,11 @@ namespace XHH
         {
             m_IndirectRenderer?.CalcCullAndLOD();
             m_IndirectRenderer?.Render();
+        }
+
+        public void DrawGizmos()
+        {
+            m_IndirectRenderer?.DrawGizmos();
         }
     }
 

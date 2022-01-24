@@ -371,7 +371,7 @@ Shader "HMK/Scene/BlendTerrain"
                 #if UNITY_REVERSED_Z
                     positionCS.z = min(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
                 #else
-                    positionCS.z = max(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_aVALUE);
+                    positionCS.z = max(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
 
                 #endif
                 float camLength = length(_WorldSpaceCameraPos - TransformObjectToWorld(input.positionOS));

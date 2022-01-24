@@ -1,0 +1,61 @@
+#include "./XHH_GPUDriven_Struct.hlsl"
+
+
+#pragma kernel CalcIndexOffsetCS
+
+//--------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+
+//--------------------------------------------------------------------------------------
+// Constant Buffers
+//--------------------------------------------------------------------------------------
+cbuffer CB
+{
+    uint _NumOfDrawcalls;
+}
+
+//--------------------------------------------------------------------------------------
+// Structured Buffers
+//--------------------------------------------------------------------------------------
+RWStructuredBuffer<uint> _ArgsBuffer;
+StructuredBuffer<uint2> _VisibleInfoBuffer;//ID LOD
+RWStructuredBuffer<uint> _InsertCountBuffer;//已经插入的个数
+RWStructuredBuffer<uint> _OutputDataBuffer;//输出的排序后的buffer
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID)
+{
+    uint tID = dispatchThreadID.x;
+
+    if (tID == 0)
+    {
+        //patch up the visible instance counts per prop type
+        for (uint k = 1; k < _NumOfDrawcalls; k++)
+        {
+            //当前的offset=之前的offet+之前的count
+            _ArgsBuffer[k * NUMBER_OF_ARGS_PER_DRAW + 4] = _ArgsBuffer[(k - 1) * NUMBER_OF_ARGS_PER_DRAW + 4] + _ArgsBuffer[(k - 1) * NUMBER_OF_ARGS_PER_DRAW + 1];
+        }
+    }
+    
+    //开始移动
+    int totalCount = 0;
+    for (uint i = 0; i < _NumOfDrawcalls; i++)
+    {
+        totalCount += _ArgsBuffer[ NUMBER_OF_ARGS_PER_DRAW * i + 1];
+    }
+
+    if (tID < totalCount)
+    {
+        uint2 visibleInfo = _VisibleInfoBuffer[tID];
+        uint id = visibleInfo.x;
+        uint lod = visibleInfo.y;
+        uint insertOffset = _ArgsBuffer[lod * NUMBER_OF_ARGS_PER_DRAW + 4];
+        uint insertedCount = 1;
+        InterlockedAdd(_InsertCountBuffer[lod], 1, insertedCount);
+        _OutputDataBuffer[insertOffset +insertedCount] = id;
+    }
+}

@@ -21,7 +21,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  meshLOD0: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  meshLOD1: {fileID: 0}
-  meshLOD2: {fileID: 0}
-  instanceMaterial: {fileID: 0}
+  meshLOD0: {fileID: -408615725155401115, guid: ad50d6fb469603c4e8027d0e3d8ee502, type: 3}
+  meshLOD1: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  meshLOD2: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  instanceMaterial: {fileID: 2100000, guid: 846d148554f7044bc883ca6b4de89567, type: 2}

@@ -23,10 +23,12 @@ Shader "XHH/DrawIndirect"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
-            #include "CustomStruct.hlsl"
+            #include "./ComputeShader/XHH_GPUDriven_Struct.hlsl"
 
-            StructuredBuffer<InstanceData> _AllInstancesDataBuffer;
-            
+            StructuredBuffer<InstanceTRS> _InstanceTRSBuffer;
+            StructuredBuffer<uint> _ArgsBuffer;
+            StructuredBuffer<uint> _OutputDataBuffer;
+            uniform uint _ArgsOffset;
             
             CBUFFER_START(UnityPerMaterial)
 
@@ -54,7 +56,8 @@ Shader "XHH/DrawIndirect"
             Varyings vert(Attributes input, uint instanceID: SV_InstanceID)
             {
                 Varyings output;
-                InstanceData data = _AllInstancesDataBuffer[instanceID];
+                uint index = instanceID + _ArgsBuffer[_ArgsOffset];
+                InstanceTRS data = _InstanceTRSBuffer[_OutputDataBuffer[index]];
                 float3 perPivotPositionWS = data.position;
                 float3 positionWS = input.positionOS + perPivotPositionWS;
                 output.positionCS = TransformWorldToHClip(positionWS);

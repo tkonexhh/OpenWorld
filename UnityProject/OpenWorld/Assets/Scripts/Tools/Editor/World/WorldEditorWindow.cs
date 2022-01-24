@@ -14,18 +14,20 @@ namespace XHH
     {
         public const string menuName = "大世界烘焙器(WorldEditor)";
 
+        [MenuItem(ToolsPathDefine.worldPath + menuName, priority = 1)]
+        private static void Open()
+        {
+            var window = GetWindow<WorldEditorWindow>();
+            window.position = GUIHelper.GetEditorWindowRect().AlignCenter(800, 500);
+        }
+
         public enum Page
         {
             Plant,
             Setting,
         }
 
-        [MenuItem(ToolsPathDefine.worldPath + menuName, priority = 2)]
-        private static void Open()
-        {
-            var window = GetWindow<WorldEditorWindow>();
-            window.position = GUIHelper.GetEditorWindowRect().AlignCenter(800, 500);
-        }
+
 
         [EnumToggleButtons]
         [ShowInInspector]

@@ -16,8 +16,17 @@ namespace XHH
         {
             tileData.groupDatas = null;
         }
-    }
 
+        [Button("Save")]
+        public void Save()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.AssetDatabase.Refresh();
+#endif
+        }
+    }
 
     [System.Serializable]
     public struct GrassTileData

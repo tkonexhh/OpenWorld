@@ -47,18 +47,39 @@ MonoBehaviour:
     - Name: resPath
       Entry: 1
       Data: Grass_001
-    - Name: extents
+    - Name: bounds
       Entry: 7
-      Data: Unity.Mathematics.float3, Unity.Mathematics
-    - Name: x
+      Data: UnityEngine.Bounds, UnityEngine.CoreModule
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
       Entry: 4
       Data: 0
-    - Name: y
+    - Name: 
       Entry: 4
       Data: 0
-    - Name: z
+    - Name: 
       Entry: 4
       Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1.84406853
+    - Name: 
+      Entry: 4
+      Data: 1.19094694
+    - Name: 
+      Entry: 4
+      Data: 2.0585413
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 

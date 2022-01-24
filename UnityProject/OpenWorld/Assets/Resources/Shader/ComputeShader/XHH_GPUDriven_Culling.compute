@@ -1,6 +1,4 @@
-#include "./XHH_GPUDeiven_Struct.hlsl"
-
-
+#include "./XHH_GPUDriven_Struct.hlsl"
 
 #pragma kernel CSMain
 
@@ -11,8 +9,6 @@
 #define THREAD_GROUP_SIZE_Y 1
 #define THREAD_GROUP_SIZE_Z 1
 
-#define NUMBER_OF_ARGS_PER_DRAW 5
-
 
 //--------------------------------------------------------------------------------------
 // Constant Buffers
@@ -22,18 +18,19 @@ cbuffer CB
     uint _ShouldFrustumCull;//是否进行视锥剔除
 
 
-
     float4x4 _VPMatrix;// p*v
-    float3 _CamPosition;//相机的距离
+    float3 _CamPosition;//相机世界坐标
     float3 _LODDistance;//三级lod 的距离
-
+    uint _InstanceCount;
 }
 
 RWStructuredBuffer<uint> _ArgsBuffer;
 StructuredBuffer<InstanceData> _InstanceDataBuffer;
+AppendStructuredBuffer<uint2> _VisibleInfoBuffer;//ID LOD
 
 
-//使用对角线长度快速计算相机是否在包围盒内部
+
+//使用对角线长度快速计算相机是否在包围盒外部
 inline uint IsCameraOutsideObjBounds(float3 pos, float3 minPos, float3 maxPos)
 {
     float boundsSize = distance(maxPos, minPos);//对角线长度
@@ -53,70 +50,88 @@ inline uint IsVisibleAfterFrustumCulling(float4 clipPos)
         ? 0: 1;
 }
 
+inline uint CalcLOD(float minDistanceToCamera)
+{
+    uint lod = 0;
+    if (minDistanceToCamera < _LODDistance.x)
+    {
+        lod = 0;
+    }
+    else if (minDistanceToCamera < _LODDistance.y)
+    {
+        lod = 1;
+    }
+    else if (minDistanceToCamera < _LODDistance.z)
+    {
+        lod = 2;
+    }
+
+    return lod;
+}
 
 
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 id: SV_DispatchThreadID)
+void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
 {
-    uint tID = id.x;
-
-    InstanceData instance = _InstanceDataBuffer[tID];
-
-    //检查是否可见
-    float3 minPos = instance.boundsCenter - instance.boundsExtents;
-    float3 maxPos = instance.boundsCenter + instance.boundsExtents;
-
-    float4 boxCorners[8];//AABB
-    boxCorners[0] = float4(minPos.x, minPos.y, minPos.z, 1.0);//左下前角
-    boxCorners[1] = float4(minPos.x, minPos.y, maxPos.z, 1.0);//左下后角
-    boxCorners[2] = float4(minPos.x, maxPos.y, minPos.z, 1.0);//左上前角
-    boxCorners[3] = float4(minPos.x, maxPos.y, maxPos.z, 1.0);//左上后角
-    boxCorners[4] = float4(maxPos.x, minPos.y, minPos.z, 1.0);//右下前角
-    boxCorners[5] = float4(maxPos.x, minPos.y, maxPos.z, 1.0);//右下后角
-    boxCorners[6] = float4(maxPos.x, maxPos.y, minPos.z, 1.0);//右上前角
-    boxCorners[7] = float4(maxPos.x, maxPos.y, maxPos.z, 1.0);//右上后角
-
-    //挨个判断各个角是否在视锥内
-    float4 clipPos = mul(_VPMatrix, boxCorners[0]);
-    uint isInFrustum = IsVisibleAfterFrustumCulling(clipPos);
-
-    // clipPos.xyz = clipPos.xyz / clipPos.w;//进行透视除法 回到0-1之间
-    // float clipMinX = clipPos.x;
-    // float clipMaxX = clipPos.x;
-    // float clipMinY = clipPos.y;
-    // float clipMaxY = clipPos.y;
-    // float clipMinZ = clipPos.z;
-
-    float minDistanceToCamera = distance(instance.boundsCenter.xyz, _CamPosition.xyz);
-
-
-    //剩下的几个角
-    [unroll]
-    for (int i = 1; i < 8; i++)
+    uint tID = dispatchThreadID.x;
+    if (tID < _InstanceCount)
     {
-        clipPos = mul(_VPMatrix, boxCorners[i]);
-        // For Frustum
-        isInFrustum = saturate(isInFrustum + IsVisibleAfterFrustumCulling(clipPos));
 
-        // For LODing
-        minDistanceToCamera = min(distance(boxCorners[i].xyz, _CamPosition.xyz), minDistanceToCamera);
+        InstanceData instance = _InstanceDataBuffer[tID];
+
+        //检查是否可见
+        float3 minPos = instance.boundsCenter - instance.boundsExtents;
+        float3 maxPos = instance.boundsCenter + instance.boundsExtents;
+
+        float4 boxCorners[8];//AABB
+        boxCorners[0] = float4(minPos.x, minPos.y, minPos.z, 1.0);//左下前角
+        boxCorners[1] = float4(minPos.x, minPos.y, maxPos.z, 1.0);//左下后角
+        boxCorners[2] = float4(minPos.x, maxPos.y, minPos.z, 1.0);//左上前角
+        boxCorners[3] = float4(minPos.x, maxPos.y, maxPos.z, 1.0);//左上后角
+        boxCorners[4] = float4(maxPos.x, minPos.y, minPos.z, 1.0);//右下前角
+        boxCorners[5] = float4(maxPos.x, minPos.y, maxPos.z, 1.0);//右下后角
+        boxCorners[6] = float4(maxPos.x, maxPos.y, minPos.z, 1.0);//右上前角
+        boxCorners[7] = float4(maxPos.x, maxPos.y, maxPos.z, 1.0);//右上后角
+
+        //挨个判断各个角是否在视锥内
+        float4 clipPos = mul(_VPMatrix, boxCorners[0]);
+        uint isInFrustum = IsVisibleAfterFrustumCulling(clipPos);
+
+        float minDistanceToCamera = distance(instance.boundsCenter.xyz, _CamPosition.xyz);
+
+
+        //剩下的几个角
+        [unroll]
+        for (int i = 1; i < 8; i++)
+        {
+            clipPos = mul(_VPMatrix, boxCorners[i]);
+            // For Frustum
+            isInFrustum = saturate(isInFrustum + IsVisibleAfterFrustumCulling(clipPos));
+
+            // For LODing
+            minDistanceToCamera = min(distance(boxCorners[i].xyz, _CamPosition.xyz), minDistanceToCamera);
+        }
+
+
+        uint isVisible = 1;
+        if (IsCameraOutsideObjBounds(_CamPosition, minPos, maxPos))
+        {
+            isVisible *= _ShouldFrustumCull ? isInFrustum: 1;
+        }
+
+        
+        //如果可见的话
+        if (isVisible > 0)
+        {
+            uint lod = CalcLOD(instance.boundsCenter);
+            //计算总数量到argsbuffer 1 6 11 存的是数量
+            uint argsIndex = 1;
+            argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 0);//是否大于0级
+            argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 1);//是否大于1级
+
+            //Output
+            InterlockedAdd(_ArgsBuffer[argsIndex], isVisible);//增加数量 可以得到最终的可见数量
+            _VisibleInfoBuffer.Append(uint2(tID, lod));
+        }
     }
-
-
-    uint isVisible = 1;
-    if (IsCameraOutsideObjBounds(_CamPosition, minPos, maxPos))
-    {
-        isVisible *= _ShouldFrustumCull ? isInFrustum: 1;
-    }
-
-
-    //计算总数量到argsbuffer
-    uint argsIndex = 1;
-    argsIndex += NUMBER_OF_ARGS_PER_DRAW * (minDistanceToCamera > _LODDistance.x);//是否大于0级
-    argsIndex += NUMBER_OF_ARGS_PER_DRAW * (minDistanceToCamera > _LODDistance.y);//是否大于1级
-
-
-    //Output
-    InterlockedAdd(_ArgsBuffer[argsIndex], isVisible);//增加数量
-
 }

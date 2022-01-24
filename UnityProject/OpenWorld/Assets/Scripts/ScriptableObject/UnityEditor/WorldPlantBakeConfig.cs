@@ -29,7 +29,6 @@ namespace XHH
             grassTileSO.Clear();
 
 
-            GrassPrefabInfoSO grassPrefabInfo = Resources.Load<GrassPrefabInfoSO>("ScriptableObject/Grass/GrassPrefabInfoSO");
 
 
             Dictionary<byte, List<GrassInstanceData>> bakedData = new Dictionary<byte, List<GrassInstanceData>>();
@@ -43,7 +42,7 @@ namespace XHH
                     string prefabPath = UnityEditor.PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(grass.gameObject);
                     prefabPath = prefabPath.Replace("Assets/Resources/Prefab/", "");
                     prefabPath = prefabPath.Replace(".prefab", "");
-                    var id = grassPrefabInfo.GetIdByPath(prefabPath);
+                    var id = GrassPrefabInfoSO.S.GetIdByPath(prefabPath);
                     var data = GrassInstanceData.CreateGrassInstanceData(grass, root);
 
                     if (!bakedData.ContainsKey(id))
@@ -82,6 +81,7 @@ namespace XHH
             }
 
             grassTileSO.tileData.groupDatas = groupDatas;
+            UnityEditor.EditorUtility.SetDirty(grassTileSO);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();
 

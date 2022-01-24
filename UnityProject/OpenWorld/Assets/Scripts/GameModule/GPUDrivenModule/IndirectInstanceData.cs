@@ -13,12 +13,13 @@ namespace XHH
         public Mesh lod1Mesh;
         public Mesh lod2Mesh;
         public Material indirectMaterial;
+        public Bounds bounds;
     }
 
     [System.Serializable]
     public class GrassIndirectInstanceData : IndirectInstanceData
     {
-
+        public byte id;
         public GrassInstanceData[] itemsTRS;
     }
 
@@ -29,12 +30,10 @@ namespace XHH
     {
         public Mesh combineMesh;
         public Material indirectMaterial;
+        public Bounds bounds;
         public MaterialPropertyBlock lod0MatPropBlock;
         public MaterialPropertyBlock lod1MatPropBlock;
         public MaterialPropertyBlock lod2MatPropBlock;
-        public uint numOfVerticesLod0;
-        public uint numOfVerticesLod1;
-        public uint numOfVerticesLod2;
         public uint numOfIndicesLod0;
         public uint numOfIndicesLod1;
         public uint numOfIndicesLod2;
@@ -45,7 +44,6 @@ namespace XHH
 
         public IndirectRenderingMesh(IndirectInstanceData instanceData)
         {
-
             // Initialize Mesh
             combineMesh = new Mesh();
             // combineMesh.name = name;
@@ -64,28 +62,15 @@ namespace XHH
             numOfIndicesLod0 = instanceData.lod0Mesh.GetIndexCount(MESH_INDEX);
             numOfIndicesLod1 = instanceData.lod1Mesh.GetIndexCount(MESH_INDEX);
             numOfIndicesLod2 = instanceData.lod2Mesh.GetIndexCount(MESH_INDEX);
-            numOfVerticesLod0 = (uint)instanceData.lod0Mesh.vertexCount;
-            numOfVerticesLod1 = (uint)instanceData.lod1Mesh.vertexCount;
-            numOfVerticesLod2 = (uint)instanceData.lod2Mesh.vertexCount;
 
             indirectMaterial = instanceData.indirectMaterial;
-
 
             lod0MatPropBlock = new MaterialPropertyBlock();
             lod1MatPropBlock = new MaterialPropertyBlock();
             lod2MatPropBlock = new MaterialPropertyBlock();
+            bounds = instanceData.bounds;
         }
 
-        public MaterialPropertyBlock this[int mpbIndex]
-        {
-            get
-            {
-                if (mpbIndex == 0) return lod0MatPropBlock;
-                else if (mpbIndex == 1) return lod1MatPropBlock;
-                else return lod2MatPropBlock;
-                // if (mpbIndex == 0) return lod0MatPropBlock;
-            }
-        }
     }
 
 

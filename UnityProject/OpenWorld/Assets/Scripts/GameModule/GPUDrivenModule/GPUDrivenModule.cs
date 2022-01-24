@@ -19,5 +19,11 @@ namespace XHH
         {
             m_GrassComponent.Update();
         }
+
+
+        private void OnDrawGizmos()
+        {
+            m_GrassComponent?.DrawGizmos();
+        }
     }
 }

@@ -9,147 +9,146 @@ Shader "VFX/DissolveDisturbance"
 
     Properties
     {
-        _Tertur("Tertur", 2D) = "white" { }
-        [HDR]_color("color", Color) = (0.5, 0.5, 0.5, 1)
-        _Dissolution("Dissolution", 2D) = "white" { }
-        [MaterialToggle] _Dissolvingswitch("Dissolving switch", Float) = 1
-        _Disturbance("Disturbance", 2D) = "white" { }
-        _NoiseU("NoiseU", Float) = 0
-        _NoiseV("NoiseV", Float) = 0
-        _Noiseqiangdu("Noiseqiangdu", Float) = 0
-        _mask("mask", 2D) = "white" { }
-        [MaterialToggle] _maskon("maskon", Float) = 1
-        _D_U("D_U", Float) = 0
-        _V_v("V_v", Float) = 0
-         _alpha("alpha", Float) = 1
-        [HideInInspector]_Cutoff("Alpha cutoff", Range(0, 1)) = 0.5
+        _Tertur ("Tertur", 2D) = "white" { }
+        [HDR]_color ("color", Color) = (0.5, 0.5, 0.5, 1)
+        _Dissolution ("Dissolution", 2D) = "white" { }
+        [MaterialToggle] _Dissolvingswitch ("Dissolving switch", Float) = 1
+        _Disturbance ("Disturbance", 2D) = "white" { }
+        _NoiseU ("NoiseU", Float) = 0
+        _NoiseV ("NoiseV", Float) = 0
+        _Noiseqiangdu ("Noiseqiangdu", Float) = 0
+        _mask ("mask", 2D) = "white" { }
+        [MaterialToggle] _maskon ("maskon", Float) = 1
+        _D_U ("D_U", Float) = 0
+        _V_v ("V_v", Float) = 0
+        _alpha ("alpha", Float) = 1
+        [HideInInspector]_Cutoff ("Alpha cutoff", Range(0, 1)) = 0.5
     }
-        SubShader
+    SubShader
+    {
+        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Transparent" "Queue" = "Transparent+100" }
+        Pass
         {
-            Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Transparent" "Queue" = "Transparent+100" }
-            Pass
+            Name "FORWARD"
+            Tags { "LightMode" = "UniversalForward" }
+            Blend SrcAlpha OneMinusSrcAlpha
+            Cull Off
+            ZWrite Off
+
+            HLSLPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            #pragma multi_compile_fwdbase
+            #pragma multi_compile_fog
+            #pragma only_renderers d3d9 d3d11 glcore gles3 metal
+            #pragma target 3.0
+            uniform sampler2D _Tertur; uniform float4 _Tertur_ST;
+            uniform float4 _color;
+            uniform sampler2D _Dissolution; uniform float4 _Dissolution_ST;
+            uniform half _Dissolvingswitch;
+            uniform sampler2D _Disturbance; uniform float4 _Disturbance_ST;
+            uniform float _NoiseU;
+            uniform float _NoiseV;
+            uniform float _Noiseqiangdu;
+            uniform sampler2D _mask; uniform float4 _mask_ST;
+            uniform half _maskon;
+            uniform float _D_U;
+            uniform float _V_v;
+            uniform float _alpha;
+            struct VertexInput
             {
-                Name "FORWARD"
-                Tags { "LightMode" = "UniversalForward" }
-                Blend SrcAlpha OneMinusSrcAlpha
-                Cull Off
-                ZWrite Off
-
-                CGPROGRAM
-
-                #pragma vertex vert
-                #pragma fragment frag
-                #include "UnityCG.cginc"
-                #pragma multi_compile_fwdbase
-                #pragma multi_compile_fog
-                #pragma only_renderers d3d9 d3d11 glcore gles3 metal
-                #pragma target 3.0
-                uniform sampler2D _Tertur; uniform float4 _Tertur_ST;
-                uniform float4 _color;
-                uniform sampler2D _Dissolution; uniform float4 _Dissolution_ST;
-                uniform fixed _Dissolvingswitch;
-                uniform sampler2D _Disturbance; uniform float4 _Disturbance_ST;
-                uniform float _NoiseU;
-                uniform float _NoiseV;
-                uniform float _Noiseqiangdu;
-                uniform sampler2D _mask; uniform float4 _mask_ST;
-                uniform fixed _maskon;
-                uniform float _D_U;
-                uniform float _V_v;
-                uniform float _alpha;
-                struct VertexInput
-                {
-                    float4 vertex: POSITION;
-                    float2 texcoord0: TEXCOORD0;
-                    float4 texcoord1: TEXCOORD1;
-                    float4 vertexColor: COLOR;
-                };
-                struct VertexOutput
-                {
-                    float4 pos: SV_POSITION;
-                    float2 uv0: TEXCOORD0;
-                    float4 uv1: TEXCOORD1;
-                    float4 vertexColor: COLOR;
-                    UNITY_FOG_COORDS(2)
-                };
-                VertexOutput vert(VertexInput v)
-                {
-                    VertexOutput o = (VertexOutput)0;
-                    o.uv0 = v.texcoord0;
-                    o.uv1 = v.texcoord1;
-                    o.vertexColor = v.vertexColor;
-                    o.pos = UnityObjectToClipPos(v.vertex);
-                    UNITY_TRANSFER_FOG(o, o.pos);
-                    return o;
-                }
-                float4 frag(VertexOutput i, float facing : VFACE) : COLOR
-                {
-                    float isFrontFace = (facing >= 0 ? 1 : 0);
-                    float faceSign = (facing >= 0 ? 1 : -1);
-                    ////// Lighting:
-                    ////// Emissive:
-                    float4 node_2703 = _Time;
-                    float2 node_5823 = (i.uv0 + float2((_NoiseU * node_2703.g), (node_2703.g * _NoiseV)));
-                    float4 _Disturbance_var = tex2D(_Disturbance, TRANSFORM_TEX(node_5823, _Disturbance));
-                    float2 node_3847 = (float2(((_Noiseqiangdu*i.uv0.y * _Disturbance_var.r) + i.uv0.r), i.uv0.g) + float2(i.uv1.g, i.uv1.b));
-                    float4 _Tertur_var = tex2D(_Tertur, TRANSFORM_TEX(node_3847, _Tertur));
-                    float4 _Tertur_var2 = tex2D(_Tertur, TRANSFORM_TEX(i.uv0, _Tertur));
-                    float3 emissive = (_Tertur_var.rgb * i.vertexColor.rgb * _color.rgb);
-                    float3 finalColor = emissive;
-                    float4 node_6887 = _Time;
-                    float2 _Dissolvingswitch_var = lerp(1.0, float2(((_D_U * node_6887.g) + i.uv0.r), (i.uv0.g + (node_6887.g * _V_v))), _Dissolvingswitch);
-                    float4 _Dissolution_var = tex2D(_Dissolution, TRANSFORM_TEX(_Dissolvingswitch_var, _Dissolution));
-                    float4 _mask_var = tex2D(_mask, TRANSFORM_TEX(i.uv0, _mask));
-                    fixed4 finalRGBA = fixed4(finalColor, (i.vertexColor.a * _Tertur_var.a * step(i.uv1.r, _Dissolution_var.r) * lerp(1.0, (_Tertur_var.a * _mask_var.r), _maskon)));
-                    UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
-                    finalRGBA.a = _alpha* _Tertur_var2.a* finalRGBA.a;
-                    return finalRGBA;
-                }
-                ENDCG
-
+                float4 vertex: POSITION;
+                float2 texcoord0: TEXCOORD0;
+                float4 texcoord1: TEXCOORD1;
+                float4 vertexColor: COLOR;
+            };
+            struct VertexOutput
+            {
+                float4 pos: SV_POSITION;
+                float2 uv0: TEXCOORD0;
+                float4 uv1: TEXCOORD1;
+                float4 vertexColor: COLOR;
+            };
+            VertexOutput vert(VertexInput v)
+            {
+                VertexOutput o = (VertexOutput)0;
+                o.uv0 = v.texcoord0;
+                o.uv1 = v.texcoord1;
+                o.vertexColor = v.vertexColor;
+                o.pos = TransformObjectToHClip(v.vertex.xyz);
+                return o;
             }
-          /*  Pass
+            float4 frag(VertexOutput i, float facing: VFACE): COLOR
             {
-                Name "ShadowCaster"
-                Tags { "LightMode" = "ShadowCaster" }
-                Offset 1, 1
-                Cull Off
+                float isFrontFace = (facing >= 0 ? 1: 0);
+                float faceSign = (facing >= 0 ? 1: - 1);
+                ////// Lighting:
+                ////// Emissive:
+                float4 node_2703 = _Time;
+                float2 node_5823 = (i.uv0 + float2((_NoiseU * node_2703.g), (node_2703.g * _NoiseV)));
+                float4 _Disturbance_var = tex2D(_Disturbance, TRANSFORM_TEX(node_5823, _Disturbance));
+                float2 node_3847 = (float2(((_Noiseqiangdu * i.uv0.y * _Disturbance_var.r) + i.uv0.r), i.uv0.g) + float2(i.uv1.g, i.uv1.b));
+                float4 _Tertur_var = tex2D(_Tertur, TRANSFORM_TEX(node_3847, _Tertur));
+                float4 _Tertur_var2 = tex2D(_Tertur, TRANSFORM_TEX(i.uv0, _Tertur));
+                float3 emissive = (_Tertur_var.rgb * i.vertexColor.rgb * _color.rgb);
+                float3 finalColor = emissive;
+                float4 node_6887 = _Time;
+                float2 _Dissolvingswitch_var = lerp(1.0, float2(((_D_U * node_6887.g) + i.uv0.r), (i.uv0.g + (node_6887.g * _V_v))), _Dissolvingswitch);
+                float4 _Dissolution_var = tex2D(_Dissolution, TRANSFORM_TEX(_Dissolvingswitch_var, _Dissolution));
+                float4 _mask_var = tex2D(_mask, TRANSFORM_TEX(i.uv0, _mask));
+                half4 finalRGBA = half4(finalColor, (i.vertexColor.a * _Tertur_var.a * step(i.uv1.r, _Dissolution_var.r) * lerp(1.0, (_Tertur_var.a * _mask_var.r), _maskon)));
+                
+                finalRGBA.a = _alpha * _Tertur_var2.a * finalRGBA.a;
+                return finalRGBA;
+            }
+            ENDHLSL
 
-                CGPROGRAM
+        }
+        /*  Pass
+        {
+            Name "ShadowCaster"
+            Tags { "LightMode" = "ShadowCaster" }
+            Offset 1, 1
+            Cull Off
 
-                #pragma vertex vert
-                #pragma fragment frag
-                #include "UnityCG.cginc"
-                #include "Lighting.cginc"
-                #pragma fragmentoption ARB_precision_hint_fastest
-                #pragma multi_compile_shadowcaster
-                #pragma multi_compile_fog
-                #pragma only_renderers d3d9 d3d11 glcore gles3 metal
-                #pragma target 3.0
-                struct VertexInput
-                {
-                    float4 vertex: POSITION;
-                };
-                struct VertexOutput
-                {
-                    V2F_SHADOW_CASTER;
-                };
-                VertexOutput vert(VertexInput v)
-                {
-                    VertexOutput o = (VertexOutput)0;
-                    o.pos = UnityObjectToClipPos(v.vertex);
-                    TRANSFER_SHADOW_CASTER(o)
-                    return o;
-                }
-                float4 frag(VertexOutput i, float facing : VFACE) : COLOR
-                {
-                    float isFrontFace = (facing >= 0 ? 1 : 0);
-                    float faceSign = (facing >= 0 ? 1 : -1);
-                    SHADOW_CASTER_FRAGMENT(i)
-                }
-                ENDCG
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #pragma multi_compile_shadowcaster
+            #pragma multi_compile_fog
+            #pragma only_renderers d3d9 d3d11 glcore gles3 metal
+            #pragma target 3.0
+            struct VertexInput
+            {
+                float4 vertex: POSITION;
+            };
+            struct VertexOutput
+            {
+                V2F_SHADOW_CASTER;
+            };
+            VertexOutput vert(VertexInput v)
+            {
+                VertexOutput o = (VertexOutput)0;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                TRANSFER_SHADOW_CASTER(o)
+                return o;
+            }
+            float4 frag(VertexOutput i, float facing : VFACE) : COLOR
+            {
+                float isFrontFace = (facing >= 0 ? 1 : 0);
+                float faceSign = (facing >= 0 ? 1 : -1);
+                SHADOW_CASTER_FRAGMENT(i)
+            }
+            ENDCG
 
             }*/
         }
-            
-}
+    }
