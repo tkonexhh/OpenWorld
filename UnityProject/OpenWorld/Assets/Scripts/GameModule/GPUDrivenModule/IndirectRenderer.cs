@@ -71,8 +71,9 @@ namespace XHH
         //other
         private int m_InstancesCount = 0;
         private uint[] m_Args;
+        private uint[] m_InsertCount = new uint[NUMBER_OF_LOD] { 0, 0, 0 };
 
-        private float m_ShowDistance = 10;//最远距离
+        private float m_ShowDistance = 50;//最远距离
 
         private Bounds m_RenderBounds;
 
@@ -103,6 +104,7 @@ namespace XHH
             m_CullCS.SetVector(ShaderConstants.LODDistancePID, lodDistance);
 
             m_CalcIndexOffsetCS = Resources.Load("Shader/ComputeShader/XHH_GPUDriven_CalcIndexOffsetCS") as ComputeShader;
+            m_CalcIndexOffsetCS.SetInt("_NumOfDrawcalls", NUMBER_OF_LOD);
 
             InitBuffer(instanceData);
         }
@@ -165,12 +167,14 @@ namespace XHH
 
                 for (int i = 0; i < instanceData.itemsTRS.Length; i++)
                 {
-                    Vector3 position = instanceData.itemsTRS[i].position;
-                    Vector3 scale = new float3(instanceData.itemsTRS[i].scale, instanceData.itemsTRS[i].scale, instanceData.itemsTRS[i].scale);
-                    Vector3 rotation = new float3(0, instanceData.itemsTRS[i].rotation / 360.0f, 0);
+                    var itemTRS = instanceData.itemsTRS[i];
+                    Vector3 offset = instanceData.positionOffset;
+                    Vector3 position = itemTRS.position;
+                    Vector3 scale = new float3(itemTRS.scale, itemTRS.scale, itemTRS.scale);
+                    Vector3 rotation = new float3(0, itemTRS.rotation / 360.0f, 0);
 
                     Bounds b = new Bounds();
-                    b.center = position;
+                    b.center = position + offset;
                     Vector3 s = originalBounds.size;
                     s.Scale(scale);
                     b.size = s;
@@ -213,9 +217,9 @@ namespace XHH
                 m_IndirectRenderingMesh.lod1MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 1 + 4);
                 m_IndirectRenderingMesh.lod2MatPropBlock.SetInt(ShaderConstants.ArgsOffsetPID, argsIndex + NUMBER_OF_ARGS_PER_DRAW * 2 + 4);
 
-                m_IndirectRenderingMesh.lod0MatPropBlock.SetBuffer("_OutputDataBuffer", m_OutputDataBuffer);
-                m_IndirectRenderingMesh.lod1MatPropBlock.SetBuffer("_OutputDataBuffer", m_OutputDataBuffer);
-                m_IndirectRenderingMesh.lod2MatPropBlock.SetBuffer("_OutputDataBuffer", m_OutputDataBuffer);
+                m_IndirectRenderingMesh.lod0MatPropBlock.SetBuffer("_InstanceIDBuffer", m_OutputDataBuffer);
+                m_IndirectRenderingMesh.lod1MatPropBlock.SetBuffer("_InstanceIDBuffer", m_OutputDataBuffer);
+                m_IndirectRenderingMesh.lod2MatPropBlock.SetBuffer("_InstanceIDBuffer", m_OutputDataBuffer);
 
 
                 m_CullCS.SetInt(ShaderConstants.ShouldFrustumCullPID, 1);
@@ -228,7 +232,7 @@ namespace XHH
             m_VisibleInfoBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint) * 2, ComputeBufferType.Append);
 
 
-            m_OutputDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint), ComputeBufferType.Append);
+            m_OutputDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint));
             m_InstanceTRSBuffer = new ComputeBuffer(m_InstancesCount, sizeof(float) * 9);
             m_InstanceTRSBuffer.SetData(instancesInputTRS, 0, 0, m_InstancesCount);
 
@@ -240,12 +244,9 @@ namespace XHH
         {
             if (m_InstancesCount <= 0)
                 return;
-            Debug.LogError("Update");
 
             // 计算可见性
             CalculateVisibleInstances();
-            //根据Offset count 重整
-            CalculateIndexOffset();
         }
 
 
@@ -277,15 +278,14 @@ namespace XHH
             m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
             m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
 
+            // Debug.LogError("m_CullingGroupX:" + m_CullingGroupX);
             m_CullCS.Dispatch(KERNAL_CalcCullAndLOD, m_CullingGroupX, 1, 1);
 
-        }
 
-        private void CalculateIndexOffset()
-        {
-            uint[] insertCount = new uint[NUMBER_OF_LOD];
-            m_InsertCountBuffer.SetData(insertCount);
-            m_CalcIndexOffsetCS.SetInt("_NumOfDrawcalls", NUMBER_OF_LOD);
+            //////////////////////////////////////////////////////
+            // Calc IndexOffset
+            //////////////////////////////////////////////////////
+            m_InsertCountBuffer.SetData(m_InsertCount);
             m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
             m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_OutputDataBuffer", m_OutputDataBuffer);
             m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
@@ -294,6 +294,7 @@ namespace XHH
 
             m_CalcIndexOffsetCS.Dispatch(KERNAL_CalcIndexOffset, m_CullingGroupX, 1, 1);
 
+            // uint[] insertCount = new uint[NUMBER_OF_LOD];
             // m_InsertCountBuffer.GetData(insertCount);
             // Debug.LogError("InsertCount:" + insertCount[0] + "-" + insertCount[1] + "-" + insertCount[2]);
 
@@ -304,13 +305,12 @@ namespace XHH
             // Debug.LogError(m_InstancesCount + "---" + totalCount + "==count" + "0===>" + visibleCount[1] + ":1===>" + visibleCount[NUMBER_OF_ARGS_PER_DRAW + 1] + ":2===>" + visibleCount[NUMBER_OF_ARGS_PER_DRAW * 2 + 1]);
         }
 
-
         public void Render()
         {
             if (m_InstancesArgsBuffer == null)
                 return;
 
-            m_RenderBounds = new Bounds(Vector3.zero, Vector3.one * 1000);
+            m_RenderBounds = new Bounds(Vector3.zero, Vector3.one * 2000);
             //20 =>5*size(uint); 单个args
             Graphics.DrawMeshInstancedIndirect(m_IndirectRenderingMesh.combineMesh, MESH_INDEX, m_IndirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 0, m_IndirectRenderingMesh.lod0MatPropBlock, ShadowCastingMode.Off);
             Graphics.DrawMeshInstancedIndirect(m_IndirectRenderingMesh.combineMesh, MESH_INDEX, m_IndirectRenderingMesh.indirectMaterial, m_RenderBounds, m_InstancesArgsBuffer, ARGS_BYTE_SIZE_PER_DRAW_CALL * 1, m_IndirectRenderingMesh.lod1MatPropBlock, ShadowCastingMode.Off);
@@ -366,7 +366,7 @@ namespace XHH
             public static readonly int VisibleInstanceOnlyTransformIDBuffer = Shader.PropertyToID("_VisibleInstanceOnlyTransformIDBuffer");
 
             public static readonly int LODDistancePID = Shader.PropertyToID("_LODDistance");
-            public static readonly int CenterPosWSPID = Shader.PropertyToID("_CenterPos");
+            public static readonly int CenterPosWSPID = Shader.PropertyToID("_CamPosition");
             public static readonly int VPMatrixPID = Shader.PropertyToID("_VPMatrix");
             public static readonly int StartOffsetPID = Shader.PropertyToID("_StartOffset");
 

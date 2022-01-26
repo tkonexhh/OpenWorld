@@ -8,12 +8,12 @@ namespace XHH
     [System.Serializable]
     public class IndirectInstanceData
     {
-        //外部的
         public Mesh lod0Mesh;
         public Mesh lod1Mesh;
         public Mesh lod2Mesh;
         public Material indirectMaterial;
-        public Bounds bounds;
+        public Bounds originBounds;
+        public Vector3 positionOffset = Vector3.zero;//坐标偏移
     }
 
     [System.Serializable]
@@ -25,7 +25,6 @@ namespace XHH
 
 
 
-    [System.Serializable]
     public class IndirectRenderingMesh
     {
         public Mesh combineMesh;
@@ -68,7 +67,7 @@ namespace XHH
             lod0MatPropBlock = new MaterialPropertyBlock();
             lod1MatPropBlock = new MaterialPropertyBlock();
             lod2MatPropBlock = new MaterialPropertyBlock();
-            bounds = instanceData.bounds;
+            bounds = instanceData.originBounds;
         }
 
     }

@@ -31,7 +31,8 @@ namespace XHH
             indirectInstanceData.lod2Mesh = grassPrefabInfo.indirectDrawSO.meshLOD2;
             indirectInstanceData.itemsTRS = instanceDatas;
             indirectInstanceData.indirectMaterial = grassPrefabInfo.indirectDrawSO.instanceMaterial;
-            indirectInstanceData.bounds = grassPrefabInfo.bounds;
+            indirectInstanceData.originBounds = grassPrefabInfo.bounds;
+            indirectInstanceData.positionOffset = m_GrassTileSO.tileData.center;
 
             m_IndirectRenderer = new IndirectRenderer(grassPrefabInfo.resPath, indirectInstanceData);
         }
@@ -39,8 +40,14 @@ namespace XHH
 
         public void Update()
         {
-            m_IndirectRenderer?.CalcCullAndLOD();
+
             m_IndirectRenderer?.Render();
+
+        }
+
+        public void LateUpdate()
+        {
+            m_IndirectRenderer?.CalcCullAndLOD();
         }
 
         public void DrawGizmos()

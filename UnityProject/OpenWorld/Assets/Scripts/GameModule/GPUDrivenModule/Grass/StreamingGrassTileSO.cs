@@ -9,14 +9,14 @@ namespace XHH
     {
         public static void LoadAsset(Vector2Int gridPos, System.Action<GrassTileSO> callback)
         {
-#if UNITY_EDITOR
-            string path = string.Format("Assets/Res/InstanceConfig/World/Grass/GrassTileSO_{0}_{1}.asset", gridPos.x, gridPos.y);
-            var grassTileSO = UnityEditor.AssetDatabase.LoadAssetAtPath<GrassTileSO>(path);
+
+            string path = string.Format("InstanceConfig/World/Grass/GrassTileSO_{0}_{1}", gridPos.x, gridPos.y);
+            var grassTileSO = Resources.Load<GrassTileSO>(path);
             if (grassTileSO != null)
             {
                 callback(grassTileSO);
             }
-#endif
+
         }
     }
 

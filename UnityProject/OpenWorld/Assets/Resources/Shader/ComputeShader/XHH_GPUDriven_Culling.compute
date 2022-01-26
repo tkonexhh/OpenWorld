@@ -17,7 +17,6 @@ cbuffer CB
 {
     uint _ShouldFrustumCull;//是否进行视锥剔除
 
-
     float4x4 _VPMatrix;// p*v
     float3 _CamPosition;//相机世界坐标
     float3 _LODDistance;//三级lod 的距离
@@ -61,7 +60,8 @@ inline uint CalcLOD(float minDistanceToCamera)
     {
         lod = 1;
     }
-    else if (minDistanceToCamera < _LODDistance.z)
+    else //if (minDistanceToCamera < _LODDistance.z)
+
     {
         lod = 2;
     }
@@ -123,14 +123,14 @@ void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
         //如果可见的话
         if (isVisible > 0)
         {
-            uint lod = CalcLOD(instance.boundsCenter);
+            uint lod = CalcLOD(minDistanceToCamera);
             //计算总数量到argsbuffer 1 6 11 存的是数量
             uint argsIndex = 1;
             argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 0);//是否大于0级
             argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 1);//是否大于1级
 
             //Output
-            InterlockedAdd(_ArgsBuffer[argsIndex], isVisible);//增加数量 可以得到最终的可见数量
+            InterlockedAdd(_ArgsBuffer[argsIndex], 1);//增加数量 可以得到最终的可见数量
             _VisibleInfoBuffer.Append(uint2(tID, lod));
         }
     }

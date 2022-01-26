@@ -46,7 +46,7 @@ MonoBehaviour:
       Data: XHH.GrassPrefabInfo, Assembly-CSharp
     - Name: resPath
       Entry: 1
-      Data: Grass_001
+      Data: Grass_001_LOD0
     - Name: bounds
       Entry: 7
       Data: UnityEngine.Bounds, UnityEngine.CoreModule

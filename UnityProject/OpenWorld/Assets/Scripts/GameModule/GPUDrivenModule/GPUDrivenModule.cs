@@ -20,6 +20,11 @@ namespace XHH
             m_GrassComponent.Update();
         }
 
+        private void LateUpdate()
+        {
+            m_GrassComponent.LateUpdate();
+        }
+
 
         private void OnDrawGizmos()
         {

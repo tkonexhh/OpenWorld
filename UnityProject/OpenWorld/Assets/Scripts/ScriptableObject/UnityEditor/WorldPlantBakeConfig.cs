@@ -17,7 +17,7 @@ namespace XHH
             if (root == null)
                 return;
 
-            string bakePath = "Assets/Res/InstanceConfig/World/Grass/GrassTileSO_0_0.asset";
+            string bakePath = "Assets/Resources/InstanceConfig/World/Grass/GrassTileSO_0_0.asset";
 
             if (EditorHelper.LoadAssetAtPath(bakePath, typeof(GrassTileSO)) == null)
             {

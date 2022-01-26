@@ -7,6 +7,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5033465810874324628, guid: 235e51e28f620054e8e1e2b7cc29e965, type: 3}
+      propertyPath: m_Name
+      value: Grass_002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6834927171729061697, guid: 235e51e28f620054e8e1e2b7cc29e965, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6f187535f1cbb9840a51bf76c8558224, type: 2}
     - target: {fileID: 6919379408486863825, guid: 235e51e28f620054e8e1e2b7cc29e965, type: 3}
       propertyPath: m_RootOrder
       value: 0

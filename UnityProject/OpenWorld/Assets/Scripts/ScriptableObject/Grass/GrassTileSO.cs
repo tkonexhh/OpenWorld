@@ -11,6 +11,7 @@ namespace XHH
     {
         public GrassTileData tileData;
 
+#if UNITY_EDITOR
         [Button("Clear")]
         public void Clear()
         {
@@ -20,12 +21,13 @@ namespace XHH
         [Button("Save")]
         public void Save()
         {
-#if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();
-#endif
         }
+#endif
+
+
     }
 
     [System.Serializable]
