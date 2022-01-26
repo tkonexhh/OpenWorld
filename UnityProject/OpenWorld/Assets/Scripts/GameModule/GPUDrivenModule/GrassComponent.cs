@@ -19,35 +19,43 @@ namespace XHH
             });
 
             var groups = m_GrassTileSO.tileData.groupDatas;
-            byte type = groups[0].type;
-            var instanceDatas = groups[0].instanceDatas;
+            for (int i = 0; i < 1; i++)
+            // for (int i = 0; i < groups.Length; i++)
+            {
+                byte type = groups[i].type;
+                var instanceDatas = groups[i].instanceDatas;
 
 
-            var grassPrefabInfo = GrassPrefabInfoSO.S.GetGrassPrefabInfo(type);
+                var grassPrefabInfo = GrassPrefabInfoSO.S.GetGrassPrefabInfo(type);
 
-            GrassIndirectInstanceData indirectInstanceData = new GrassIndirectInstanceData();
-            indirectInstanceData.lod0Mesh = grassPrefabInfo.indirectDrawSO.meshLOD0;
-            indirectInstanceData.lod1Mesh = grassPrefabInfo.indirectDrawSO.meshLOD1;
-            indirectInstanceData.lod2Mesh = grassPrefabInfo.indirectDrawSO.meshLOD2;
-            indirectInstanceData.itemsTRS = instanceDatas;
-            indirectInstanceData.indirectMaterial = grassPrefabInfo.indirectDrawSO.instanceMaterial;
-            indirectInstanceData.originBounds = grassPrefabInfo.bounds;
-            indirectInstanceData.positionOffset = m_GrassTileSO.tileData.center;
+                GrassIndirectInstanceData indirectInstanceData = new GrassIndirectInstanceData();
+                indirectInstanceData.lod0Mesh = grassPrefabInfo.indirectDrawSO.meshLOD0;
+                indirectInstanceData.lod1Mesh = grassPrefabInfo.indirectDrawSO.meshLOD1;
+                indirectInstanceData.lod2Mesh = grassPrefabInfo.indirectDrawSO.meshLOD2;
+                indirectInstanceData.itemsTRS = instanceDatas;
+                indirectInstanceData.indirectMaterial = grassPrefabInfo.indirectDrawSO.instanceMaterial;
+                indirectInstanceData.originBounds = grassPrefabInfo.bounds;
+                indirectInstanceData.positionOffset = m_GrassTileSO.tileData.center;
+                indirectInstanceData.resPath = grassPrefabInfo.resPath;
 
-            m_IndirectRenderer = new IndirectRenderer(grassPrefabInfo.resPath, indirectInstanceData);
+                m_IndirectRenderer = new IndirectRenderer(indirectInstanceData);
+            }
+
+
+
         }
 
 
         public void Update()
         {
+            m_IndirectRenderer?.CalcCullAndLOD();
 
-            m_IndirectRenderer?.Render();
 
         }
 
         public void LateUpdate()
         {
-            m_IndirectRenderer?.CalcCullAndLOD();
+            m_IndirectRenderer?.Render();
         }
 
         public void DrawGizmos()

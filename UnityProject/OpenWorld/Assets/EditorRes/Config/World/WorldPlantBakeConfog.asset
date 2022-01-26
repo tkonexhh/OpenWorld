@@ -21,4 +21,5 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  root: {fileID: 0}
+  grassRoot: {fileID: 0}
+  treeRoot: {fileID: 0}

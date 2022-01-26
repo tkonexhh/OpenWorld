@@ -32,7 +32,6 @@ namespace XHH
     /// </summary>
     public class IndirectRenderer
     {
-        public string name;//key
 
         ///----------------------
         ///数据
@@ -71,7 +70,7 @@ namespace XHH
         //other
         private int m_InstancesCount = 0;
         private uint[] m_Args;
-        private uint[] m_InsertCount = new uint[NUMBER_OF_LOD] { 0, 0, 0 };
+        private uint[] m_InsertCounts = new uint[NUMBER_OF_LOD] { 0, 0, 0 };
 
         private float m_ShowDistance = 50;//最远距离
 
@@ -93,9 +92,8 @@ namespace XHH
         private const int MESH_INDEX = 0;
 
 
-        public IndirectRenderer(string name, GrassIndirectInstanceData instanceData)
+        public IndirectRenderer(GrassIndirectInstanceData instanceData)
         {
-            this.name = name;
 
             if (m_CullCS == null)
                 m_CullCS = Resources.Load("Shader/ComputeShader/XHH_GPUDriven_Culling") as ComputeShader;
@@ -162,7 +160,6 @@ namespace XHH
                 //其中 argsIndex + 1  argsIndex + 6 argsIndex + 11 需要传入CS中计算最终数量
                 //其中 argsIndex + 4  argsIndex + 9 argsIndex + 14 需要传入Draw中计算起始下标 
 
-
                 Bounds originalBounds = m_IndirectRenderingMesh.bounds;
 
                 for (int i = 0; i < instanceData.itemsTRS.Length; i++)
@@ -204,6 +201,7 @@ namespace XHH
 
 
                 m_InsertCountBuffer = new ComputeBuffer(NUMBER_OF_LOD, sizeof(uint));
+                m_InsertCountBuffer.SetData(m_InsertCounts);
 
                 m_IndirectRenderingMesh.lod0MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
                 m_IndirectRenderingMesh.lod1MatPropBlock.SetBuffer(ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
@@ -232,11 +230,13 @@ namespace XHH
             m_VisibleInfoBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint) * 2, ComputeBufferType.Append);
 
 
+
             m_OutputDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint));
             m_InstanceTRSBuffer = new ComputeBuffer(m_InstancesCount, sizeof(float) * 9);
             m_InstanceTRSBuffer.SetData(instancesInputTRS, 0, 0, m_InstancesCount);
 
-            m_CullingGroupX = Mathf.Max(1, Mathf.CeilToInt(m_InstancesCount / 64f));
+            m_CullingGroupX = Mathf.Max(1, Mathf.CeilToInt(m_InstancesCount / 64));
+            m_CullCS.SetInt("_InstanceCount", m_InstancesCount);
 
         }
 
@@ -269,7 +269,7 @@ namespace XHH
             //////////////////////////////////////////////////////
             m_CullCS.SetMatrix(ShaderConstants.VPMatrixPID, m_VPMatrix);
             m_CullCS.SetVector(ShaderConstants.CenterPosWSPID, camera.transform.position);
-            m_CullCS.SetInt("_InstanceCount", m_InstancesCount);
+
 
             m_VisibleInfoBuffer.SetCounterValue(0);
             m_InstanceDataBuffer.SetData(instancesInputData, 0, 0, m_InstancesCount);
@@ -285,7 +285,7 @@ namespace XHH
             //////////////////////////////////////////////////////
             // Calc IndexOffset
             //////////////////////////////////////////////////////
-            m_InsertCountBuffer.SetData(m_InsertCount);
+            m_InsertCountBuffer.SetData(m_InsertCounts);
             m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
             m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_OutputDataBuffer", m_OutputDataBuffer);
             m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
@@ -355,7 +355,7 @@ namespace XHH
 
         public void DrawGizmos()
         {
-
+            Gizmos.DrawWireCube(m_RenderBounds.center, m_RenderBounds.size);
         }
 
 
@@ -363,7 +363,6 @@ namespace XHH
         {
             public static readonly int InstanceDataBufferPID = Shader.PropertyToID("_InstanceDataBuffer");
             public static readonly int InstanceTRSBufferPID = Shader.PropertyToID("_InstanceTRSBuffer");
-            public static readonly int VisibleInstanceOnlyTransformIDBuffer = Shader.PropertyToID("_VisibleInstanceOnlyTransformIDBuffer");
 
             public static readonly int LODDistancePID = Shader.PropertyToID("_LODDistance");
             public static readonly int CenterPosWSPID = Shader.PropertyToID("_CamPosition");

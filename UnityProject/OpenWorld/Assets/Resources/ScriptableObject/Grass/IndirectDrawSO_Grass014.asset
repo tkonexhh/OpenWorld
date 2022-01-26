@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f034c6ce5f41b14488189c8a3e5c2be0, type: 3}
+  m_Name: IndirectDrawSO_Grass014
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  meshLOD0: {fileID: 9107017983277655628, guid: d8882fe5ba05a6e43864009d79784f38, type: 3}
+  meshLOD1: {fileID: 9107017983277655628, guid: d8882fe5ba05a6e43864009d79784f38, type: 3}
+  meshLOD2: {fileID: 9107017983277655628, guid: d8882fe5ba05a6e43864009d79784f38, type: 3}
+  instanceMaterial: {fileID: 2100000, guid: 91bcfb7ba0ba4e74faff3936ec995b55, type: 2}

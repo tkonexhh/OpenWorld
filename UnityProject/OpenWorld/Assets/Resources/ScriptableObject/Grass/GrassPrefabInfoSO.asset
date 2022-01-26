@@ -17,6 +17,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 11400000, guid: 7e6d43abafe64774d959505198d06cc2, type: 2}
+    - {fileID: 11400000, guid: 3b89356eec247054e9a7de972430d4b6, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -34,7 +35,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 
@@ -86,6 +87,63 @@ MonoBehaviour:
     - Name: indirectDrawSO
       Entry: 10
       Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: XHH.GrassPrefabInfo, Assembly-CSharp
+    - Name: resPath
+      Entry: 1
+      Data: Scene/Grass/SM_demo02_build_grass014
+    - Name: bounds
+      Entry: 7
+      Data: UnityEngine.Bounds, UnityEngine.CoreModule
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 1.02449489
+    - Name: 
+      Entry: 4
+      Data: 0.711791933
+    - Name: 
+      Entry: 4
+      Data: 0.98820585
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: indirectDrawSO
+      Entry: 10
+      Data: 1
     - Name: 
       Entry: 8
       Data: 

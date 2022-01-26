@@ -27,11 +27,12 @@ RWStructuredBuffer<uint> _InsertCountBuffer;//已经插入的个数
 RWStructuredBuffer<uint> _OutputDataBuffer;//输出的排序后的buffer
 
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID)
+void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 _groupID: SV_GroupID)
 {
     uint tID = dispatchThreadID.x;
+    uint groupID = _groupID.x;
 
-    if (tID == 0)
+    if ((tID == 0) * (groupID == 0))
     {
         //patch up the visible instance counts per prop type
         for (uint k = 1; k < _NumOfDrawcalls; k++)

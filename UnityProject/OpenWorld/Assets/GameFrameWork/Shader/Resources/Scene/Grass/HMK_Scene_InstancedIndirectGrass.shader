@@ -139,96 +139,95 @@ Shader "HMK/Scene/InstancedIndirectGrass"
 
         }
 
-        // Pass
-        // {
-        //     Name "DepthOnly"
-        //     Tags { "LightMode" = "DepthOnly" }
+        Pass
+        {
+            Name "DepthOnly"
+            Tags { "LightMode" = "DepthOnly" }
 
-        //     ZWrite On
-        //     ColorMask 0
-        //     Cull Off
+            ZWrite On
+            ColorMask 0
+            Cull Off
 
-        //     HLSLPROGRAM
+            HLSLPROGRAM
 
-        //     // #pragma exclude_renderers gles gles3 glcore
-        //     #pragma target 4.5
+            // #pragma exclude_renderers gles gles3 glcore
+            #pragma target 4.5
 
-        //     #pragma vertex DepthOnlyVertex
-        //     #pragma fragment DepthOnlyFragment
+            #pragma vertex DepthOnlyVertex
+            #pragma fragment DepthOnlyFragment
 
-        //     // -------------------------------------
-        //     // Material Keywords
-        //     #pragma shader_feature_local_fragment _ALPHATEST_ON
-        //     #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            // -------------------------------------
+            // Material Keywords
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
-        //     //--------------------------------------
-        //     // GPU Instancing
-        //     // #pragma multi_compile_instancing
-        //     // #pragma multi_compile _ DOTS_INSTANCING_ON
+            //--------------------------------------
+            // GPU Instancing
+            // #pragma multi_compile_instancing
+            // #pragma multi_compile _ DOTS_INSTANCING_ON
 
-        //     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-        //     #include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
-        //     #include "./HMK_Scene_Grass_Common.hlsl"
-        
-        //     struct Attributes
-        //     {
-        //         float4 positionOS: POSITION;
-        //         float2 uv: TEXCOORD0;
-        //     };
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+            #include "./HMK_Scene_Grass_Common.hlsl"
+            
+            struct Attributes
+            {
+                float4 positionOS: POSITION;
+                float2 uv: TEXCOORD0;
+            };
 
-        //     struct Varyings
-        //     {
-        //         float4 positionCS: SV_POSITION;
-        //     };
+            struct Varyings
+            {
+                float4 positionCS: SV_POSITION;
+            };
 
-        
+            
 
-        //     CBUFFER_START(UnityPerMaterial)
+            CBUFFER_START(UnityPerMaterial)
 
-        //     half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-        //     //Global Property
-        //     int _InteractivesCount;//交互物体数量
-        //     half3 _Interactives[100];//交互物体 最大支持20个交互物体
+            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
+            //Global Property
+            int _InteractivesCount;//交互物体数量
+            half3 _Interactives[100];//交互物体 最大支持20个交互物体
 
-        //     half _WindStrength, _WindHeight;
-        
-        //     StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//只含有坐标信息 下面需要吧缩放旋转也考虑上
-        //     StructuredBuffer<uint> _VisibleInstanceOnlyTransformIDBuffer;
-        //     CBUFFER_END
+            half _WindStrength, _WindHeight;
+            
+            StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//只含有坐标信息 下面需要吧缩放旋转也考虑上
+            StructuredBuffer<uint> _VisibleInstanceOnlyTransformIDBuffer;
+            CBUFFER_END
 
-        //     Varyings DepthOnlyVertex(Attributes input, uint instanceID: SV_InstanceID)
-        //     {
-        //         int id = _VisibleInstanceOnlyTransformIDBuffer[instanceID];
-        //         //适用旋转
-        //         GrassTRS trs = _AllInstancesTransformBuffer[id];
-        //         input.positionOS = mul(Rotation(half3(0, trs.rotateY, 0)), input.positionOS);
+            Varyings DepthOnlyVertex(Attributes input, uint instanceID: SV_InstanceID)
+            {
+                int id = _VisibleInstanceOnlyTransformIDBuffer[instanceID];
+                //适用旋转
+                GrassTRS trs = _AllInstancesTransformBuffer[id];
+                input.positionOS = mul(Rotation(half3(0, trs.rotateY, 0)), input.positionOS);
 
-        //         Varyings output;
-        //         half3 perGrassPivotPosWS = input.positionOS + trs.position;// _AllInstancesTransformBuffer[instanceID];
-        //         half3 positionWS = perGrassPivotPosWS;
-        
-        //         //适用缩放
-        //         input.positionOS.xyz *= trs.scale;
+                Varyings output;
+                half3 perGrassPivotPosWS = input.positionOS + trs.position;// _AllInstancesTransformBuffer[instanceID];
+                half3 positionWS = perGrassPivotPosWS;
+                
+                //适用缩放
+                input.positionOS.xyz *= trs.scale;
 
-        //         //风力效果
-        //         half mask = input.uv.y;
-        //         GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
-        //         //交互效果
-        //         ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
+                //风力效果
+                half mask = input.uv.y;
+                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
+                //交互效果
+                ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
 
-        //         output.positionCS = TransformWorldToHClip(positionWS);
-        //         return output;
-        //     }
+                output.positionCS = TransformWorldToHClip(positionWS);
+                return output;
+            }
 
-        //     half4 DepthOnlyFragment(Varyings input): SV_TARGET
-        //     {
-        //         return 0;
-        //     }
+            half4 DepthOnlyFragment(Varyings input): SV_TARGET
+            {
+                return 0;
+            }
 
-        //     ENDHLSL
+            ENDHLSL
 
-        // }
-
+        }
     }
     Fallback "Universal Render Pipeline/Particles/Simple Lit"
 }
