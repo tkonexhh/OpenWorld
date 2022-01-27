@@ -30,5 +30,11 @@ namespace XHH
         {
             m_GrassComponent?.DrawGizmos();
         }
+
+
+        private void OnDestroy()
+        {
+            m_GrassComponent.Destroy();
+        }
     }
 }

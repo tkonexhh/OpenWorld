@@ -19,12 +19,12 @@ namespace XHH
             });
 
             var groups = m_GrassTileSO.tileData.groupDatas;
+            GrassIndirectInstanceData[] indirectInstanceDatas = new GrassIndirectInstanceData[1];
             for (int i = 0; i < 1; i++)
             // for (int i = 0; i < groups.Length; i++)
             {
                 byte type = groups[i].type;
                 var instanceDatas = groups[i].instanceDatas;
-
 
                 var grassPrefabInfo = GrassPrefabInfoSO.S.GetGrassPrefabInfo(type);
 
@@ -37,11 +37,10 @@ namespace XHH
                 indirectInstanceData.originBounds = grassPrefabInfo.bounds;
                 indirectInstanceData.positionOffset = m_GrassTileSO.tileData.center;
                 indirectInstanceData.resPath = grassPrefabInfo.resPath;
-
-                m_IndirectRenderer = new IndirectRenderer(indirectInstanceData);
+                indirectInstanceDatas[i] = indirectInstanceData;
             }
 
-
+            m_IndirectRenderer = new IndirectRenderer(indirectInstanceDatas);
 
         }
 
@@ -49,8 +48,6 @@ namespace XHH
         public void Update()
         {
             m_IndirectRenderer?.CalcCullAndLOD();
-
-
         }
 
         public void LateUpdate()
@@ -62,6 +59,13 @@ namespace XHH
         {
             m_IndirectRenderer?.DrawGizmos();
         }
+
+        public void Destroy()
+        {
+            m_IndirectRenderer?.Destroy();
+        }
+
+
     }
 
 }
