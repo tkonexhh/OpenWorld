@@ -22,7 +22,7 @@ cbuffer CB
 // Structured Buffers
 //--------------------------------------------------------------------------------------
 RWStructuredBuffer<uint> _ArgsBuffer;
-StructuredBuffer<uint2> _VisibleInfoBuffer;//ID LOD
+StructuredBuffer<uint3> _VisibleInfoBuffer;//ID LOD
 RWStructuredBuffer<uint> _InsertCountBuffer;//已经插入的个数
 RWStructuredBuffer<uint> _OutputDataBuffer;//输出的排序后的buffer
 
@@ -35,6 +35,7 @@ void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 
     if ((tID == 0) * (groupID == 0))
     {
         //patch up the visible instance counts per prop type
+        
         for (uint k = 1; k < _NumOfDrawcalls; k++)
         {
             //当前的offset=之前的offet+之前的count
@@ -49,14 +50,19 @@ void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 
         totalCount += _ArgsBuffer[ NUMBER_OF_ARGS_PER_DRAW * i + 1];
     }
 
+
     if (tID < totalCount)
     {
-        uint2 visibleInfo = _VisibleInfoBuffer[tID];
+        uint3 visibleInfo = _VisibleInfoBuffer[tID];
         uint id = visibleInfo.x;
         uint lod = visibleInfo.y;
-        uint insertOffset = _ArgsBuffer[lod * NUMBER_OF_ARGS_PER_DRAW + 4];
+        uint drawCall = visibleInfo.z;
+
+        uint argsIndex = drawCall * NUMBER_OF_ARGS_PER_INSTANCE_TYPE + lod * NUMBER_OF_ARGS_PER_DRAW + 4;
+        uint countIndex = lod + drawCall * 3;
+        uint insertOffset = _ArgsBuffer[argsIndex];
         uint insertedCount = 1;
-        InterlockedAdd(_InsertCountBuffer[lod], 1, insertedCount);
+        InterlockedAdd(_InsertCountBuffer[countIndex], 1, insertedCount);
         _OutputDataBuffer[insertOffset +insertedCount] = id;
     }
 }

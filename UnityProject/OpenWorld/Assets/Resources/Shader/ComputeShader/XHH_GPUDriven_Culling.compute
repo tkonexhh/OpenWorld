@@ -25,7 +25,7 @@ cbuffer CB
 
 RWStructuredBuffer<uint> _ArgsBuffer;
 StructuredBuffer<InstanceData> _InstanceDataBuffer;
-AppendStructuredBuffer<uint2> _VisibleInfoBuffer;//ID LOD
+AppendStructuredBuffer<uint3> _VisibleInfoBuffer;//ID LOD drawCall
 
 
 
@@ -78,7 +78,7 @@ void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
     {
 
         InstanceData instance = _InstanceDataBuffer[tID];
-
+        uint drawCall = instance.drawCallInstanceIndex ;//type类型
         //检查是否可见
         float3 minPos = instance.boundsCenter - instance.boundsExtents;
         float3 maxPos = instance.boundsCenter + instance.boundsExtents;
@@ -125,13 +125,13 @@ void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
         {
             uint lod = CalcLOD(minDistanceToCamera);
             //计算总数量到argsbuffer 1 6 11 存的是数量
-            uint argsIndex = 1;
+            uint argsIndex = drawCall * NUMBER_OF_ARGS_PER_INSTANCE_TYPE + 1;
             argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 0);//是否大于0级
             argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 1);//是否大于1级
 
             //Output
             InterlockedAdd(_ArgsBuffer[argsIndex], 1);//增加数量 可以得到最终的可见数量
-            _VisibleInfoBuffer.Append(uint2(tID, lod));
+            _VisibleInfoBuffer.Append(uint3(tID, lod, drawCall));
         }
     }
 }
