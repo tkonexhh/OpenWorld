@@ -7,15 +7,14 @@
 // Constants
 //--------------------------------------------------------------------------------------
 #define THREAD_GROUP_SIZE_X 64
-#define THREAD_GROUP_SIZE_Y 1
-#define THREAD_GROUP_SIZE_Z 1
 
 //--------------------------------------------------------------------------------------
 // Constant Buffers
 //--------------------------------------------------------------------------------------
 cbuffer CB
 {
-    uint _NumOfDrawcalls;
+    uint _NumOfDrawcalls;//总DC  type * 3
+
 }
 
 //--------------------------------------------------------------------------------------
@@ -25,8 +24,9 @@ RWStructuredBuffer<uint> _ArgsBuffer;
 StructuredBuffer<uint3> _VisibleInfoBuffer;//ID LOD
 RWStructuredBuffer<uint> _InsertCountBuffer;//已经插入的个数
 RWStructuredBuffer<uint> _OutputDataBuffer;//输出的排序后的buffer
+// StructuredBuffer<uint> _IsVisibleBuffer;//可见性信息
 
-[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+[numthreads(THREAD_GROUP_SIZE_X, 1, 1)]
 void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 _groupID: SV_GroupID)
 {
     uint tID = dispatchThreadID.x;
@@ -34,8 +34,6 @@ void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 
 
     if ((tID == 0) * (groupID == 0))
     {
-        //patch up the visible instance counts per prop type
-        
         for (uint k = 1; k < _NumOfDrawcalls; k++)
         {
             //当前的offset=之前的offet+之前的count
@@ -45,12 +43,14 @@ void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 
     
     //开始移动
     int totalCount = 0;
+    
     for (uint i = 0; i < _NumOfDrawcalls; i++)
     {
         totalCount += _ArgsBuffer[ NUMBER_OF_ARGS_PER_DRAW * i + 1];
     }
 
-
+    // int isVisible = _IsVisibleBuffer[tID];
+    // if (isVisible > 0)
     if (tID < totalCount)
     {
         uint3 visibleInfo = _VisibleInfoBuffer[tID];
@@ -59,9 +59,10 @@ void CalcIndexOffsetCS(in uint3 dispatchThreadID: SV_DispatchThreadID, in uint3 
         uint drawCall = visibleInfo.z;
 
         uint argsIndex = drawCall * NUMBER_OF_ARGS_PER_INSTANCE_TYPE + lod * NUMBER_OF_ARGS_PER_DRAW + 4;
-        uint countIndex = lod + drawCall * 3;
+        uint countIndex = drawCall * NUMBER_OF_LOD + lod;
+
         uint insertOffset = _ArgsBuffer[argsIndex];
-        uint insertedCount = 1;
+        uint insertedCount;
         InterlockedAdd(_InsertCountBuffer[countIndex], 1, insertedCount);
         _OutputDataBuffer[insertOffset +insertedCount] = id;
     }

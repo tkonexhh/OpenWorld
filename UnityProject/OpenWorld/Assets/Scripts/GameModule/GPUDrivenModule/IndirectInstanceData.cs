@@ -21,7 +21,6 @@ namespace XHH
     {
         public byte id;
         public GrassInstanceData[] itemsTRS;
-        public string resPath;
     }
 
 

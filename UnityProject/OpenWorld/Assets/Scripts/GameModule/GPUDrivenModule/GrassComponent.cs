@@ -9,7 +9,9 @@ namespace XHH
     {
         private GrassTileSO m_GrassTileSO;
 
-        private IndirectRenderer m_IndirectRenderer;
+        // private IndirectRenderer m_IndirectRenderer;
+
+        private IndirectRenderer[] m_IndirectRenderers;
 
         public void Init()
         {
@@ -20,7 +22,8 @@ namespace XHH
 
             var groups = m_GrassTileSO.tileData.groupDatas;
             GrassIndirectInstanceData[] indirectInstanceDatas = new GrassIndirectInstanceData[groups.Length];
-            // for (int i = 0; i < 1; i++)
+            m_IndirectRenderers = new IndirectRenderer[groups.Length];
+
             for (int i = 0; i < groups.Length; i++)
             {
                 byte type = groups[i].type;
@@ -36,33 +39,51 @@ namespace XHH
                 indirectInstanceData.indirectMaterial = grassPrefabInfo.indirectDrawSO.instanceMaterial;
                 indirectInstanceData.originBounds = grassPrefabInfo.bounds;
                 indirectInstanceData.positionOffset = m_GrassTileSO.tileData.center;
-                indirectInstanceData.resPath = grassPrefabInfo.resPath;
                 indirectInstanceDatas[i] = indirectInstanceData;
+                m_IndirectRenderers[i] = new IndirectRenderer(indirectInstanceData);
             }
 
-            m_IndirectRenderer = new IndirectRenderer(indirectInstanceDatas);
+
+            Debug.LogError(m_IndirectRenderers[0].m_CullCS.Equals(m_IndirectRenderers[1].m_CullCS));
+            // m_IndirectRenderer = new IndirectRenderer(indirectInstanceDatas);
 
         }
 
 
         public void Update()
         {
-            m_IndirectRenderer?.CalcCullAndLOD();
+            for (int i = 0; i < m_IndirectRenderers.Length; i++)
+            {
+                m_IndirectRenderers[i]?.Render();
+            }
+            // m_IndirectRenderer?.Render();
         }
 
         public void LateUpdate()
         {
-            m_IndirectRenderer?.Render();
+            for (int i = 0; i < m_IndirectRenderers.Length; i++)
+            {
+                m_IndirectRenderers[i]?.CalcCullAndLOD();
+            }
+            // m_IndirectRenderer?.CalcCullAndLOD();
         }
 
         public void DrawGizmos()
         {
-            m_IndirectRenderer?.DrawGizmos();
+            for (int i = 0; i < m_IndirectRenderers.Length; i++)
+            {
+                m_IndirectRenderers[i]?.DrawGizmos();
+            }
+            // m_IndirectRenderer?.DrawGizmos();
         }
 
         public void Destroy()
         {
-            m_IndirectRenderer?.Destroy();
+            for (int i = 0; i < m_IndirectRenderers.Length; i++)
+            {
+                m_IndirectRenderers[i]?.Destroy();
+            }
+            // m_IndirectRenderer?.Destroy();
         }
 
 

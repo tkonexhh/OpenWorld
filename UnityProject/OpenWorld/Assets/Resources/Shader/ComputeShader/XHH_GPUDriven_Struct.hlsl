@@ -19,3 +19,4 @@ struct InstanceTRS
 
 #define NUMBER_OF_ARGS_PER_DRAW 5
 #define NUMBER_OF_ARGS_PER_INSTANCE_TYPE 15
+#define NUMBER_OF_LOD 3

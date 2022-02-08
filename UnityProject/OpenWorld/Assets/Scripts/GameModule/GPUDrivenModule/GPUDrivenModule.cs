@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Rendering;
 namespace XHH
 {
     public class GPUDrivenModule : MonoBehaviour
     {
         private GrassComponent m_GrassComponent;
+        public bool draw;
 
         void Start()
         {
@@ -22,7 +23,8 @@ namespace XHH
 
         private void LateUpdate()
         {
-            m_GrassComponent.LateUpdate();
+            if (draw)
+                m_GrassComponent.LateUpdate();
         }
 
 

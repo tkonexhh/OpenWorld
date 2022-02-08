@@ -6,8 +6,6 @@
 // Constants
 //--------------------------------------------------------------------------------------
 #define THREAD_GROUP_SIZE_X 64
-#define THREAD_GROUP_SIZE_Y 1
-#define THREAD_GROUP_SIZE_Z 1
 
 
 //--------------------------------------------------------------------------------------
@@ -20,12 +18,14 @@ cbuffer CB
     float4x4 _VPMatrix;// p*v
     float3 _CamPosition;//相机世界坐标
     float3 _LODDistance;//三级lod 的距离
-    uint _InstanceCount;
+    uint _InstanceCount;//总数量
+
 }
 
 RWStructuredBuffer<uint> _ArgsBuffer;
 StructuredBuffer<InstanceData> _InstanceDataBuffer;
 AppendStructuredBuffer<uint3> _VisibleInfoBuffer;//ID LOD drawCall
+RWStructuredBuffer<uint> _IsVisibleBuffer;
 
 
 
@@ -60,8 +60,7 @@ inline uint CalcLOD(float minDistanceToCamera)
     {
         lod = 1;
     }
-    else //if (minDistanceToCamera < _LODDistance.z)
-
+    else
     {
         lod = 2;
     }
@@ -70,7 +69,7 @@ inline uint CalcLOD(float minDistanceToCamera)
 }
 
 
-[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+[numthreads(THREAD_GROUP_SIZE_X, 1, 1)]
 void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
 {
     uint tID = dispatchThreadID.x;
@@ -78,7 +77,7 @@ void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
     {
 
         InstanceData instance = _InstanceDataBuffer[tID];
-        uint drawCall = instance.drawCallInstanceIndex ;//type类型
+        uint drawCall = instance.drawCallInstanceIndex;//不同的type
         //检查是否可见
         float3 minPos = instance.boundsCenter - instance.boundsExtents;
         float3 maxPos = instance.boundsCenter + instance.boundsExtents;
@@ -119,18 +118,20 @@ void CSMain(in uint3 dispatchThreadID: SV_DispatchThreadID)
             isVisible *= _ShouldFrustumCull ? isInFrustum: 1;
         }
 
-        
+        _IsVisibleBuffer[tID] = isVisible;
+
         //如果可见的话
         if (isVisible > 0)
         {
             uint lod = CalcLOD(minDistanceToCamera);
+            // lod = 0;
             //计算总数量到argsbuffer 1 6 11 存的是数量
             uint argsIndex = drawCall * NUMBER_OF_ARGS_PER_INSTANCE_TYPE + 1;
             argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 0);//是否大于0级
             argsIndex += NUMBER_OF_ARGS_PER_DRAW * (lod > 1);//是否大于1级
 
             //Output
-            InterlockedAdd(_ArgsBuffer[argsIndex], 1);//增加数量 可以得到最终的可见数量
+            InterlockedAdd(_ArgsBuffer[argsIndex], isVisible);//增加数量 可以得到最终的可见数量
             _VisibleInfoBuffer.Append(uint3(tID, lod, drawCall));
         }
     }
