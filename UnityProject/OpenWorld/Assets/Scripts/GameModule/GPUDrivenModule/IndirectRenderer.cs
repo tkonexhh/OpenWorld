@@ -46,7 +46,8 @@ namespace XHH
         ///----------------------
         /// ComputeShader
         ///----------------------
-        public ComputeShader m_CullCS;
+        private ComputeShader m_CullCS;
+        private ComputeShader m_CalcLODOffsetCS;
         private ComputeShader m_CalcIndexOffsetCS;
 
 
@@ -58,7 +59,10 @@ namespace XHH
         private ComputeBuffer m_InstanceDataBuffer;
         private ComputeBuffer m_InstancesArgsBuffer;
         private ComputeBuffer m_VisibleInfoBuffer;//可见ID LOD
-        private ComputeBuffer m_IsVisibleBuffer;
+
+
+        private ComputeBuffer m_VisibleCountBuffer;//各个ID的可见性数量
+
         //CalcIndexOffset
         private ComputeBuffer m_InsertCountBuffer;//已经插入的数量
         private ComputeBuffer m_OutputDataBuffer;//最终的输出数据
@@ -95,23 +99,28 @@ namespace XHH
         private const int ARGS_BYTE_SIZE_PER_INSTANCE_TYPE = NUMBER_OF_ARGS_PER_INSTANCE_TYPE * sizeof(uint); // 15args * 4bytes = 60bytes
 
 
-        public IndirectRenderer(GrassIndirectInstanceData instanceDatas)
+        public IndirectRenderer(GrassIndirectInstanceData[] instanceDatas)
         {
-            if (m_CullCS == null)
-                //     m_CullCS = Resources.Load("Shader/ComputeShader/XHH_GPUDriven_Culling") as ComputeShader;
-                // var cullingCS = ;
-                m_CullCS = Object.Instantiate(Resources.Load("Shader/ComputeShader/XHH_GPUDriven_Culling") as ComputeShader);
+            m_InstaceTypeCount = instanceDatas.Length;
+            // m_InstaceTypeCount = 1;
+
+
+            m_CullCS = Object.Instantiate(Resources.Load("Shader/ComputeShader/XHH_GPUDriven_Culling") as ComputeShader);
 
             Vector4 lodDistance = new Vector3(m_ShowDistance * 0.20f, m_ShowDistance * 0.5f, m_ShowDistance);
-            // Debug.LogError("lodDistance" + lodDistance);
             m_CullCS.SetVector(ShaderConstants.LODDistancePID, lodDistance);
             m_CullCS.SetInt(ShaderConstants.ShouldFrustumCullPID, 1);
 
-            // m_InstaceTypeCount = instanceDatas.Length;
-            m_InstaceTypeCount = 1;
 
-            m_CalcIndexOffsetCS = Resources.Load("Shader/ComputeShader/XHH_GPUDriven_CalcIndexOffsetCS") as ComputeShader;
+
+            m_CalcLODOffsetCS = Object.Instantiate(Resources.Load("Shader/ComputeShader/XHH_GPUDriven_CalcLODOffsetCS") as ComputeShader);
+            m_CalcLODOffsetCS.SetInt("_InstanceTypeCount", m_InstaceTypeCount);
+
+
+
+            m_CalcIndexOffsetCS = Object.Instantiate(Resources.Load("Shader/ComputeShader/XHH_GPUDriven_CalcIndexOffsetCS") as ComputeShader);
             m_CalcIndexOffsetCS.SetInt("_NumOfDrawcalls", m_InstaceTypeCount * NUMBER_OF_LOD);
+
 
             InitBuffer(ref instanceDatas);
         }
@@ -124,7 +133,7 @@ namespace XHH
 
         }
 
-        private void InitBuffer(ref GrassIndirectInstanceData instanceDatas)
+        private void InitBuffer(ref GrassIndirectInstanceData[] instanceDatas)
         {
             if (!TryGetKernels())
             {
@@ -142,7 +151,7 @@ namespace XHH
 
             for (int i = 0; i < m_InstaceTypeCount; i++)
             {
-                var instanceData = instanceDatas;
+                var instanceData = instanceDatas[i];
                 var indirectRenderingMesh = new IndirectRenderingMesh(instanceData);
 
                 int argsIndex = i * NUMBER_OF_ARGS_PER_INSTANCE_TYPE;
@@ -253,13 +262,12 @@ namespace XHH
         {
             m_InstanceDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(float) * 6 + sizeof(uint));
             m_VisibleInfoBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint) * 3, ComputeBufferType.Append);
-            m_IsVisibleBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint));
+            m_VisibleCountBuffer = new ComputeBuffer(m_InstaceTypeCount * NUMBER_OF_LOD, sizeof(uint));
 
             m_OutputDataBuffer = new ComputeBuffer(m_InstancesCount, sizeof(uint));
             m_InstanceTRSBuffer = new ComputeBuffer(m_InstancesCount, sizeof(float) * 9);
             m_InstanceTRSBuffer.SetData(instancesInputTRS, 0, 0, m_InstancesCount);
 
-            m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, "_IsVisibleBuffer", m_IsVisibleBuffer);
 
             m_CullingGroupX = Mathf.Max(1, Mathf.CeilToInt(m_InstancesCount / 64.0f));
             m_CalcIndexOffsetGroupX = Mathf.Max(1, Mathf.CeilToInt(m_InstancesCount / (2 * (float)SCAN_THREAD_GROUP_SIZE)));
@@ -309,28 +317,37 @@ namespace XHH
 
                 m_VisibleInfoBuffer.SetCounterValue(0);
                 m_InstanceDataBuffer.SetData(instancesInputData, 0, 0, m_InstancesCount);
+                m_VisibleCountBuffer.SetData(m_InsertCounts);
 
                 m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.InstanceDataBufferPID, m_InstanceDataBuffer);
                 m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
                 m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
-                // m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, "_IsVisibleBuffer", m_IsVisibleBuffer);
+                m_CullCS.SetBuffer(KERNAL_CalcCullAndLOD, "_VisibleCountBuffer", m_VisibleCountBuffer);
 
                 m_CullCS.Dispatch(KERNAL_CalcCullAndLOD, m_CullingGroupX, 1, 1);
             }
             Profiler.EndSample();
 
+            //////////////////////////////////////////////////////
+            // Calc IndexOffset
+            // 计算每个Type的lod个数和偏移，并算出下一步CS的参数
+            //////////////////////////////////////////////////////
+            Profiler.BeginSample("Calc LOD count Offset");
+            {
 
+            }
 
+            Profiler.EndSample();
 
             //////////////////////////////////////////////////////
             // Calc IndexOffset
             //////////////////////////////////////////////////////
             Profiler.BeginSample("Calc IndexOffset");
             {
+                m_InsertCountBuffer.SetCounterValue(0);
                 m_InsertCountBuffer.SetData(m_InsertCounts);
 
                 m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, ShaderConstants.ArgsBufferPID, m_InstancesArgsBuffer);
-                // m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_IsVisibleBuffer", m_IsVisibleBuffer);
                 m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_OutputDataBuffer", m_OutputDataBuffer);
                 m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_VisibleInfoBuffer", m_VisibleInfoBuffer);
                 m_CalcIndexOffsetCS.SetBuffer(KERNAL_CalcIndexOffset, "_InsertCountBuffer", m_InsertCountBuffer);
@@ -354,14 +371,14 @@ namespace XHH
 
 
 
-            // uint[] insertCount = new uint[m_InstaceTypeCount * NUMBER_OF_LOD];
-            // m_InsertCountBuffer.GetData(insertCount);
-            // string insertCountLog = "InsertCount:\n";
-            // for (int i = 0; i < m_InstaceTypeCount; i++)
-            // {
-            //     insertCountLog += "i:" + i + "----" + insertCount[i * NUMBER_OF_LOD + 0] + "-" + insertCount[i * NUMBER_OF_LOD + 1] + "-" + insertCount[i * NUMBER_OF_LOD + 2] + "\n";
-            // }
-            // Debug.LogError(insertCountLog);
+            uint[] insertCount = new uint[m_InstaceTypeCount * NUMBER_OF_LOD];
+            m_VisibleCountBuffer.GetData(insertCount);
+            string insertCountLog = "InsertCount:\n";
+            for (int i = 0; i < m_InstaceTypeCount; i++)
+            {
+                insertCountLog += "i:" + i + "----" + insertCount[i * NUMBER_OF_LOD + 0] + "-" + insertCount[i * NUMBER_OF_LOD + 1] + "-" + insertCount[i * NUMBER_OF_LOD + 2] + "\n";
+            }
+            Debug.LogError(insertCountLog);
 
 
 

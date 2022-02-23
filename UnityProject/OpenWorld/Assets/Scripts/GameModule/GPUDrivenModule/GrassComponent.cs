@@ -9,7 +9,7 @@ namespace XHH
     {
         private GrassTileSO m_GrassTileSO;
 
-        // private IndirectRenderer m_IndirectRenderer;
+        private IndirectRenderer m_IndirectRenderer;
 
         private IndirectRenderer[] m_IndirectRenderers;
 
@@ -40,12 +40,10 @@ namespace XHH
                 indirectInstanceData.originBounds = grassPrefabInfo.bounds;
                 indirectInstanceData.positionOffset = m_GrassTileSO.tileData.center;
                 indirectInstanceDatas[i] = indirectInstanceData;
-                m_IndirectRenderers[i] = new IndirectRenderer(indirectInstanceData);
+                // m_IndirectRenderers[i] = new IndirectRenderer(indirectInstanceData);
             }
 
-
-            Debug.LogError(m_IndirectRenderers[0].m_CullCS.Equals(m_IndirectRenderers[1].m_CullCS));
-            // m_IndirectRenderer = new IndirectRenderer(indirectInstanceDatas);
+            m_IndirectRenderer = new IndirectRenderer(indirectInstanceDatas);
 
         }
 
@@ -56,7 +54,7 @@ namespace XHH
             {
                 m_IndirectRenderers[i]?.Render();
             }
-            // m_IndirectRenderer?.Render();
+            m_IndirectRenderer?.Render();
         }
 
         public void LateUpdate()
@@ -65,7 +63,7 @@ namespace XHH
             {
                 m_IndirectRenderers[i]?.CalcCullAndLOD();
             }
-            // m_IndirectRenderer?.CalcCullAndLOD();
+            m_IndirectRenderer?.CalcCullAndLOD();
         }
 
         public void DrawGizmos()
@@ -74,7 +72,7 @@ namespace XHH
             {
                 m_IndirectRenderers[i]?.DrawGizmos();
             }
-            // m_IndirectRenderer?.DrawGizmos();
+            m_IndirectRenderer?.DrawGizmos();
         }
 
         public void Destroy()
@@ -83,7 +81,7 @@ namespace XHH
             {
                 m_IndirectRenderers[i]?.Destroy();
             }
-            // m_IndirectRenderer?.Destroy();
+            m_IndirectRenderer?.Destroy();
         }
 
 

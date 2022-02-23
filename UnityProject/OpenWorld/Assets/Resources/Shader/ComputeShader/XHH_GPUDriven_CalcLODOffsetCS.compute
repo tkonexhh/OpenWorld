@@ -1,0 +1,44 @@
+#include "./XHH_GPUDriven_Struct.hlsl"
+
+
+#pragma kernel CSMain
+
+//--------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------
+#define THREAD_GROUP_SIZE_X 1
+
+
+
+//--------------------------------------------------------------------------------------
+// Constant Buffers
+//--------------------------------------------------------------------------------------
+cbuffer CB
+{
+    uint _InstanceTypeCount;//类型数量
+
+}
+
+
+RWStructuredBuffer<uint> _ArgsBuffer;
+StructuredBuffer<uint> _VisibleCountBuffer;
+
+[numthreads(THREAD_GROUP_SIZE_X, 1, 1)]
+void CSMain(uint3 id: SV_DispatchThreadID)
+{
+    uint tid = id.x;
+    if (tid < _InstanceTypeCount)
+    {
+        uint nowId = tid * NUMBER_OF_LOD;
+        uint needAdd = _VisibleCountBuffer[nowId];
+
+        for (uint i = 1; i < NUMBER_OF_LOD; i++)
+        {
+            if (needAdd > 0)
+            {
+                InterlockedAdd(_ArgsBuffer[(nowId + i) * 5 + 4], needAdd);
+            }
+            needAdd += _VisibleCountBuffer[nowId + i];
+        }
+    }
+}

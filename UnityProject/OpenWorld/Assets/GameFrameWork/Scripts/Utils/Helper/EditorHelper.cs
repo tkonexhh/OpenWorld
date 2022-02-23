@@ -52,4 +52,11 @@ public class EditorHelper
         Gizmos.DrawWireCube(center, size);
 #endif
     }
+
+    public static void DisplayDialog(string title, string message, string ok, string cancel)
+    {
+#if UNITY_EDITOR
+        EditorUtility.DisplayDialog(title, message, ok, cancel);
+#endif
+    }
 }
