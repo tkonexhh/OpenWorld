@@ -23,8 +23,21 @@ namespace XHH
 
         public enum Page
         {
+            Terrain,
             Plant,
             Setting,
+        }
+
+        public class MenuContants
+        {
+            public static string terrain = "Terrain";
+            public static string plantName = "Plant";
+            public static string setting = "Setting";
+
+            public static string root = "Assets/EditorRes/Config/World/";
+            public static string terrainPath = root + "WorldTerrainBakeSO.asset";
+            public static string plantPath = root + "WorldPlantBakeConfog.asset";
+            public static string settingPath = root + "WolldSettingConfig.asset";
         }
 
 
@@ -37,8 +50,9 @@ namespace XHH
         private int m_EnumIndex;
         private bool m_TreeRebuild;
 
+        private WorldTerrainBakeSO m_Terrain;
         private WorldPlantBakeConfig m_PlantBakeConfig;
-        private WolldSettingConfig m_Setting;
+        private WorldSettingConfig m_Setting;
 
         private void OnPageChange()
         {
@@ -48,18 +62,19 @@ namespace XHH
 
         protected override void Initialize()
         {
+            IOHelper.CreatePath(MenuContants.root);
 
-            IOHelper.CreateAssetPath(PathHelper.FileNameToPath(MenuContants.plantPath));
-            IOHelper.CreateAssetPath(PathHelper.FileNameToPath(MenuContants.settingPath));
+            m_Terrain = InitSO(MenuContants.terrainPath, typeof(WorldTerrainBakeSO)) as WorldTerrainBakeSO;
+            m_PlantBakeConfig = InitSO(MenuContants.plantPath, typeof(WorldPlantBakeConfig)) as WorldPlantBakeConfig;
+            m_Setting = InitSO(MenuContants.settingPath, typeof(WorldSettingConfig)) as WorldSettingConfig;
 
-            if (EditorHelper.LoadAssetAtPath(MenuContants.plantPath, typeof(WorldPlantBakeConfig)) == null)
-                EditorHelper.CreateAsset(SerializedScriptableObject.CreateInstance<WorldPlantBakeConfig>(), MenuContants.plantPath);
-            m_PlantBakeConfig = EditorHelper.LoadAssetAtPath(MenuContants.plantPath, typeof(WorldPlantBakeConfig)) as WorldPlantBakeConfig;
+        }
 
-            if (EditorHelper.LoadAssetAtPath(MenuContants.settingPath, typeof(WolldSettingConfig)) == null)
-                EditorHelper.CreateAsset(SerializedScriptableObject.CreateInstance<WolldSettingConfig>(), MenuContants.settingPath);
-            m_Setting = EditorHelper.LoadAssetAtPath(MenuContants.settingPath, typeof(WolldSettingConfig)) as WolldSettingConfig;
-
+        private SerializedScriptableObject InitSO(string path, System.Type type)
+        {
+            if (EditorHelper.LoadAssetAtPath(path, type) == null)
+                EditorHelper.CreateAsset(SerializedScriptableObject.CreateInstance(type), path);
+            return EditorHelper.LoadAssetAtPath(path, type) as SerializedScriptableObject;
         }
 
 
@@ -78,6 +93,7 @@ namespace XHH
 
             switch (m_Page)
             {
+                case Page.Terrain:
                 case Page.Plant:
                 case Page.Setting:
                     DrawEditor(m_EnumIndex);
@@ -104,6 +120,9 @@ namespace XHH
             var tree = new OdinMenuTree(true);
             switch (m_Page)
             {
+                case Page.Terrain:
+                    tree.Add(MenuContants.terrain, m_Terrain);
+                    break;
                 case Page.Plant:
                     tree.Add(MenuContants.plantName, m_PlantBakeConfig);
                     break;
@@ -119,6 +138,7 @@ namespace XHH
         {
             switch (m_Page)
             {
+                case Page.Terrain:
                 case Page.Plant:
                 case Page.Setting:
                     break;
@@ -129,6 +149,7 @@ namespace XHH
         protected override IEnumerable<object> GetTargets()
         {
             List<object> targets = new List<object>();
+            targets.Add(m_Terrain);
             targets.Add(m_PlantBakeConfig);
             targets.Add(m_Setting);
             // targets.Add(drawModule);
@@ -142,6 +163,7 @@ namespace XHH
         {
             switch (m_Page)
             {
+                case Page.Terrain:
                 case Page.Plant:
                 case Page.Setting:
                     break;
@@ -152,14 +174,7 @@ namespace XHH
         }
 
 
-        public class MenuContants
-        {
-            public static string plantName = "Plant";
-            public static string plantPath = "Assets/EditorRes/Config/World/WorldPlantBakeConfog.asset";
 
-            public static string setting = "Setting";
-            public static string settingPath = "Assets/EditorRes/Config/World/WolldSettingConfig.asset";
-        }
     }
 
 }

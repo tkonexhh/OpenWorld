@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f913156a08fccca47bdd5e30b9593dde, type: 3}
-  m_Name: PlantBakeConfog
+  m_Script: {fileID: 11500000, guid: ab5b7a0b2f2a82746a1567e050e14e8a, type: 3}
+  m_Name: WorldTerrainChunkSO
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -21,4 +21,4 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  root: {fileID: 0}
+  terrainData: {fileID: 15600000, guid: c3d818e1cd749ee4ebc1f4f99d7d271f, type: 2}

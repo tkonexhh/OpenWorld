@@ -6,7 +6,66 @@ using System;
 
 public class StreamHelper
 {
-    //BinaryWriter
+    static byte[] s_Buff = new byte[256];
+
+    public static void WriteByte(Stream stream, byte v)
+    {
+        byte[] sBuff = { v };
+        stream.Write(sBuff, 0, sBuff.Length);
+    }
+
+    public static byte ReadByte(Stream stream)
+    {
+        stream.Read(s_Buff, 0, sizeof(byte));
+        return s_Buff[0];
+    }
+
+    public static void WriteInt(Stream stream, int v)
+    {
+        byte[] sBuff = BitConverter.GetBytes(v);
+        stream.Write(sBuff, 0, sBuff.Length);
+    }
+
+    // public static void WriteIntTo(Stream stream, int v, int offset)
+    // {
+    //     byte[] sBuff = BitConverter.GetBytes(v);
+    //     stream.Write(sBuff, offset, sBuff.Length);
+    // }
+
+    public static int ReadInt(Stream stream)
+    {
+        int v = 0;
+        // byte[] sBuff = new byte[sizeof(int)];
+        stream.Read(s_Buff, 0, sizeof(int));
+        v = BitConverter.ToInt32(s_Buff, 0);
+        return v;
+    }
+    public static void WriteUShort(Stream stream, ushort v)
+    {
+        byte[] sBuff = BitConverter.GetBytes(v);
+        stream.Write(sBuff, 0, sBuff.Length);
+    }
+    public static ushort ReadUShort(Stream stream)
+    {
+        ushort v = 0;
+        // byte[] sBuff = new byte[sizeof(ushort)];
+        stream.Read(s_Buff, 0, sizeof(ushort));
+        v = BitConverter.ToUInt16(s_Buff, 0);
+        return v;
+    }
+    public static void WriteFloat(Stream stream, float v)
+    {
+        byte[] sBuff = BitConverter.GetBytes(v);
+        stream.Write(sBuff, 0, sBuff.Length);
+    }
+    public static float ReadFloat(Stream stream)
+    {
+        float v = 0;
+        // byte[] sBuff = new byte[sizeof(float)];
+        stream.Read(s_Buff, 0, sizeof(float));
+        v = BitConverter.ToSingle(s_Buff, 0);
+        return v;
+    }
     public static void WriteVector3(Stream stream, Vector3 v)
     {
         byte[] sBuff = BitConverter.GetBytes(v.x);
@@ -16,19 +75,18 @@ public class StreamHelper
         sBuff = BitConverter.GetBytes(v.z);
         stream.Write(sBuff, 0, sBuff.Length);
     }
-
-    public static Vector3 ReadVector3(Stream stream, ref byte[] sBuff)
+    public static Vector3 ReadVector3(Stream stream)
     {
         Vector3 v = Vector3.zero;
-        stream.Read(sBuff, 0, sizeof(float));
-        v.x = BitConverter.ToSingle(sBuff, 0);
-        stream.Read(sBuff, 0, sizeof(float));
-        v.y = BitConverter.ToSingle(sBuff, 0);
-        stream.Read(sBuff, 0, sizeof(float));
-        v.z = BitConverter.ToSingle(sBuff, 0);
+        // byte[] sBuff = new byte[sizeof(float)];
+        stream.Read(s_Buff, 0, sizeof(float));
+        v.x = BitConverter.ToSingle(s_Buff, 0);
+        stream.Read(s_Buff, 0, sizeof(float));
+        v.y = BitConverter.ToSingle(s_Buff, 0);
+        stream.Read(s_Buff, 0, sizeof(float));
+        v.z = BitConverter.ToSingle(s_Buff, 0);
         return v;
     }
-
 
     public static void WriteVector2(Stream stream, Vector2 v)
     {
@@ -38,77 +96,15 @@ public class StreamHelper
         stream.Write(sBuff, 0, sBuff.Length);
     }
 
-    public static Vector2 ReadVector2(Stream stream, ref byte[] sBuff)
+    public static Vector2 ReadVector2(Stream stream)
     {
         Vector2 v = Vector2.zero;
-        stream.Read(sBuff, 0, sizeof(float));
-        v.x = BitConverter.ToSingle(sBuff, 0);
-        stream.Read(sBuff, 0, sizeof(float));
-        v.y = BitConverter.ToSingle(sBuff, 0);
+        // byte[] sBuff = new byte[sizeof(float)];
+        stream.Read(s_Buff, 0, sizeof(float));
+        v.x = BitConverter.ToSingle(s_Buff, 0);
+        stream.Read(s_Buff, 0, sizeof(float));
+        v.y = BitConverter.ToSingle(s_Buff, 0);
         return v;
     }
 
-    public static void WriteFloat(Stream stream, float value)
-    {
-        byte[] sBuff = BitConverter.GetBytes(value);
-        stream.Write(sBuff, 0, sizeof(float));
-    }
-
-    public static float ReadFloat(Stream stream, ref byte[] sBuff)
-    {
-        float value = 0;
-        stream.Read(sBuff, 0, sizeof(float));
-        value = BitConverter.ToSingle(sBuff, 0);
-        return value;
-    }
-
-    /// <summary>
-    /// 用byte代替int来存储数据
-    /// 范围0-255
-    /// </summary>
-    /// <param name="stream"></param>
-    /// <param name="value"></param>
-    public static void WriteByte(Stream stream, byte value)
-    {
-        byte[] sBuff = BitConverter.GetBytes(value);
-        stream.Write(sBuff, 0, sizeof(byte));
-    }
-
-    public static int ReadByte(Stream stream, ref byte[] sBuff)
-    {
-        int value = 0;
-        stream.Read(sBuff, 0, sizeof(byte));
-        value = (byte)BitConverter.ToUInt16(sBuff, 0);
-        return value;
-    }
-
-
-    public static void WriteShort(Stream stream, short value)
-    {
-        byte[] sBuff = BitConverter.GetBytes(value);
-        stream.Write(sBuff, 0, sizeof(short));
-    }
-
-    public static int ReadShort(Stream stream, ref byte[] sBuff)
-    {
-        short value = 0;
-        stream.Read(sBuff, 0, sizeof(short));
-        value = BitConverter.ToInt16(sBuff, 0);
-        return value;
-    }
-
-
-    public static void WriteInt(Stream stream, int value)
-    {
-        byte[] sBuff = BitConverter.GetBytes(value);
-        stream.Write(sBuff, 0, sizeof(int));
-    }
-
-    public static int ReadInt(Stream stream, ref byte[] sBuff)
-    {
-        int value = 0;
-        stream.Read(sBuff, 0, sizeof(int));
-        value = (int)BitConverter.ToUInt32(sBuff, 0);
-        return value;
-    }
 }

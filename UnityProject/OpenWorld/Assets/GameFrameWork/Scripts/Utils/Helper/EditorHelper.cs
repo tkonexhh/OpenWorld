@@ -42,6 +42,7 @@ public class EditorHelper
     {
 #if UNITY_EDITOR
         EditorUtility.SetDirty(target);
+        AssetDatabase.Refresh();
 #endif
     }
 

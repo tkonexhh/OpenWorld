@@ -29,10 +29,10 @@ public class IOHelper
         }
     }
 
-    public static void DeleteAssetPath(string assetPath)
-    {
-        DeletePath(PathHelper.AssetsPath2ABSPath(assetPath));
-    }
+    // public static void DeleteAssetPath(string assetPath)
+    // {
+    //     DeletePath(PathHelper.AssetsPath2ABSPath(assetPath));
+    // }
 
     public static void CreatePath(string path)
     {
@@ -40,9 +40,9 @@ public class IOHelper
             Directory.CreateDirectory(path);
     }
 
-    public static void CreateAssetPath(string assetPath)
-    {
-        CreatePath(PathHelper.AssetsPath2ABSPath(assetPath));
-    }
+    // public static void CreateAssetPath(string assetPath)
+    // {
+    //     CreatePath(PathHelper.AssetsPath2ABSPath(assetPath));
+    // }
 
 }
