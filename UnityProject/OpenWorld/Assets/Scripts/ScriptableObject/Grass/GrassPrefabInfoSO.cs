@@ -87,6 +87,8 @@ namespace XHH
     {
         [LabelText("资源路径")] public string resPath;
         [LabelText("原始包围盒")] public Bounds bounds;
-        [LabelText("绘制信息")] public IndirectDrawSO indirectDrawSO;
+        public Mesh mesh;
+        public Material instanceMaterial;
+        public Material indirectMaterial;
     }
 }

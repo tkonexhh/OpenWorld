@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement focusable="true" name="bg" style="width: 100px; height: 100px; background-color: rgb(28, 255, 0);">
+        <ui:Label display-tooltip-when-elided="true" name="Label" style="flex-shrink: 1; flex-grow: 1; background-image: url(&apos;/Assets/prefab-painter-master/Textures/GrassColor.png&apos;); margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />
+        <ui:Button display-tooltip-when-elided="true" name="BgButton" style="overflow: hidden; opacity: 0.15; display: flex; position: absolute; height: 100px; width: 100px; flex-shrink: 1; flex-grow: 1; flex-basis: auto; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="NameLabel" style="-unity-background-image-tint-color: rgb(255, 255, 255); color: rgb(225, 0, 255); padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; font-size: 8px; -unity-text-align: middle-center; white-space: normal;" />
+    </ui:VisualElement>
+</ui:UXML>

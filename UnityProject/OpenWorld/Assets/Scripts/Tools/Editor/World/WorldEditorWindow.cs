@@ -14,7 +14,7 @@ namespace XHH
     {
         public const string menuName = "大世界烘焙器(WorldEditor)";
 
-        [MenuItem(ToolsPathDefine.worldPath + menuName, priority = 1)]
+        [MenuItem(ToolsPathDefine.WorldPath + menuName, priority = 1)]
         private static void Open()
         {
             var window = GetWindow<WorldEditorWindow>();

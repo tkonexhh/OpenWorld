@@ -1,42 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
-namespace XHH
-{
-    public class GPUDrivenModule : MonoBehaviour
-    {
-        private GrassComponent m_GrassComponent;
-        public bool draw;
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using UnityEngine.Rendering;
+// namespace XHH
+// {
+//     public class GPUDrivenModule : MonoBehaviour
+//     {
+//         private GrassComponent m_GrassComponent;
+//         public bool draw;
 
-        void Start()
-        {
-            m_GrassComponent = new GrassComponent();
-            m_GrassComponent.Init();
-        }
-
-
-        void Update()
-        {
-            m_GrassComponent.Update();
-        }
-
-        private void LateUpdate()
-        {
-            if (draw)
-                m_GrassComponent.LateUpdate();
-        }
+//         void Start()
+//         {
+//             m_GrassComponent = new GrassComponent();
+//             m_GrassComponent.Init();
+//         }
 
 
-        private void OnDrawGizmos()
-        {
-            m_GrassComponent?.DrawGizmos();
-        }
+//         void Update()
+//         {
+//             m_GrassComponent.Update();
+//         }
+
+//         private void LateUpdate()
+//         {
+//             if (draw)
+//                 m_GrassComponent.LateUpdate();
+//         }
 
 
-        private void OnDestroy()
-        {
-            m_GrassComponent.Destroy();
-        }
-    }
-}
+//         private void OnDrawGizmos()
+//         {
+//             m_GrassComponent?.DrawGizmos();
+//         }
+
+
+//         private void OnDestroy()
+//         {
+//             m_GrassComponent.Destroy();
+//         }
+//     }
+// }

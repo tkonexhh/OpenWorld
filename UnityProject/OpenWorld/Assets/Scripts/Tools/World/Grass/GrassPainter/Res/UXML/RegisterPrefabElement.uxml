@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement style="flex-direction: row;">
+        <ui:VisualElement style="flex-grow: 1;">
+            <uie:ObjectField label="Mesh" name="MeshField" style="flex-grow: 1;" />
+            <uie:ObjectField label="Material" name="MaterialField" style="flex-grow: 1;" />
+            <uie:ObjectField label="Indirect Material" name="IndirectMaterialField" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:Button text="+" display-tooltip-when-elided="true" name="AddButton" />
+    </ui:VisualElement>
+    <ui:VisualElement>
+        <ui:Label text="Mesh 和 Material 都不同的物体才能注册在这里&#10;不要重复添加！！！！" display-tooltip-when-elided="true" style="color: rgb(255, 0, 0); margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;" />
+    </ui:VisualElement>
+</ui:UXML>

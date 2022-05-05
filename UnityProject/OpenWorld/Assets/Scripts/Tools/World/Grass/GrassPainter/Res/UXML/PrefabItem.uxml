@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="VisualElement" style="width: auto; height: auto; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; padding-left: 1px; padding-right: 1px; padding-top: 1px; padding-bottom: 1px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; flex-direction: row;">
+        <ui:VisualElement name="Left" style="flex-grow: 0; width: 80px;">
+            <ui:Label display-tooltip-when-elided="true" name="Label" style="flex-shrink: 1; flex-grow: 1; background-image: url(&apos;/Assets/prefab-painter-master/Textures/GrassColor.png&apos;); margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; width: auto; height: 80px;" />
+            <ui:Button text="-" display-tooltip-when-elided="true" name="RemoveButton" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Right" style="flex-grow: 1; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 3px; padding-right: 3px; padding-top: 3px; padding-bottom: 3px;">
+            <ui:Label text="Label" display-tooltip-when-elided="true" name="NameLabel" style="padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;" />
+            <uie:ObjectField label="Mesh" name="MeshField" style="margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;" />
+            <uie:ObjectField label="Material" name="MaterialField" style="margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;" />
+            <uie:ObjectField label="Indirect Material" name="IndirectMaterialField" style="margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

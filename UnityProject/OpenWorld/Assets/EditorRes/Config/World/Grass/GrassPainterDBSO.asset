@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47f01380d9e35fd4e81405539834fd9a, type: 3}
+  m_Name: GrassPainterDBSO
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  prefabs:
+  - mesh: {fileID: -4903651410457918733, guid: ddcd9c3c17ac4f94ea4f0d4a837b3dc7, type: 3}
+    material: {fileID: 5010050210178893215, guid: 1cf32b62a96f877449fa73006460f81e, type: 3}
+    indirectMaterial: {fileID: 2100000, guid: e6fb7eca82ae15848ac7abe815d2dc0c, type: 2}

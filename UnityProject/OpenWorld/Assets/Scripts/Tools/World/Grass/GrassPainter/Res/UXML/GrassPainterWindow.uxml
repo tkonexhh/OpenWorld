@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Root" style="flex-grow: 1; flex-direction: column;">
+        <ui:VisualElement style="flex-grow: 0; flex-direction: row;">
+            <ui:Button text="自动生成" display-tooltip-when-elided="true" name="AutoBtn" style="flex-grow: 1; flex-shrink: 0.25;" />
+            <ui:Button text="手工摆放" display-tooltip-when-elided="true" name="PaintBtn" style="flex-grow: 1; flex-shrink: 0.25;" />
+            <ui:Button text="预制件注册" display-tooltip-when-elided="true" name="PrefabBtn" style="flex-grow: 1; flex-shrink: 0.25;" />
+            <ui:Button text=" 设置" display-tooltip-when-elided="true" name="SettingBtn" style="flex-shrink: 0.25; flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="VisualElement2" style="flex-direction: row;">
+            <ui:Button text="Save" display-tooltip-when-elided="true" name="SaveButton" style="flex-grow: 1; flex-shrink: 1;" />
+            <ui:Button text="Load" display-tooltip-when-elided="true" name="LoadButton" style="flex-grow: 1; flex-shrink: 1;" />
+            <ui:Button text="Clear" display-tooltip-when-elided="true" name="ClearButton" style="flex-grow: 1; flex-shrink: 1;" />
+            <ui:Button text="Load Bake" display-tooltip-when-elided="true" name="LoadBakeButton" style="flex-grow: 1; flex-shrink: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="MainContainer" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

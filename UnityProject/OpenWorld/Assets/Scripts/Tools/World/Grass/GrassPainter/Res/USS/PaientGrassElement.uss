@@ -1,0 +1,19 @@
+Slider > Label {
+    min-width: auto;
+    width: 100px;
+}
+
+Layer > Label {
+    width: 100px;
+    min-width: 0;
+}
+
+LayerMaskField > Label {
+    width: 100px;
+    min-width: 0;
+}
+
+SliderInt > Label {
+    min-width: auto;
+    width: 100px;
+}
