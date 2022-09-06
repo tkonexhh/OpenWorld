@@ -27,9 +27,6 @@ Shader "HMK/Lit"
         [Enum(UnityEngine.Rendering.CullMode)]  _Cull ("__Cull", float) = 2.0
 
         _ReceiveShadows ("Receive Shadows", Float) = 1.0
-        
-        //GI state
-        [HideInInspector] _GIMap ("__giMap", Float) = 0.0
     }
     SubShader
     {
@@ -51,7 +48,7 @@ Shader "HMK/Lit"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature _PBRMAP_ON
-            #pragma multi_complie  _GIMAP_ON
+
             // -------------------------------------
             // Universal Pipeline keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS

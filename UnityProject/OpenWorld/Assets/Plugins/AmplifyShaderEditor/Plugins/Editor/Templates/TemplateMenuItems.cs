@@ -21,6 +21,11 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "2992e84f91cbeb14eab234972e07ea9d" );
 		}
+		[MenuItem( "Assets/Create/Amplify Shader/HD/Lit", false, 85 )]
+		public static void ApplyTemplateHDLit()
+		{
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "53b46d85872c5b24c8f4f0a1c3fe4c87" );
+		}
 		[MenuItem( "Assets/Create/Amplify Shader/Legacy/Post Process", false, 85 )]
 		public static void ApplyTemplateLegacyPostProcess()
 		{
@@ -56,30 +61,25 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "e1de45c0d41f68c41b2cc20c8b9c05ef" );
 		}
-		[MenuItem( "Assets/Create/Amplify Shader/ASETemplateShaders/HMKLit", false, 85 )]
-		public static void ApplyTemplateASETemplateShadersHMKLit()
+		[MenuItem( "Assets/Create/Amplify Shader/HD/Decal", false, 85 )]
+		public static void ApplyTemplateHDDecal()
 		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "f7d54362c16073e4e89017941e7fc177" );
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "d345501910c196f4a81c9eff8a0a5ad7" );
 		}
-		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Bake/Legacy", false, 85 )]
-		public static void ApplyTemplateImpostorsBakeLegacy()
+		[MenuItem( "Assets/Create/Amplify Shader/HD/Fabric", false, 85 )]
+		public static void ApplyTemplateHDFabric()
 		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "f53051a8190f7044fa936bd7fbe116c1" );
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "41e04be03f2c20941bc749271be1c937" );
 		}
-		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Bake/Universal", false, 85 )]
-		public static void ApplyTemplateImpostorsBakeUniversal()
+		[MenuItem( "Assets/Create/Amplify Shader/HD/Hair", false, 85 )]
+		public static void ApplyTemplateHDHair()
 		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "6ee191abcace33c46a5dd52068b074e0" );
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "e4fe21624ace6de4b9fbaabdda0c51de" );
 		}
-		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Runtime/Standard Legacy", false, 85 )]
-		public static void ApplyTemplateImpostorsRuntimeStandardLegacy()
+		[MenuItem( "Assets/Create/Amplify Shader/HD/Unlit", false, 85 )]
+		public static void ApplyTemplateHDUnlit()
 		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "30a8e337ed84177439ca24b6a5c97cd1" );
-		}
-		[MenuItem( "Assets/Create/Amplify Shader/Impostors/Runtime/Universal PBR", false, 85 )]
-		public static void ApplyTemplateImpostorsRuntimeUniversalPBR()
-		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "ad3e6cbf440fc8843823405e7e862e1a" );
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "7f5cb9c3ea6481f469fdd856555439ef" );
 		}
 		[MenuItem( "Assets/Create/Amplify Shader/Legacy/Lit", false, 85 )]
 		public static void ApplyTemplateLegacyLit()

@@ -35,20 +35,7 @@ namespace XHH
         [Button]
         public void Slice()
         {
-            int x = 0, y = 0;
-            if (terrainChunks[x, y] == null)
-                return;
 
-            var terrainData = terrainChunks[x, y].terrainData;
-            int curSliceCount = Mathf.NextPowerOfTwo(sliceCount);
-            int quadTreeDepth = Mathf.FloorToInt(Mathf.Log(curSliceCount, 2));
-
-            // Debug.LogError(curSliceCount + "--" + quadTreeDepth);
-
-            float max_sub_grids = sliceCount * (1 << 4);
-
-            float min_edge_len = terrainChunkSize.x / max_sub_grids;
-            Debug.LogError(min_edge_len);
             // Vector3 center = terrainChunk
             // var bounds = new Bounds(terrainTarget.transform.TransformPoint(terrainData.bounds.center), terrainData.bounds.size);
         }

@@ -19,8 +19,6 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
     private MaterialProperty roughnessScaleProp { get; set; }
     private MaterialProperty occlusionScaleProp { get; set; }
 
-
-    private MaterialProperty m_MPUseGIMap;
     //------
 
     private bool m_BasicFoldout = true;
@@ -42,30 +40,10 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
         metallicScaleProp = FindProperty("_MetallicScale", props);
         roughnessScaleProp = FindProperty("_RoughnessScale", props);
         occlusionScaleProp = FindProperty("_OcclusionScale", props);
-
-        m_MPUseGIMap = FindProperty("_GIMap", props);
     }
 
     protected override void OnOptionGUI()
     {
-        EditorGUI.BeginChangeCheck();
-        EditorGUI.showMixedValue = m_MPUseGIMap.hasMixedValue;
-        var enabled = EditorGUILayout.Toggle(TStyles.useGIMap, m_MPUseGIMap.floatValue == 1);
-        if (EditorGUI.EndChangeCheck())
-        {
-            m_MPUseGIMap.floatValue = enabled ? 1 : 0;
-            if (m_MPUseGIMap.floatValue == 1)
-            {
-                m_Material.EnableKeyword("_GIMAP_ON");
-            }
-            else
-            {
-                m_Material.DisableKeyword("_GIMAP_ON");
-            }
-        }
-
-        EditorGUI.showMixedValue = false;
-
 
     }
 
@@ -113,7 +91,6 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
     static class TStyles
     {
         public static readonly GUIContent pbrMap = new GUIContent("PBR Map", "R:金属度 G:粗糙度 B:AO");
-        public static readonly GUIContent useGIMap = new GUIContent("Use GIMap", "是否从运行时选择GI");
     }
 
     static class TShaderKeywords
