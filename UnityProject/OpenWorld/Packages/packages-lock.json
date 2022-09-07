@@ -24,6 +24,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.assetgraph": {
+      "version": "file:AssetGraph",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.7.3",
       "depth": 1,

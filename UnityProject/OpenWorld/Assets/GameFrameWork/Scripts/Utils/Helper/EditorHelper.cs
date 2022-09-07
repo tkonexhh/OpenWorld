@@ -60,4 +60,11 @@ public class EditorHelper
         EditorUtility.DisplayDialog(title, message, ok, cancel);
 #endif
     }
+
+    public static void DisplayDialog(string message)
+    {
+#if UNITY_EDITOR
+        EditorUtility.DisplayDialog("Tips", message, "ok");
+#endif
+    }
 }

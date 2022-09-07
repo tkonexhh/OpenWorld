@@ -1,5 +1,6 @@
 using System.IO;
 using UnityEngine;
+using UnityEditor;
 
 public class ScriptCreatorEditor : UnityEditor.AssetModificationProcessor
 {
@@ -35,6 +36,9 @@ public class ScriptCreatorEditor : UnityEditor.AssetModificationProcessor
 
     private static void ParseAndChangeScript(string path)
     {
+        EditorUtility.ClearProgressBar();
+        if (!File.Exists(Application.dataPath + path))
+            return;
         string str = File.ReadAllText(Application.dataPath + path);
         if (string.IsNullOrEmpty(str))
         {

@@ -44,3 +44,5 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+*.svn*
+

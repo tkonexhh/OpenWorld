@@ -1,0 +1,1592 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4bc21567f434b598a3c96ba4946372, type: 3}
+  m_Name: AssetReferenceDB
+  m_EditorClassIdentifier: 
+  m_assets:
+  - m_assetDatabaseId: 408083dc9c2f74c62aabd45e865483d4
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Exporter.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 281140814d0e14d72b24887894bfe14e
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/ModifyAssetDirectlyTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 81b3d18ee905544b988d58249996f11f
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/AssetGenerators/DuplicateRefererenceAsset.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0055cf136f4524b349b00090b98b9f95
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/GenerateAssetTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4235bf1f6608b4e5dae5965f02fc21ee
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/PerformGraph.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 71f0b2cf522d4463b8785e74ba1d86c4
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Addressables/AddressableBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f4d13ce31bb134be28f5bbb25442e7aa
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Runtime/AssetBundleBuildMapTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bcb0c45f124e843669cb245a2c43f67d
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Filters/IFilter.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d9b376e058dcb4ba1a06fc3718529127
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Filters/FilterUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3d9db06067b4d4af5a0622f149725e5a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/AssetGenerators/AssetGenerateInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a41d2c466f24e42bc8aea8a0a0a45eb4
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Exception/AssetReferenceException.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: da4f50d25854f40a284136aeb3f72c39
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/AssetGenerator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 55796f9e6ac6b4b938413481d8242df5
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/AssetReference.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7cc57ee31ef3a44389458141063b7b71
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/PlayerBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2396a89559dfd474e9f16d864bc7481a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/PrefabBuilders/PrefabBuilderUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6d887369ddee445fcb949ccffacd6c26
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/ErrorTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6d6cf7100d6f3475b8905f2f6383bbca
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V2/NodeDataImporter.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9b74ea960fdf3432c9764eeb4f29c397
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/RecordUndoScope.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 523eb70c378aa40b68c2874d02d485ed
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/MirrorDirectory.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7b36421f668d647d3a0f7a8be7f5e5aa
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/SerializableMultiTargetString.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ee4bc21567f434b598a3c96ba4946372
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/AssetReferenceDatabase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 068f1398579174bac9fc1f39aeae52a8
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/PrefabBuilders/PrefabCreateDescription.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2b4b92c4019054aee96cde27365b8394
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/GroupView/GroupAssetListTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c72e9896ca732448296aaec689e29fcf
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Modifiers/IModifier.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0d21ca7a30faf461381a8cc734ab6a8a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V1/ConnectionPointData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 108c2ba5daba841b79b8cc5db3dba1fb
+    m_importFrom: Packages/com.unity.assetgraph/Runtime/AssetBundleBuildMap.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b9957afe4f6df4fba8f8e329a47b30cb
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/BuildTargetUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e6c1855b74e6c4d2297a7cbe8be9db2b
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/LastImportedItemsTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ecebe0a6795bf4a00a89a1b2db87734d
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/AssetGenerators/CreateMaterialFromTexture.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 98f6aad0f00cc44b6947117629fa55bd
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/MirrorDirectoryTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f9d22c34b09544790a895928c8472805
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/UserPreference.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5e95c6380691441ec902f183f790521e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/SerializedComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cf06ec3dfe8d94a49848e19761db76a7
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/GroupBySizeTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f28a97eb9f6b84cc2b6879387333e1c7
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/ModelImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 82f81cb4192dc4e1d9714dd03ea84ad1
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/JSONGraphUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 459682b384b2b49bf9ab32341ad85637
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Modifiers/AttachComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: eb70905fec4ff495e9ab036174bef78d
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/IPostprocess.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: be2d0a6950d464b7e9569db65ea823aa
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/ExtractSharedAssetsTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 65072170869d44a69a6dcc814a0cb197
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/TextureImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 207962df4115f4a73bc381985e110fd4
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ConnectionEvent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f2e3edb2e315041c8981dea915573b24
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/AssetLog/AssetProcessEventLogWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4e9e9880c451546738ed613faeda6c89
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Modifiers/AddGameObject.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d1b3dc357d1344cc5801bb6d5cb46625
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetReferenceStreamManager.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 672797698ae4a441abfef0263c6d3e6c
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetGraphController.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9724bc0abad514944ac70ce952ac4c64
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/AssetGraphEditorBaseTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a58aa8ea0dc1b47c3a51105ef2252237
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/AudioImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e7593765c5f3448889247c3e3f0e8ff5
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Loader.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6a1337df6f2e1467499697f89b4b7393
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Filters/FilterByNameAndType.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7894a5761247a462097d180e2cf09a54
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/GroupingBySize.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1e80978168993489ea03c2ffbccaf928
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/LoaderBySearch.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 785a88dedbaea4eb5b50019325ee54b1
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V1/MiniJSONForAssetGraph.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4c13fae742fa24ea9beb76b5cdc2bf5b
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/GroupView/GroupViewController.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6838d1c6be001444ab0dfe90e45b087e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/BatchBuildWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fe2e19f73811c442ca0c598941b71e27
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/AssertUnwantedAssetsInBundleTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: eec4882d68a9346b3b5f8ecf1e38a534
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V2/ConfigGraph.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 220bd545cb0f64493b48cad989fd4fae
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Exception/NodeException.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6061cd2dc44bc4639976b2ca7abe755d
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Filter.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f7957320f633f4c71bc0d6f744410738
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V1/ConnectionData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8ac5a4eb1d8da482694ba467cd1fc34f
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/ImportSetting.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9bc7d9a184fb741d08099d7530a0750e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/ExportAsUnityPackage.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8250daa78002140a48f305854f8e9972
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/FileOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 02e5822d3f4d04f41b5e9ffc9c85e280
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/SystemDataUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e68d307cab9a04f81ada3f4ad7d740f6
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/BuildPlayerTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 46e082cff6afc4be8815e6b86e62dc45
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Grouping.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5e7d7b14b790b4a679c521d3123744c2
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/GroupByFileTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 90c319597e27f4efc898a09d71c4aafb
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/GraphCollectionManageTab.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 90f369f416671475d86e05b86c9d8139
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/PrefabBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4828dd530e30e4fa6ad842215386a139
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/SaveScope.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ae32c06838424447c9cfb208bc0b7aba
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/PrefabBuilders/IPrefabBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fdc9a4fb30f6f48c3b5f1f38a2ffb2b5
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/SerializableMultiTargetInstance.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 04fc02c04cf134e3f95f79cc893edde2
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ProjectSettings/AssetGraphSettingsProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 04e83e1d064b147fc97851b317d0a292
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/CUIUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dafe4c82ebed44b81bb48ef142b5386a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V2/Settings.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: afb0cc9ce87ec4aef95c9b4c2261a3b2
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Addressables/AddressableAssetGroup.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cc9d051a7aa1d4dbbbe99c67526af874
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/AssetGenerators/IAssetGenerator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 413464e71470e48cea3073a1ea418f7e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/AssetGraphEditorWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bb6c03f5afc23481cb01e7c813d06e48
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/GraphBackground.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 09bd7246e12c44caeb1c3e4dc76fbd68
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/NodeBuildContext.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 76fc1281e9e0349bfa3740ff8ffce865
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Modifiers/SetReference.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 04cb0660197e64f278791d91a18431a0
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/SerializableGroups.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ad9b7be1ce5884bc292a5ba51184b915
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/BundleConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 24a97ba653e6e4d7a99423d3c1bdec8f
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/ExportToDirectoryTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b59656e937e034d1fa0af1f755d7ddf1
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/PrefabBuilders/ReplaceWithIncomingGameObject.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: be72e827636b84babac7fe6b7fc282f6
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Filters/FilterTypeUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 327cf429aa28d4cd29d4b1ac70fc99e0
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/ExecuteResultTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ecbc77d52b04a4ea0959b200eced849b
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Addressables/AddressableAssetAddress.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6f8d4698d81ba4878b54b15cff6f852a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ProjectSettings/ExecutionOrderSettingsTab.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d98578e11c3b84590a32d4b988609228
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/PrefabBuilders/ReplaceGameObjectByName.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d9a4cee567dcf46fc919420c7d668c2e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/AssetLog/AssetProcessEventListTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fbc295f9fd7874aef834ba4d3abd555b
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/NodeGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: be312e4110688470990b1596df3dfa61
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Error.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 28ea601a1b6074391b80b16eaef50a85
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/LoadBySearchFilterTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 11599b042eeda438193915d6d4b2e25e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V1/SaveData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a2445fd6934ad4e88a4dbd7c02db6940
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Imported.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 736b0a4506b3e4d9cafbaf59961d22a9
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V1/NodeData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5d0b03a948ad545f691a9d4213bfe810
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/AssetLog/AssetProcessEventLogViewController.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1d8730a30170c42c1924ef148010adb5
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/ComponentMenuUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2beb27d59eec84f3eaa90e2394236032
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/GroupView/GroupListTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4ff65a093e87f482b91a6ccf343a1f76
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V2/ConnectionData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a073337e5a6474ad2bc1d344d9ce8211
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ConnectionGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7c03100996df84ff1a8e32ffca7213a4
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/GraphCollectionExecuteTab.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 92eb5dcde0e0343c2a063849d7a86b93
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ConfigGraphEditor.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 186be03abcfd84b539b9b8cc418ae65d
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Modifiers/SetSpritesToAnimation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f006d9a9c7507460d9ab6f36cbdb7794
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetGraphPostprocessor.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a9b2fb219b0a847f6a705de8223b87df
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/FileUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4188ec7e6ce3549bca02d5a372758f36
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/IAssetImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0a8d5f6b5b77645a8aee1e0f93f67568
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/GUIHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 07689e8f3a2194ffeb25946bde9b4f46
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/ObjectReferenceBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9bdee3e78787c4f539be1d0ff103d17f
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Addressables/AddressableAssetLabel.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b4b8af3d4821b45eb967f3864437109a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/ImportUnityPackage.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a68de7e1271fb487c85fbb75941f9b17
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ConnectionGUIEditor.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fbf1bb8889d9649978dd5d2efe02cd48
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/TrueTypeFontImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d1be99fd759d413e8e2b03aa29094d36
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/VersionCompatibilityUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0e179c9e7e4094b6cacb7dec874f7144
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/NodeEvent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a50575a181d034e50b6cbad0c798a66e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/PrefabBuilders/PrefabBuildInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 11cd75004d5b84ef08d52cd8912277d3
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/BatchBuildConfig.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 68a8222d3f84e43fc99a00702bd91e8f
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/SerializedInstance.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1970fb55c77154021a4cd5e4a72d89eb
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Label.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 346bda70af48240ecbace0e785adc937
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ConnectionGUIUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6c6b3bac846ff402eadc1eb18359ddf3
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/AssetGenerators/TextureScaler.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4824831e124564254aea49f66a81cbad
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/AssetReferenceUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2ab1c7411bf1a49c28024f09d219bf1d
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/OverwriteImportSettingTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 65c22f76b77044875a46f653f516c019
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/NodeGUIUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 14a32d4a270f44283bace2cf0ca5bb51
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/RegressionTestNode.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1953985c2034b454d88f96cc7f8528c3
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/LoadFromDirectoryTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a58617e7f893049179cb9ed32310dbfc
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/LogUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b1bc2d26162184521b3d75065fcd5667
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/GraphCollectionDetailTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4f4afbfedc128456c8531368b170d036
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Exception/AssetGraphException.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b199839a9e8f347ada0d93a4bb32bea5
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/AssetGenerators/Duplicator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9699bb034e3d543dea089ed1168ce619
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/SerializableMultiTargetInt.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 73fc848d55dc74aaa8039af14e99f8b6
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/CreatePrefabFromGroupTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 76c0bf6fed0654e94b1f608efcc19f53
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/LabelAssetsTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c0ef623add767445284d290e629624fe
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/Node.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 82a0f18c397f74c78afb86c98d2f8694
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/NodeGUIEditor.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b929608ac59544de3a587ffc4080d2fd
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V2/ConnectionPointData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 04e668989dcf2499eb5662cb399f5f44
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/Modifier.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5c75fed7a116640d1b5c78c11883ff89
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/AssertUnwantedAssetsInBundle.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b45ce3caafd734a08b4ecc1f882ee67c
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/GraphCollectionTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1725dd748a705450ea972f3fe0826119
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/GroupingByFile.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7a61cdf230c0a4ddba68a0a707d58525
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/ExtractSharedAssets.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2e4c82d3e76e64c5f9c64cf0c38aaf42
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Modifiers/SetProperty.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dc3edc4496b6745b1a650261e54f33dd
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/AssetGraphUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: df472e963db9c4e008037836a73f8472
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/BuildAssetBundleTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5da08927eb8a84276b34742adde1b11f
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/ProjectSettings/AssetBundleSettingsTab.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8d9a5f17c54584a67b7fe58665965f15
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetProcessEventRecord.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5ddfceca50d66489dbc1b6285a804190
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/VideoClipImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3cc36a7b9a2cc410080d519bcdbaea0a
+    m_importFrom: Packages/com.unity.assetgraph/Editor/GUI/BatchBuild/BuildTargetTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 20b1b37a2183e4f4eb443dc216e58e1e
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetProcessEvent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 64253c20cf541461ab2e8099d2025732
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Importers/ShaderImporterConfigurator.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5a621b3eb315745c8b95a9e354708dd4
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/TypeUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f2ba48f0005dc45778cbd15a7e1b92f6
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetPostprocessorContext.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b7918bea6e94546af99e5406dd5037c4
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/SplitByFilterTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d507a227bf0d44fe1a93735de25c9956
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/GroupByFilePathTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dab20ed5a5e3e40d8a69e2f6cee60fe2
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/CustomScriptUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e92b488a6e4e44b0ba8022885f55f087
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Model/V2/NodeData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 51616e18d891a48d1b0474a1defc1a91
+    m_importFrom: Packages/com.unity.assetgraph/Tests/Editor/ConfigureBundleFromGroupTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 52dd117dc34344058952aab4660ca971
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Utility/DisableAssetProcessEventRecordScope.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 391178b0da267493d9ee22c8f353b40b
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Core/AssetBundleBuildReport.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7f876bd6f2c4343308d812b7ff184217
+    m_importFrom: Packages/com.unity.assetgraph/Editor/System/Node/Buitin/BundleBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: aaaaaeca0c80b384eb057364c3cb5a28
+    m_importFrom: Assets/AssetGraph/AssetBundles/Cache/TemporalSettingFiles/AssetReferenceDB.asset
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 67e997c1197697049b849d622f490385
+    m_importFrom: Assets/AssetGraph
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4a42b0daecc99a64c83459567c230e7b
+    m_importFrom: Assets/AssetGraph/AssetBundles/Cache/TemporalSettingFiles
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 772ab3d9fc6fdbe45af90bb32e3c5324
+    m_importFrom: Assets/AssetGraph/AssetBundles
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 53773796b3c17d544920f63a4a1ec962
+    m_importFrom: Assets/AssetGraph/AssetBundles/Cache
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 47632158e69d72d49b24c8a947a2fc4d
+    m_importFrom: Assets/ThirdParty
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e33ff61240a851e4fbaea71d01a460cd
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/EditorDefine.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b883ac0c3c25e8143847a9326e2961cf
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskVerifyBuildResult.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e8e4a86c3bd8c8947a947776891e14b1
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/EditorExtension.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1d78289c318344845bbeed6a18649c3b
+    m_importFrom: Assets/ThirdParty/YooAsset
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ffe1385deb0bd9844a514f1c2fd65e62
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/IFilterRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1fdecc5500229d44887425ce619352fc
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0063c156ec88acc4d862f9b31e6c74ad
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/AssetBundleReporterWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4bbef9cb5c1a40b41a28a65df3449abe
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/ECollectorType.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d6268d725eec21b4aae819adc1553f0e
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildReport
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1af5fed7e9f83174d868c12b41c4a79e
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskBuilding_SBP.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2939a2b9862f05545969cc5fcb378bd8
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/BundleInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3c7907ead85e2f94786308b28c37a8aa
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/Downloader/TempDownloader.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fc10550f17aaeb14795135a51444de1c
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PlayMode/OfflinePlayModeImpl.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f38422f6a64300243af6b4fbf84644ba
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/SBPBuildTasks.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f48abdec05f0dbe438a83e181fe6bc93
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilderHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 577f7c1abcdf0a140958f1d1d44d6f40
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/IPackRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a6847b71aba411740aaec06eea58a377
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Properties/AssemblyInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8b0b0ed13c7433847a91c0ffd8306125
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/OperationSystem/EOperationStatus.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2fa91f25d246411459816310b09480a5
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollectorSettingData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 02cc2ce3da5a88b48942ad96e6061aad
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/ProviderBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 31c6096c1cb29b4469096b7b4942a322
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/VisualViewers/DebuggerAssetListViewer.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9052b72c383e95043a0c7e7f369b1ad7
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/AssetBundleReporterWindow.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 76b148be04a698e45a54dd85e64969dd
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Handles/SubAssetsOperationHandle.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: aed5a1a6733b7d44ca4f6149ed5a2bb8
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/IActiveRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3c6da38a89e37124c907c4814295a432
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Settings/YooAssetSettingsData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b8aaabc43e74af14d8eb3c7c85e19cda
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Loader/AssetBundleLoaderBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 38b1b77cff590ca4e808c5068c9bf88b
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/BundledSceneProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a82eeb6a47cd02c4cb38e851c8ed8784
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/Downloader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d19eae1f43ecf6347925a06730a6c846
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/DownloadSystem.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c64025c73372d9d4cab02c9cf9436e55
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 40472229e23f3314f9a7123ad2d6e1e4
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 04491137351983348959c00ec4ee226a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/IEncryptionServices.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 65584a0568d40b14582a3c4aaf947b98
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/CacheSystem/EVerifyResult.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e5eb0b1129d88a744973666a66a1902c
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility/CRC32Algorithm.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b7eeccc96e4c31c45bd105b0dbc3fd6e
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Loader/DependAssetBundleGrouper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 447008dd110b8d746aafbe88c78bee5d
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildAssetInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 98bb314dc26ba184fbb9e9fdcdb58a1d
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildParameters.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8d996937ba73c9b4bb942b8ba6f43398
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services/LocationServices/DefaultLocationServices.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8e7d3b16d9b01f548b4654e958d43a37
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Operations/InstantiateOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cfc81e18e5b5f6f4b821c7427b34d349
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services/ILocationServices.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a9f5acda1a4584648af7b47e19a0d24f
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Handles/OperationHandleBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 04568a15f0fdb58438568dac56c588c5
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger/DebugReport.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2cfd65b3b7663b247b2df16077f4ef17
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/DefaultActiveRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 70ff08c6c9b0f5e4c993ec4c91954467
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PatchBundle.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a034acd0035503742bc8d24b3c4068c2
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/VisualViewers
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8616c7550a7890141af598898a12df1b
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/CacheSystem/CacheSystem.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b20b2efe14ab7e8498edb9819d24a172
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/OperationSystem/OperationSystem.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8252a639423064f498ed22f14912adae
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/DatabaseSceneProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2de5a58f37a4ae64e804f150144da809
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Properties
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 770292fd53451ac40b45c59a4ef241a9
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 70401cc80b9807e46bd8283e01b4302f
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector/ShaderVariantCollectorWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 09788b4733bab2d4792fdd5d28e7653c
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilderSetting.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b19f23ac31124274d942d32bec434450
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6b766125ab790154ca132adb5c77333d
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Handles/AssetOperationHandle.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bf4cc5f446778bc428a69fdcd183e447
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bd1ad395c62c5804589ec9b267ea0484
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Loader/AssetBundleWebLoader.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: de7563040250b4e4a835d1fc90238e38
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b84510feab7cbe44a9b6d8ef0b3f559c
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildParametersContext.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c4b754a3b15abc44fa2727f57721e18b
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/Operations/UpdatePackageOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6e400ee1e8b3556479bfa493ff7fe778
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services/LocationServices
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: baee18c5c7b76584b90413bf20fdae9a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskGetBuildMap.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 89b4ea90b9f7e474d9e80077656ef6c4
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/RemotePlayerSession.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 37a7daecdb1361140b44ba4724e8866e
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/CacheData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 48da07f89a738f345a11ed22c2bcf5f7
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/VisualViewers/DebuggerAssetListViewer.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3444518ef1b082a46a9855fef4f69c86
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services/IDecryptionServices.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 61de6d9d221a97247ac52dd5a68b74af
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/VisualViewers/DebuggerBundleListViewer.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f94918fa1ea63c34fa0e49fdad4119cf
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleSimulateBuilder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8229aa3f8a369204db5c368715191e2f
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildMapContext.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 79014124da678684388454d6ea892722
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem/BuildRunner.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ac093515ae764b94aa07be91d4ba978b
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 60bb21def73049e4f83a108d0e741301
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/Operations/UpdateStaticVersionOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 13c0685c8f990994eb8bccb06df93ca3
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4c6e1a8bc8d5e664395395daa772ddd7
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/Downloader/FileDownloader.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 151a4acd5ad1c2046be20e080f9bdad4
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem/IContextObject.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 64d0a51f59c2a964eaf97b87db47428f
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Loader/AssetBundleFileLoader.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dda4d1eafa2c9f34fade509f8dae9c04
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/Downloader/DownloaderBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1e8ac0dfc77bd1b4697db63d52ab4c6e
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/ECompressOption.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 185f6993d5150494d98da50e26cb1c25
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollectorSetting.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b44b2cc585bc59c4d879d1edac67f7c4
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/CollectAssetInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3fec07d458534d34ea14d1b1a0a5100b
+    m_importFrom: Assets/ThirdParty/YooAsset/LICENSE.md
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2875232ad7f87c148b752d432f3a54f2
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dcb9955c15609744a9666bd76f6af3d9
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e928a1c08d679ad44bcb435678667fd7
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/OperationSystem/AsyncOperationBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0f35afda8a63f874fb78877d65dafdd2
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildReport/BuildReport.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f79866c315d53ef4480d6fa4083c09ad
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollector.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2ffcef42f3747ab43908595778accc29
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility/YooLogger.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d2d701e695ac3fe4cbe25d43dde05944
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/EditorHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a0319abb8eae03b4b88e8f900fe2276c
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers/ReporterBundleListViewer.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 21b4cc6bf4c0c064d8e2687024e24c86
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector/ShaderVariantCollector.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 355c4ac5cdebddc4c8362bed6f17a79e
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollectorWindow.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e9d6cb1ce5d510645866ad7c122abfab
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PlayMode
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5f81bc15a55ee0a49a266f9d71e2372b
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers/ReporterAssetListViewer.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bd12814185b4c7044b0afd59f9c1c948
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskCreateReport.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 02ad351eb8539da47a0c789e2f8c468f
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/CacheSystem/EVerifyLevel.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b8016a4c13444bf45830d714ab2aa430
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/AssetBundleInspector.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 44454e58a49818040a1aef5799e71b30
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector/ShaderVariantCollectorSetting.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2dfde84e843cc34468dd1071608926bc
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7375e313be9e6b24ab7193e64a67fa07
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/AssetBundleDebuggerWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cf18b110959e74849b675ca29f77c7dd
+    m_importFrom: Assets/ThirdParty/YooAsset/README.md
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2ab5f2486d06e2642ba7aa9c9623430e
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/UnityWebFileRequester.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9b2b5e436ee882d41bf53082bf7b23a0
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/AssetBundleRecorder.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 70420213c551a2b4b8cf014067699b07
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services/IBundleServices.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6df37bfd87103a54ca60c0c467a5f33b
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/DefaultAddressRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 56d6dbe0d65ce334a8996beb19612989
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers/ReporterBundleListViewer.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 26aa55851e9252b4ab0655ee60526cb0
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildReport/ReportBundleInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c78d471226b9c8d429a2d962370f480b
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskEncryption.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4d1926c9df5b052469a1c63448b7609a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/YooAsset.Editor.asmdef
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fe50795c51a46884088139b840c1557f
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilderTools.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 937392854b37d5043808598f2d0e07ec
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Handles
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3ecc5913758e8234fbba5ef2fd192f86
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/AssetSystem.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cc215f5628022c345be919a0e21fcc8c
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildReport/ReportSummary.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0b6f2523a865e454d8fa3f48a2852d5a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/EBuildMode.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b7557eb146572de49a1ec9b3f3c0b706
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/UnityWebDataRequester.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9581e7c53fe081749ab849ec6e2be3d6
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility/YooHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 426a4ff47699b6844946329f54a89128
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/IAddressRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0b559b6cd6f58a04497ef21b68d5dde8
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility/YooUtility.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 197364393c72852419af32ef010600bf
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5c77e17c3a3a57548a218f1cd26f5a55
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskCopyBuildinFiles.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d3aba580c6b1c3447a3336a478717965
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers/ReporterSummaryViewer.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: df359cc7c21634d41b5d05f09ca59cf2
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PatchAsset.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8888657c45e12c646a8349bac6bf0326
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem/IBuildTask.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 790db12999afd334e8fb6ba70ef0a947
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/AssetBundleDebuggerWindow.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 60c7594328ef976408edadfdf2b9aa3d
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility/BitMask32.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e26f14db9addb4c49b4f0f520bf75d9d
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Operations/RawFileOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b730ebd685b28964a9f002593751e98a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollectorWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ca5e4bf0c3efe6742bb57b494487be52
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/BundledAssetProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bbc02342251289b46a6fedc192aaa9b6
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/YooAssets.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 84c5eff5dedf53343897e83f6b10eea6
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/EOutputNameStyle.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d110092f543e3fe40a4d3882e1a718e8
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskCreatePatchPackage.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6a232601f99c4634ea17fca4979f80ab
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem/BuildContext.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 826a9d7b4de0eba40b5c39b33747c011
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildBundleInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c5d788ba2dd3c5243ae2e0be8e780825
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Handles/SceneOperationHandle.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 24698266f028e4a47bb88f091fd64547
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilderSettingData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 28ba29adb4949284e8c48893218b0d9a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilderWindow.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 16aa7c2c37209a043b4f33d7854047c6
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskVerifyBuildResult_SBP.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ff07a5253f139bf40856fa1ed6a6bb5b
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Settings
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 566c37f5a59f2e84397a9527981a7310
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskCreatePatchManifest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 07db4f624e6cf80468fadd9e94691017
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/AssetInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5b503bf79c4303d4794d7c9414a4c201
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 58462a7dcef164e43878a037395d4417
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Loader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e53e56a0f6b01dd4c933249d2bda8d78
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/EBuildPipeline.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e34a5702dd353724aa315fb8011f08c3
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/YooAsset.asmdef
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 84c10fd3507a1c24a9043aebb72db5f5
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PlayMode/HostPlayModeImpl.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 223f217ed81460541b5ea7eb7a7d82a4
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/CacheSystem/PatchCacheVerifier.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: be28b213af401274881688f5bc0c2381
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers/ReporterAssetListViewer.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6b03684bc5163694ab3983243512b4cc
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Utility/BitMask64.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2fb1b9a2a91f1af4a86acfcfac424e0b
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PlayMode/EditorSimulateModeImpl.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 35749e57d9a3da84aa60c348bc6bbe9d
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem/TaskAttribute.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 254f430e0264bd84387878f8d7280e44
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 057a358d2d0c92b47add59dac8bef783
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/Downloader/HttpDownloader.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3fd4f5f47edbfd54ba92427daf9ea3a4
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger/RemoteDebuggerDefine.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ab74d4ff4a2805147883de70a1559a0a
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector/ShaderVariantCollectionHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 250c5da7ab03e724f8c328de5238e433
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/Operations/UpdateManifestOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b3763bf52bde23b41a756f0d015cb30d
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/BundledSubAssetsProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c94cb69081e4d394e80f6fca6da4366f
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/OperationSystem
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: db680274cf006c548abff57b7e1894b4
+    m_importFrom: Assets/ThirdParty/YooAsset/CHANGELOG.md
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e9f7615a761107d4ebf96d66be2f6b45
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollectorGroup.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 94254ab8e4496214884c11a891c131c6
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/Downloader/DownloadHandlerFileRange.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a44ad228b117d0047ab80e7a442459b4
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/Operations/InitializationOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b3af795872a84c6429235be37acaf655
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger/DebugProviderInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3ef16d696d8ffbd488c27e539f1966ad
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildReport/ReportAssetInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4a924dc0a22fc104781bf9aaadd60c29
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/DefaultPackRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a74c81d149472fb4c960a1db1fd8accc
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/DefaultFilterRule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4eacb00a7e3873740b599112dfcf0123
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/BundledProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e0855c4b5eaa26942bd7ad177fe3c288
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildSystem/BuildResult.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3837962b901d7ba4abf02a9991ac4c4a
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/DatabaseSubAssetsProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fcfac83df022948478c32bf11b8e0987
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Operations
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0dee755cccd608d48b6581ec33c99b39
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskPrepare.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f9a030381c5944145a285c3212153ceb
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleCollector/AssetBundleCollectorConfig.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a8d6592eded144142afcf85c79cf1ce4
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Services/LocationServices/AddressLocationServices.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 96fc897d22c24d64b9faa531c0573c44
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/Operations/DownloaderOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f8929271050855e42a1ccc6b14993a04
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleReporter/VisualViewers/ReporterSummaryViewer.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5ecf79384c5577a49a9908067c7ca646
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ff8a96dd005f55346986f8a98aff8c99
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/OperationSystem/GameAsyncOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4812fd895ef2d7e4a97956be2c6f8170
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/Operations
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d4022dd2ea39af5458fb1d61ec997347
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/DatabaseAssetProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9466e826c135e994c84961e4b921ca5f
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildTasks/TaskBuilding.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5b09fe4b7aa2d2143bc538976541b039
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PlayMode/EditorSimulateModeHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5bd1afdce9715f84eb4cbc901922afc2
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Settings/YooAssetSettings.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8e6b180f448258247a506a5d0ea4922e
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 96a75a20111d6124696665e7aac3564c
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/CacheSystem
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 97098b04691f5c046ac4829f1d72f425
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector/ShaderVariantCollectionManifest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6849dc1f64284274490437c22a811a1d
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/YooAssetDriver.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d8cbaf07016a5d045a8f463042a64c25
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/EditorTools.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e9274735f1f14af4b893c21a4240b816
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/BuildMapCreater.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f0bb3469358a90d41a3a4b284a3ddc8f
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/PatchSystem/PatchManifest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e79402f4d610fb4408aa6f8a94b09cb9
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger/RemoteCommand.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8e64fd2ee771f7d498838ebf375a9531
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Provider/CompletedProvider.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 66e43420e95cd0b4bae8803a31e9817b
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleBuilder/AssetBundleBuilderWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 932a25ffd05c13c47994d66e9d73bc37
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/AssetBundleDebugger/VisualViewers/DebuggerBundleListViewer.uxml
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5299512de5ab5c141ae37dac6ee1721e
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/AssetSystem/Operations/UnloadSceneOperation.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8338e9d79d24e7e4e80aaacc8bc0fcde
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger/DebugBundleInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b3043e89ff35bd346b268c0e8d460067
+    m_importFrom: Assets/ThirdParty/YooAsset/Editor/ShaderVariantCollector/ShaderVariantCollectorSettingData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 552d612838977104b9bb3c91df401915
+    m_importFrom: Assets/ThirdParty/YooAsset/package.json
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1c8ce2c52a3e9964fa50a9c031e4e593
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem/ThreadSyncContext.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 715017c3b0bb2a3429d8f021b0d9a2b2
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/DownloadSystem
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 91030c545c99c944a846f6a9a2a0756a
+    m_importFrom: Assets/ThirdParty/YooAsset/Runtime/Debugger/RemoteDebuggerInRuntime.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8e54669ff78bb3f4e9d4e591d1771bae
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 07bfa7e432cf1334ca285411f9c97a9a
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/ByteBuf.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c041f301d0633aa488c390e2574f6584
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/SimpleJSON.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7f50f5ff262da314a9ef7dc2c468b5ba
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/ByteBufExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4615d3ebbd0d7ae4fa8c107f727bbab4
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/LICENSE
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f165b42bd8dbf6540a34270d32b97c45
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/EditorEnumItemInfo.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9c437b2415702c0489bea4623364a820
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/EditorText.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 01830ef12a97cf045bd989f2484f73ce
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a777a4fe93c78c246b61a8e9c42ae35e
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/SimpleJSONBinary.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0794c5fece7ec984192e57c9ecc88720
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/SimpleJSONUnity.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2a1978c3ede87404e99b5429f92b2eb9
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/BeanBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 08eef6b77ab6ede4997166dc812a918f
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/ITypeId.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6f1bdd2f47e2a0a4d9f9974a50ce6666
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/SimpleJSONDotNetTypes.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ff559e62a2b7c5f40a6b2ed4bbc79668
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/EditorBeanBase.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 35336dcb5aad4cf45b523dbf1482a514
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/Changelog.txt
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ef82068810e5599439c5346fba3b0f97
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/StringUtil.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0a0880b9f306ab740b3fd1ca728609e8
+    m_importFrom: Assets/ThirdParty/LuBan
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0b3e755f11799b5458a47d6b897a9393
+    m_importFrom: Assets/ThirdParty/LuBan/LubanLib/SimpleJSON/README
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c96fc7c00e0d894419d05c0be758fd06
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Helper/EnumHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a93fa08d2badde84b9125c68a42700e3
+    m_importFrom: Assets/Scripts/Table/Generate/item/ItemExchange.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4712bcbcaba893f41be7b804bf441c46
+    m_importFrom: Assets/Scripts/Table/Generate
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 27c353f3c3f8b9141af0220431a8a1cd
+    m_importFrom: Assets/Scripts/Table
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3690d8a03bf86404f905e7965bb7c16a
+    m_importFrom: Assets/Scripts/Table/Generate/Tables.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 151a9e18454ee2840805d2961ea98672
+    m_importFrom: Assets/Scripts/Table/Generate/item
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cf1b4ce2e300be7488c5ac4209d343db
+    m_importFrom: Assets/Scripts/Table/Generate/AccessFlag.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2af9160797638a6408f298986e8d4952
+    m_importFrom: Assets/Scripts/Table/Generate/Quality.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 75fd5082416dcd34fb719a3fc6b09fda
+    m_importFrom: Assets/Scripts/Tools/Editor/Table
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2680e9dafd48dfb47995f60191570323
+    m_importFrom: Assets/Scripts/Tools/Editor/Table/UpdateExcelData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f1fb098ea22beb64fbb4cb77a1dc3539
+    m_importFrom: Assets/Scripts/Table/Generate/item/TDEquip.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8e0dc553f832e534d900db8deedc8ea6
+    m_importFrom: Assets/Scripts/Table/Generate/item/TDEquipTable.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 140f2c33a43e1ab45a5e125569edca45
+    m_importFrom: Assets/Scripts/Tools/ToolsPathDefine.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f1ddd893d9b63e348b77cd4eaff3fea1
+    m_importFrom: Assets/Scripts/Attribute
+    m_exportTo: 
+    m_variantName: 
+  m_version: 2

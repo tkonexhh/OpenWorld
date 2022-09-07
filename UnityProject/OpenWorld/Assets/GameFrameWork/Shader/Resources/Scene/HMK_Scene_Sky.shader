@@ -33,7 +33,7 @@
 		{
 			CGPROGRAM
 
-			#pragma shader_feature UseFog
+			#pragma shader_feature_local UseFog
 
 			#pragma vertex vert
 			#pragma fragment frag

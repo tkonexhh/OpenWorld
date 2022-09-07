@@ -6,7 +6,7 @@ using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
-
+using MonKey;
 
 namespace XHH
 {
@@ -14,6 +14,7 @@ namespace XHH
     {
         public const string menuName = "大世界烘焙器(WorldEditor)";
 
+        [Command("Editor_World", "打开大世界烘焙器", Category = "OpenWorld")]
         [MenuItem(ToolsPathDefine.WorldPath + menuName, priority = 1)]
         private static void Open()
         {

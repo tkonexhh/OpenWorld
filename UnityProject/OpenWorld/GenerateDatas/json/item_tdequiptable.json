@@ -1,0 +1,101 @@
+[
+  {
+    "id": 10000,
+    "name": "发型",
+    "desc": "初始发型",
+    "exchange_stream": {
+      "id": 10001,
+      "num": 2
+    }
+  },
+  {
+    "id": 10001,
+    "name": "外套",
+    "desc": "初始外套",
+    "exchange_stream": {
+      "id": 10002,
+      "num": 2
+    }
+  },
+  {
+    "id": 10002,
+    "name": "上衣",
+    "desc": "初始上衣",
+    "exchange_stream": {
+      "id": 10003,
+      "num": 3
+    }
+  },
+  {
+    "id": 10003,
+    "name": "裙子",
+    "desc": "初始下装",
+    "exchange_stream": {
+      "id": 10004,
+      "num": 3
+    }
+  },
+  {
+    "id": 10004,
+    "name": "袜子",
+    "desc": "初始袜子",
+    "exchange_stream": {
+      "id": 10005,
+      "num": 4
+    }
+  },
+  {
+    "id": 10005,
+    "name": "鞋子",
+    "desc": "初始鞋子",
+    "exchange_stream": {
+      "id": 10006,
+      "num": 4
+    }
+  },
+  {
+    "id": 10006,
+    "name": "发饰",
+    "desc": "初始发饰",
+    "exchange_stream": {
+      "id": 10007,
+      "num": 5
+    }
+  },
+  {
+    "id": 10007,
+    "name": "中秋节发饰",
+    "desc": "中秋节发饰",
+    "exchange_stream": {
+      "id": 10008,
+      "num": 5
+    }
+  },
+  {
+    "id": 10008,
+    "name": "中秋节鞋子",
+    "desc": "中秋节鞋子",
+    "exchange_stream": {
+      "id": 10009,
+      "num": 6
+    }
+  },
+  {
+    "id": 10009,
+    "name": "礼包",
+    "desc": "中秋节礼包",
+    "exchange_stream": {
+      "id": 10000,
+      "num": 6
+    }
+  },
+  {
+    "id": 10010,
+    "name": "礼包",
+    "desc": "中秋节礼包",
+    "exchange_stream": {
+      "id": 10000,
+      "num": 6
+    }
+  }
+]
