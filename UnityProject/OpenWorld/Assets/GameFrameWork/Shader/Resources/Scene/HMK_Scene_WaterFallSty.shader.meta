@@ -5,6 +5,7 @@ ShaderImporter:
   defaultTextures:
   - _DirectNoise: {fileID: 2800000, guid: d25f17b315a213d4cb44bea8d4da1c08, type: 3}
   - _CubeMap: {fileID: 8900000, guid: e9c79385d6300a9409b7308b98a2b705, type: 3}
+  - _T_noise_water_normal: {fileID: 2800000, guid: 03aeb081553ddb54387c5a68a255c3e8, type: 3}
   nonModifiableTextures: []
   preprocessorOverride: 0
   userData: 

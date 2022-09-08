@@ -15,7 +15,7 @@ TEXTURE3D(_GIVolumeTex1);SAMPLER(sampler_GIVolumeTex1);
 half4 GetAmbientColor(float3 normal, float3 coord)
 {
     float4 var_SH0 = SAMPLE_TEXTURE3D(_GIVolumeTex0, sampler_GIVolumeTex0, coord);
-    float3 var_SH1 = SAMPLE_TEXTURE3D(_GIVolumeTex1, sampler_GIVolumeTex1, coord);
+    float4 var_SH1 = SAMPLE_TEXTURE3D(_GIVolumeTex1, sampler_GIVolumeTex1, coord);
     float ao = var_SH0.a;
     float3 sh0 = var_SH0.xyz;
     float3 sh10 = var_SH1.r;

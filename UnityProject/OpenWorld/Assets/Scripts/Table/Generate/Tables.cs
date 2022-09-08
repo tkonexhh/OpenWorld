@@ -8,31 +8,31 @@
 using Bright.Serialization;
 using SimpleJSON;
 
-namespace XHH
+namespace OpenWorld
 {
-   
-public sealed partial class Tables
-{
-    public item.TDEquipTable TDEquipTable {get; }
 
-    public Tables(System.Func<string, JSONNode> loader)
+    public sealed partial class Tables
     {
-        var tables = new System.Collections.Generic.Dictionary<string, object>();
-        TDEquipTable = new item.TDEquipTable(loader("item_tdequiptable")); 
-        tables.Add("item.TDEquipTable", TDEquipTable);
-        PostInit();
+        public item.TDEquipTable TDEquipTable { get; }
 
-        TDEquipTable.Resolve(tables); 
-        PostResolve();
-    }
+        public Tables(System.Func<string, JSONNode> loader)
+        {
+            var tables = new System.Collections.Generic.Dictionary<string, object>();
+            TDEquipTable = new item.TDEquipTable(loader("item_tdequiptable"));
+            tables.Add("item.TDEquipTable", TDEquipTable);
+            PostInit();
 
-    public void TranslateText(System.Func<string, string, string> translator)
-    {
-        TDEquipTable.TranslateText(translator); 
+            TDEquipTable.Resolve(tables);
+            PostResolve();
+        }
+
+        public void TranslateText(System.Func<string, string, string> translator)
+        {
+            TDEquipTable.TranslateText(translator);
+        }
+
+        partial void PostInit();
+        partial void PostResolve();
     }
-    
-    partial void PostInit();
-    partial void PostResolve();
-}
 
 }

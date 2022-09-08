@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.IO;
 
-namespace XHH.World
+namespace OpenWorld.World
 {
     public class MeshData
     {

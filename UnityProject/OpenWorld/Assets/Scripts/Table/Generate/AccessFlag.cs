@@ -6,7 +6,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace XHH
+namespace OpenWorld
 {
     [System.Flags]
     public enum AccessFlag
@@ -18,6 +18,6 @@ namespace XHH
         /// <summary>
         /// 位标记使用示例
         /// </summary>
-        READ_WRITE = WRITE|READ,
+        READ_WRITE = WRITE | READ,
     }
 }

@@ -5,7 +5,7 @@
 #include "./../HLSLIncludes/Common/HMK_Shadow.hlsl"
 
 
-TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
+// TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
 
 struct Attributes
 {
@@ -34,21 +34,6 @@ Varyings ShadowPassVertex(Attributes input)
     return output;
 }
 
-// half Alpha(half albedoAlpha, half4 color, half cutoff)
-// {
-//     #if !defined(_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A) && !defined(_GLOSSINESS_FROM_BASE_ALPHA)
-//         half alpha = albedoAlpha * color.a;
-//     #else
-//         half alpha = color.a;
-//     #endif
-
-//     #if defined(_ALPHATEST_ON)
-//         clip(alpha - cutoff);
-//     #endif
-
-//     return alpha;
-// }
-
 half4 ShadowPassFragment(Varyings input): SV_TARGET
 {
     #if defined(_ALPHATEST_ON)
@@ -57,7 +42,6 @@ half4 ShadowPassFragment(Varyings input): SV_TARGET
         clip(alpha - _Cutoff);
     #endif
     
-    // Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
     return 0;
 }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace XHH.Character
+namespace OpenWorld.Character
 {
     public class CharacterLocomotion : MonoBehaviour
     {

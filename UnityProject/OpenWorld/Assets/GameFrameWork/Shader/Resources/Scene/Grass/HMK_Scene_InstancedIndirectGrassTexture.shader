@@ -4,10 +4,11 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
     {
         [Header(Option)]
         [Toggle(_ALPHATEST_ON)]_AlphaClip ("__clip", Float) = 0.0
-        _Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
+        _CutOff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         
         _BaseColor ("Base Color", color) = (1, 1, 1, 1)
         _MainMap ("Main Texture", 2D) = "white" { }
+        _SpecularStrength ("Specular Strength", range(0, 2)) = 0.3
         
         [Header(Wind)]
         _WindStrength ("Wind Strength", range(0, 3)) = 1
@@ -50,22 +51,12 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
             #include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+            #include "./HMK_Scene_Grass_Input.hlsl"
             #include "./HMK_Scene_Grass_Common.hlsl"
             
-            CBUFFER_START(UnityPerMaterial)
-            half _Cutoff;
-            half4 _BaseColor;
-
-            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-            //Global Property
-            int _InteractivesCount;//交互物体数量
-            half3 _Interactives[100];//交互物体 最大支持20个交互物体
-
-            half _WindStrength, _WindHeight;
             
             StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//只含有坐标信息 下面需要吧缩放旋转也考虑上
             StructuredBuffer<uint> _VisibleInstanceOnlyTransformIDBuffer;
-            CBUFFER_END
 
             
             TEXTURE2D(_MainMap);SAMPLER(sampler_MainMap);
@@ -74,6 +65,9 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
             {
                 float4 positionOS: POSITION;
                 float2 uv: TEXCOORD0;
+                float2 uv2: TEXCOORD1;
+                half4 color: COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
@@ -99,13 +93,7 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
                 input.positionOS.xyz *= (trs.scale + 0.2);
 
                 half mask = input.uv.y;
-                //风力效果
-                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
-                //交互效果
-                ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
-
-                //光照
-                //草的顶点数量少,着色直接在顶点阶段做完
+                
                 
                 output.positionOS = input.positionOS;
                 output.positionCS = TransformWorldToHClip(positionWS);
@@ -128,7 +116,7 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
                 #if defined(_ALPHATEST_ON)
                     clip(surfaceData.alpha - _Cutoff);
                 #endif
-                half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y);
+                half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y, _SpecularStrength);
                 half3 finalRGB = lightingResult;
 
                 return half4(finalRGB, 1);
@@ -148,7 +136,7 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
+            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthOnlyVertex
@@ -168,41 +156,36 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+            #include "./HMK_Scene_Grass_Input.hlsl"
             #include "./HMK_Scene_Grass_Common.hlsl"
             
             struct Attributes
             {
                 float4 positionOS: POSITION;
                 float2 uv: TEXCOORD0;
+                float2 uv2: TEXCOORD1;
+                half4 color: COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
             {
                 float4 positionCS: SV_POSITION;
                 float uv: TEXCOORD0;
+                float2 uv2: TEXCOORD1;
             };
 
             
 
-            CBUFFER_START(UnityPerMaterial)
-            #if defined(_ALPHATEST_ON)
-                half _Cutoff;
-            #endif
             
-            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-            //Global Property
-            int _InteractivesCount;//交互物体数量
-            half3 _Interactives[100];//交互物体 最大支持20个交互物体
-
-            half _WindStrength, _WindHeight;
             
             StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//只含有坐标信息 下面需要吧缩放旋转也考虑上
             StructuredBuffer<uint> _VisibleInstanceOnlyTransformIDBuffer;
-            CBUFFER_END
+            
 
-            #if defined(_ALPHATEST_ON)
-                TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
-            #endif
+            
+            TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
+            
 
             Varyings DepthOnlyVertex(Attributes input, uint instanceID: SV_InstanceID)
             {
@@ -219,12 +202,13 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
 
                 //风力效果
                 half mask = input.uv.y;
-                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
+                // GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
                 //交互效果
-                ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
+                // ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
 
                 output.positionCS = TransformWorldToHClip(positionWS);
                 output.uv = input.uv;
+                output.uv2 = input.uv2;
                 return output;
             }
 
@@ -233,7 +217,7 @@ Shader "HMK/Scene/InstancedIndirectGrassTexture"
                 #if defined(_ALPHATEST_ON)
                     half4 var_Base = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
                     half alpha = var_Base.a;
-                    clip(alpha - _Cutoff);
+                    clip(alpha - _CutOff);
                 #endif
 
                 return 0;

@@ -3,7 +3,7 @@
 // using UnityEngine;
 // using Sirenix.OdinInspector;
 
-// namespace XHH
+// namespace OpenWorld
 // {
 //     [CreateAssetMenu(menuName = "ScriptableObject/IndirectDrawSO", fileName = "IndirectDrawSO_")]
 //     public class IndirectDrawSO : SerializedScriptableObject

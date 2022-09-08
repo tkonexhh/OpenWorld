@@ -6,7 +6,7 @@ using UnityEditor;
 using Debug = UnityEngine.Debug;
 using MonKey;
 
-namespace XHH
+namespace OpenWorld
 {
     public class UpdateExcelData
     {

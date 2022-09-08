@@ -9,25 +9,30 @@ public class HMKTerrainShaderGUI : ShaderGUI
     private MaterialEditor m_MaterialEditor;
 
     //======
-    private MaterialProperty m_MPControl;//权重图
-    private MaterialProperty m_MPSplat0, m_MPSplat1, m_MPSplat2, m_MPSplat3;
-    private MaterialProperty NRAMap0Prop { get; set; }
-    private MaterialProperty NRAMap1Prop { get; set; }
-    private MaterialProperty NRAMap2Prop { get; set; }
-    private MaterialProperty NRAMap3Prop { get; set; }
+    // private MaterialProperty normalMap;
+    private MaterialProperty m_MPControl0, m_MPControl1;//权重图
+    private MaterialProperty m_MPSplat0, m_MPSplat1, m_MPSplat2, m_MPSplat3, m_MPSplat4, m_MPSplat5, m_MPSplat6, m_MPSplat7;
+    private MaterialProperty nra0 { get; set; }
+    private MaterialProperty nra1 { get; set; }
+    private MaterialProperty nra2 { get; set; }
+    private MaterialProperty nra3 { get; set; }
+    private MaterialProperty nra4 { get; set; }
+    private MaterialProperty nra5 { get; set; }
+    private MaterialProperty nra6 { get; set; }
+    private MaterialProperty nra7 { get; set; }
+
     private MaterialProperty roughnessScaleProp { get; set; }
-    private MaterialProperty occlusionScaleProp { get; set; }
-    private MaterialProperty m_MPWeight;
+    private MaterialProperty OcclusionScaleProp { get; set; }
+
     private MaterialProperty m_MPUVScale;
 
-    private MaterialProperty m_MPEnableHeightBlend;
-    private MaterialProperty m_MPEnableAntiTilling;
-    private MaterialProperty m_MPFadeDistance;
 
+    private MaterialProperty enableHeightBlend { get; set; }
+    private MaterialProperty heightBias { get; set; }
 
+    private MaterialProperty enableCliffRenderProp { get; set; }
+    private MaterialProperty cliffBlendProp { get; set; }
 
-
-    private bool m_SplatSettingFoldout = true;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
     {
@@ -43,111 +48,136 @@ public class HMKTerrainShaderGUI : ShaderGUI
 
     private void UpdateMaterialProperty(MaterialProperty[] props)
     {
-        m_MPControl = FindProperty("_Control", props);
+        // normalMap = FindProperty("_NormalMap", props);
+        m_MPControl0 = FindProperty("_Control0", props);
+        m_MPControl1 = FindProperty("_Control1", props);
         m_MPSplat0 = FindProperty("_Splat0", props);
         m_MPSplat1 = FindProperty("_Splat1", props);
         m_MPSplat2 = FindProperty("_Splat2", props);
         m_MPSplat3 = FindProperty("_Splat3", props);
-        NRAMap0Prop = FindProperty("_NormalPBRMap0", props);
-        NRAMap1Prop = FindProperty("_NormalPBRMap1", props);
-        NRAMap2Prop = FindProperty("_NormalPBRMap2", props);
-        NRAMap3Prop = FindProperty("_NormalPBRMap3", props);
-        roughnessScaleProp = FindProperty("_RoughnessScale", props);
-        occlusionScaleProp = FindProperty("_OcclusionScale", props);
-        m_MPWeight = FindProperty("_Weight", props);
-        m_MPUVScale = FindProperty("_UVScale", props);
-        m_MPEnableHeightBlend = FindProperty("_EnalbeHeightBlend", props);
+        m_MPSplat4 = FindProperty("_Splat4", props);
+        m_MPSplat5 = FindProperty("_Splat5", props);
+        m_MPSplat6 = FindProperty("_Splat6", props);
+        m_MPSplat7 = FindProperty("_Splat7", props);
+        nra0 = FindProperty("_NRA0", props);
+        nra1 = FindProperty("_NRA1", props);
+        nra2 = FindProperty("_NRA2", props);
+        nra3 = FindProperty("_NRA3", props);
+        nra4 = FindProperty("_NRA4", props);
+        nra5 = FindProperty("_NRA5", props);
+        nra6 = FindProperty("_NRA6", props);
+        nra7 = FindProperty("_NRA7", props);
 
-        m_MPEnableAntiTilling = FindProperty("_EnableAntiTilling", props);
-        m_MPFadeDistance = FindProperty("_FadeDistance", props);
+        roughnessScaleProp = FindProperty("_RoughnessScale", props);
+        OcclusionScaleProp = FindProperty("_OcclusionScale", props);
+        m_MPUVScale = FindProperty("_UVScale", props);
+
+        enableHeightBlend = FindProperty("_EnableHeightBlend", props);
+        heightBias = FindProperty("_HeightBias", props);
+
+
+        enableCliffRenderProp = FindProperty("_EnableCliffRender", props);
+        cliffBlendProp = FindProperty("_CliffBlend", props);
 
     }
 
     private void BasicGUI()
     {
-        m_MaterialEditor.TexturePropertySingleLine(Styles.controlMap, m_MPControl);
+        // m_MaterialEditor.TexturePropertySingleLine(Styles.normalMap, normalMap);
+        EditorGUILayout.Space(10);
 
-        m_SplatSettingFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(m_SplatSettingFoldout, "Splat Setting");
-        if (m_SplatSettingFoldout)
-        {
-            EditorGUI.indentLevel++;
-            DrawSplat("Splat R:", m_MPSplat0, NRAMap0Prop);
-            DrawSplat("Splat G:", m_MPSplat1, NRAMap1Prop);
-            DrawSplat("Splat B:", m_MPSplat2, NRAMap2Prop);
-            DrawSplat("Splat A:", m_MPSplat3, NRAMap3Prop);
-            EditorGUI.indentLevel--;
-            EditorGUILayout.EndFoldoutHeaderGroup();
-        }
+        m_MaterialEditor.TexturePropertySingleLine(Styles.controlMap0, m_MPControl0);
 
-        m_MaterialEditor.RangeProperty(roughnessScaleProp, "Roughness Scale");
-        m_MaterialEditor.RangeProperty(occlusionScaleProp, "Occlusion Scale");
+        EditorGUI.indentLevel++;
+        DrawSplat("Control 0:Albedp", m_MPSplat0, m_MPSplat1, m_MPSplat2, m_MPSplat3);
+        DrawSplat("Control 0:NRA", nra0, nra1, nra2, nra3);
+        EditorGUI.indentLevel--;
 
         EditorGUILayout.Space(10);
-        m_MaterialEditor.RangeProperty(m_MPWeight, "Blend Weight");
-        m_MaterialEditor.RangeProperty(m_MPUVScale, "Uv Scale");
+        m_MaterialEditor.TexturePropertySingleLine(Styles.controlMap1, m_MPControl1);
+
+        EditorGUI.indentLevel++;
+        DrawSplat("Control 1:Albedp", m_MPSplat4, m_MPSplat5, m_MPSplat6, m_MPSplat7);
+        DrawSplat("Control 1:NRA", nra4, nra5, nra6, nra7);
+        EditorGUI.indentLevel--;
+
+
+        m_MaterialEditor.RangeProperty(roughnessScaleProp, "Roughness Scale");
+        m_MaterialEditor.RangeProperty(OcclusionScaleProp, "Occlusion Scale");
+
+        EditorGUILayout.Space(10);
+        m_MaterialEditor.RangeProperty(m_MPUVScale, "UV Scale");
 
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("Keywords", EditorStyles.boldLabel);
-        DrawEnableHeightBlend();
-        DrawAntiTilling();
+        DrawHeightBlend();
+        DrawCliffRender();
     }
 
-    private void DrawSplat(string title, MaterialProperty albedo, MaterialProperty nra)
+    private void DrawSplat(string title, MaterialProperty albedo0, MaterialProperty albedo1, MaterialProperty albedo2, MaterialProperty albedo3)
     {
         EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
 
         EditorGUILayout.BeginHorizontal();
         var rect = EditorGUILayout.GetControlRect();
 
-        float singleWidth = rect.width / 3;
+        float singleWidth = rect.width / 4;
         var rect1 = new Rect(rect.x, rect.y, singleWidth, rect.height);
         var rect2 = new Rect(rect.x + singleWidth, rect.y, singleWidth, rect.height);
-        // var rect3 = new Rect(rect.x + singleWidth * 2, rect.y, singleWidth, rect.height);
-        m_MaterialEditor.TexturePropertyMiniThumbnail(rect1, albedo, "Albedo", "R");
-        m_MaterialEditor.TexturePropertyMiniThumbnail(rect2, nra, "NRA", "R");
-        // m_MaterialEditor.TexturePropertyMiniThumbnail(rect3, pbrMap, "PBR", "R:金属度 G:粗糙度 B:AO");
+        var rect3 = new Rect(rect.x + singleWidth * 2, rect.y, singleWidth, rect.height);
+        var rect4 = new Rect(rect.x + singleWidth * 3, rect.y, singleWidth, rect.height);
+        m_MaterialEditor.TexturePropertyMiniThumbnail(rect1, albedo0, "R", "R");
+        m_MaterialEditor.TexturePropertyMiniThumbnail(rect2, albedo1, "G", "R");
+        m_MaterialEditor.TexturePropertyMiniThumbnail(rect3, albedo2, "B", "R");
+        m_MaterialEditor.TexturePropertyMiniThumbnail(rect4, albedo3, "A", "R");
+
+
+
 
         EditorGUILayout.EndHorizontal();
     }
 
-    private void DrawEnableHeightBlend()
+    private void DrawHeightBlend()
     {
         EditorGUI.BeginChangeCheck();
-        var enableHeightBlend = EditorGUILayout.Toggle(Styles.enableHeightBlend, m_MPEnableHeightBlend.floatValue == 1);
+        var enableHeightBlend = EditorGUILayout.Toggle(Styles.enableHeightBlend, this.enableHeightBlend.floatValue == 1);
         if (EditorGUI.EndChangeCheck())
         {
-            m_MPEnableHeightBlend.floatValue = enableHeightBlend ? 1 : 0;
+            this.enableHeightBlend.floatValue = enableHeightBlend ? 1 : 0;
         }
 
-        if (m_MPEnableHeightBlend.floatValue == 1)
+        if (this.enableHeightBlend.floatValue == 1)
         {
-            m_Material.EnableKeyword("EnableHeightBlend");
-        }
-        else
-        {
-            m_Material.DisableKeyword("EnableHeightBlend");
-        }
-    }
-
-    private void DrawAntiTilling()
-    {
-        EditorGUI.BeginChangeCheck();
-        var enableAntiTilling = EditorGUILayout.Toggle(Styles.enableAntiTilling, m_MPEnableAntiTilling.floatValue == 1);
-        if (EditorGUI.EndChangeCheck())
-        {
-            m_MPEnableAntiTilling.floatValue = enableAntiTilling ? 1 : 0;
-        }
-
-        if (m_MPEnableAntiTilling.floatValue == 1)
-        {
-            m_Material.EnableKeyword("EnableAntiTilling");
+            m_Material.EnableKeyword("_TERRAIN_BLEND_HEIGHT");
             EditorGUI.indentLevel++;
-            m_MaterialEditor.VectorProperty(m_MPFadeDistance, "Fade Distance");
+            m_MaterialEditor.RangeProperty(heightBias, "Height bias");
             EditorGUI.indentLevel--;
         }
         else
         {
-            m_Material.DisableKeyword("EnableAntiTilling");
+            m_Material.DisableKeyword("_TERRAIN_BLEND_HEIGHT");
+        }
+    }
+
+    private void DrawCliffRender()
+    {
+        EditorGUI.BeginChangeCheck();
+        var enableCliffRender = EditorGUILayout.Toggle(Styles.enableCliffRender, enableCliffRenderProp.floatValue == 1);
+        if (EditorGUI.EndChangeCheck())
+        {
+            enableCliffRenderProp.floatValue = enableCliffRender ? 1 : 0;
+        }
+
+        if (enableCliffRenderProp.floatValue == 1)
+        {
+            m_Material.EnableKeyword("EnableCliffRender");
+            EditorGUI.indentLevel++;
+            m_MaterialEditor.RangeProperty(cliffBlendProp, "Cliff Blend");
+            EditorGUI.indentLevel--;
+        }
+        else
+        {
+            m_Material.DisableKeyword("EnableCliffRender");
         }
 
     }
@@ -155,9 +185,10 @@ public class HMKTerrainShaderGUI : ShaderGUI
 
     static class Styles
     {
-        public static GUIContent controlMap = new GUIContent("Control Map");
+        public static GUIContent normalMap = new GUIContent("Normal Map");
+        public static GUIContent controlMap0 = new GUIContent("Control Map0");
+        public static GUIContent controlMap1 = new GUIContent("Control Map1");
         public static GUIContent enableHeightBlend = new GUIContent("Enable Height Blend");
-        public static GUIContent enableAntiTilling = new GUIContent("Enable Anti-Tilling");
-        public static GUIContent enableCloudShadow = new GUIContent("Enable CloudShadow");
+        public static GUIContent enableCliffRender = new GUIContent("Enable Cliff Render");
     }
 }

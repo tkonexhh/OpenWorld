@@ -11,60 +11,60 @@ using SimpleJSON;
 
 
 
-namespace XHH.item
+namespace OpenWorld.item
 {
 
-public sealed partial class ItemExchange :  Bright.Config.BeanBase 
-{
-    public ItemExchange(JSONNode _json) 
+    public sealed partial class ItemExchange : Bright.Config.BeanBase
     {
-        { if(!_json["id"].IsNumber) { throw new SerializationException(); }  Id = _json["id"]; }
-        { if(!_json["num"].IsNumber) { throw new SerializationException(); }  Num = _json["num"]; }
-        PostInit();
+        public ItemExchange(JSONNode _json)
+        {
+            { if (!_json["id"].IsNumber) { throw new SerializationException(); } Id = _json["id"]; }
+            { if (!_json["num"].IsNumber) { throw new SerializationException(); } Num = _json["num"]; }
+            PostInit();
+        }
+
+        public ItemExchange(int id, int num)
+        {
+            this.Id = id;
+            this.Num = num;
+            PostInit();
+        }
+
+        public static ItemExchange DeserializeItemExchange(JSONNode _json)
+        {
+            return new item.ItemExchange(_json);
+        }
+
+        /// <summary>
+        /// 道具id
+        /// </summary>
+        public int Id { get; private set; }
+        /// <summary>
+        /// 道具数量
+        /// </summary>
+        public int Num { get; private set; }
+
+        public const int __ID__ = 1814660465;
+        public override int GetTypeId() => __ID__;
+
+        public void Resolve(Dictionary<string, object> _tables)
+        {
+            PostResolve();
+        }
+
+        public void TranslateText(System.Func<string, string, string> translator)
+        {
+        }
+
+        public override string ToString()
+        {
+            return "{ "
+            + "Id:" + Id + ","
+            + "Num:" + Num + ","
+            + "}";
+        }
+
+        partial void PostInit();
+        partial void PostResolve();
     }
-
-    public ItemExchange(int id, int num ) 
-    {
-        this.Id = id;
-        this.Num = num;
-        PostInit();
-    }
-
-    public static ItemExchange DeserializeItemExchange(JSONNode _json)
-    {
-        return new item.ItemExchange(_json);
-    }
-
-    /// <summary>
-    /// 道具id
-    /// </summary>
-    public int Id { get; private set; }
-    /// <summary>
-    /// 道具数量
-    /// </summary>
-    public int Num { get; private set; }
-
-    public const int __ID__ = 1814660465;
-    public override int GetTypeId() => __ID__;
-
-    public  void Resolve(Dictionary<string, object> _tables)
-    {
-        PostResolve();
-    }
-
-    public  void TranslateText(System.Func<string, string, string> translator)
-    {
-    }
-
-    public override string ToString()
-    {
-        return "{ "
-        + "Id:" + Id + ","
-        + "Num:" + Num + ","
-        + "}";
-    }
-    
-    partial void PostInit();
-    partial void PostResolve();
-}
 }

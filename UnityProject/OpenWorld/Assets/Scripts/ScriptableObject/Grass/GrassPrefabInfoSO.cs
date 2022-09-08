@@ -4,7 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 
-namespace XHH
+namespace OpenWorld
 {
     [CreateAssetMenu(menuName = "ScriptableObject/GrassPrefabInfoSO", fileName = "GrassPrefabInfoSO")]
     public class GrassPrefabInfoSO : SerializedScriptableObject

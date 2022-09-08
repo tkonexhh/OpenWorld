@@ -13,7 +13,7 @@ float GGXNDF(float roughness, float NdotH)
 }
 
 //几何阴影函数
-float GGXGSF(float NdotL, float NdotV, float roughness)
+float V_SmithGGX(float NdotL, float NdotV, float roughness)
 {
     float roughnessSqr = roughness * roughness;
     float NdotLSqr = NdotL * NdotL;
@@ -24,20 +24,47 @@ float GGXGSF(float NdotL, float NdotV, float roughness)
     return Gs;
 }
 
+float V_SmithGGXCorrelated(float NdotL, float NdotV, float roughness)
+{
+    float a2 = roughness * roughness;
+    float lambdaL = NdotL * sqrt((NdotV - a2 * NdotV) * NdotV + a2);
+    float lambdaV = NdotV * sqrt((NdotL - a2 * NdotL) * NdotL + a2);
+    float v = 0.5 / (lambdaL + lambdaV);
+    return saturate(v);
+}
+
+float V_SmithGGXCorrelated_Fast(float NdotL, float NdotV, float roughness)
+{
+    float v = 0.5 / lerp(2.0 * NdotL * NdotV, NdotL + NdotV, roughness);
+    return saturate(v);
+}
+
+
+float Visibility(float NdotL, float NdotV, float roughness)
+{
+    return V_SmithGGXCorrelated_Fast(NdotL, NdotV, roughness);
+}
+
+// half D_GGX(half roughness, half NdotH)
+// {
+//     roughness = Pow4(roughness);
+//     half D = (NdotH * roughness - NdotH) * NdotH + 1;
+//     return roughness / (PI * D * D);
+// }
+
 float D_Function(float roughness, float NdotH)
 {
-    float lerpSquareRoughness = pow(lerp(0.002, 1, roughness), 2);
-    // float lerpSquareRoughness = (1 / (1 + roughness * roughness));
-    float D = lerpSquareRoughness / (pow((NdotH * NdotH * (lerpSquareRoughness - 1) + 1), 2) * PI);//与虚幻一致
-    return D;
+    float a2 = roughness * roughness;
+    float f = (NdotH * NdotH) * (a2 - 1.0) + 1.0;
+    return a2 / (f * f);
 }
 
 float G_Function(float NdotL, float NdotV, float roughness, float kInDirectLight)
 {
-    float GLeft = NdotL / lerp(NdotL, 1, kInDirectLight);
-    float GRight = NdotV / lerp(NdotV, 1, kInDirectLight);
-    // float GLeft = NdotL / (NdotL * (1 - kInDirectLight) + kInDirectLight);
-    // float GRight = NdotV / (NdotV * (1 - kInDirectLight) + kInDirectLight);
+    // float GLeft = NdotL / lerp(NdotL, 1, kInDirectLight);
+    // float GRight = NdotV / lerp(NdotV, 1, kInDirectLight);
+    float GLeft = NdotL / (NdotL * (1 - kInDirectLight) + kInDirectLight);
+    float GRight = NdotV / (NdotV * (1 - kInDirectLight) + kInDirectLight);
     //和虚幻不同
     float G = GLeft * GRight;
     return G;
@@ -49,16 +76,17 @@ float G_Function(float NdotL, float NdotV, float roughness)
     return G_Function(NdotL, NdotV, roughness, kInDirectLight);
 }
 
-// float3 F_Function(float VdotH, float3 F0)
+
+// float F_Schlick(float VdotH, float F0)
 // {
-//     float3 F = F0 + (1 - F0) * exp2((-5.55473 * VdotH - 6.98316) * VdotH);//与虚幻一致
+//     float F = F0 + (1 - F0) * pow(1 - VdotH, 5);
 //     return F;
 // }
 
-//F项 直接光
-
-real3 F_Function(float HdotL, float3 F0)
+float3 F_Function(float VdotH, half3 F0)
 {
-    float Fre = exp2((-5.55473 * HdotL - 6.98316) * HdotL);
-    return lerp(Fre, 1, F0);
+    // float3 F = F0 + (1 - F0) * exp2((-5.55473 * VdotH - 6.98316) * VdotH);//与虚幻一致
+    // return F;
+    float f = pow(1.0 - VdotH, 5.0);
+    return F0 + (1 - F0) * f;
 }

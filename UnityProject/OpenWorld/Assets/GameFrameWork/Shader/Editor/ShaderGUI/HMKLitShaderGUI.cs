@@ -18,7 +18,13 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
     private MaterialProperty metallicScaleProp { get; set; }
     private MaterialProperty roughnessScaleProp { get; set; }
     private MaterialProperty occlusionScaleProp { get; set; }
+    private MaterialProperty emissionScaleProp { get; set; }
+    private MaterialProperty emissionColorProp { get; set; }
+    private MaterialProperty emissionBreathOnProp { get; set; }
+    private MaterialProperty breathSpeedProp { get; set; }
 
+
+    // private MaterialProperty m_MPUseGIMap;
     //------
 
     private bool m_BasicFoldout = true;
@@ -27,6 +33,10 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
     {
         base.OnGUI(materialEditor, properties);
         BasicGUI();
+        GUILayout.Space(10);
+        DrawQueueOffsetField();
+
+        EnableBakeEmission();
     }
 
     protected override void UpdateMaterialProperty(MaterialProperty[] props)
@@ -40,10 +50,34 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
         metallicScaleProp = FindProperty("_MetallicScale", props);
         roughnessScaleProp = FindProperty("_RoughnessScale", props);
         occlusionScaleProp = FindProperty("_OcclusionScale", props);
+
+        emissionScaleProp = FindProperty("_EmissionScale", props);
+        emissionColorProp = FindProperty("_EmissionColor", props);
+        emissionBreathOnProp = FindProperty("_Emission_Breath_On", props);
+        breathSpeedProp = FindProperty("_BreathSpeed", props);
+
+        // m_MPUseGIMap = FindProperty("_GIMap", props);
     }
 
     protected override void OnOptionGUI()
     {
+        EditorGUI.BeginChangeCheck();
+        // EditorGUI.showMixedValue = m_MPUseGIMap.hasMixedValue;
+        // var enabled = EditorGUILayout.Toggle(TStyles.useGIMap, m_MPUseGIMap.floatValue == 1);
+        // if (EditorGUI.EndChangeCheck())
+        // {
+        //     m_MPUseGIMap.floatValue = enabled ? 1 : 0;
+        //     if (m_MPUseGIMap.floatValue == 1)
+        //     {
+        //         m_Material.EnableKeyword("_GIMAP_ON");
+        //     }
+        //     else
+        //     {
+        //         m_Material.DisableKeyword("_GIMAP_ON");
+        //     }
+        // }
+        // EditorGUI.showMixedValue = false;
+
 
     }
 
@@ -68,6 +102,8 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
             }
         }
 
+        DrawTileOffset(m_MaterialEditor, baseMapProp);
+
         m_BasicFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(m_BasicFoldout, "PBR Setting");
         if (m_BasicFoldout)
         {
@@ -81,21 +117,84 @@ internal class HMKLitShaderGUI : HMKBaseShaderGUI
             m_MaterialEditor.RangeProperty(metallicScaleProp, "Metallic Scale");
             m_MaterialEditor.RangeProperty(roughnessScaleProp, "Roughness Scale");
             m_MaterialEditor.RangeProperty(occlusionScaleProp, "Occlusion Scale");
+
+            m_MaterialEditor.ColorProperty(emissionColorProp, "Emission Color");
+            EditorGUI.BeginChangeCheck();
+            var emissionScale = m_MaterialEditor.RangeProperty(emissionScaleProp, "Emission Scale");
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (emissionScale > 0)
+                {
+                    EnableBakeEmission();
+                }
+                else
+                {
+                    DisableBakeEmission();
+                }
+            }
+
+            DrawEmissionBreath();
+
+
             EditorGUI.indentLevel--;
 
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
 
+    private void DrawEmissionBreath()
+    {
+        // m_MaterialEditor.ShaderProperty(emissionBreathOnProp, "Emission Breath");
+
+        EditorGUI.BeginChangeCheck();
+        EditorGUI.showMixedValue = emissionBreathOnProp.hasMixedValue;
+        var enabled = EditorGUILayout.Toggle(TStyles.emissionBreath, emissionBreathOnProp.floatValue == 1);
+        if (EditorGUI.EndChangeCheck())
+        {
+            emissionBreathOnProp.floatValue = enabled ? 1 : 0;
+            if (emissionBreathOnProp.floatValue == 1)
+            {
+                DisableBakeEmission();
+                m_Material.EnableKeyword(TShaderKeywords.EMISSION_BREATH_ON);
+            }
+            else
+            {
+                EnableBakeEmission();
+                m_Material.DisableKeyword(TShaderKeywords.EMISSION_BREATH_ON);
+            }
+        }
+
+        EditorGUI.showMixedValue = false;
+
+        if (emissionBreathOnProp.floatValue == 1)
+        {
+            m_MaterialEditor.FloatProperty(breathSpeedProp, "Breath Speed");
+        }
+    }
+
+    void EnableBakeEmission()
+    {
+        if (emissionScaleProp.floatValue > 0 && emissionBreathOnProp.floatValue == 0)
+            m_Material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
+    }
+
+    void DisableBakeEmission()
+    {
+        m_Material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+    }
+
+
 
     static class TStyles
     {
-        public static readonly GUIContent pbrMap = new GUIContent("PBR Map", "R:金属度 G:粗糙度 B:AO");
+        public static readonly GUIContent pbrMap = new GUIContent("MRAE Map", "R:金属度 G:粗糙度 B:AO A:Emission");
+        public static readonly GUIContent emissionBreath = new GUIContent("Emission Breath", "是否开启自发光呼吸");
     }
 
     static class TShaderKeywords
     {
         public static readonly string _PBRMAP_ON = "_PBRMAP_ON";
+        public static readonly string EMISSION_BREATH_ON = "_EMISSION_BREATH_ON";
     }
 
 }

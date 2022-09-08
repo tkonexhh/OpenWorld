@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 using Unity.Mathematics;
 using UnityEngine.Profiling;
 
-namespace XHH
+namespace OpenWorld
 {
 
     // Preferrably want to have all buffer structs in power of 2...

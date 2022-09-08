@@ -1589,4 +1589,888 @@ MonoBehaviour:
     m_importFrom: Assets/Scripts/Attribute
     m_exportTo: 
     m_variantName: 
+  - m_assetDatabaseId: 0437c2ac1ed534911be7d049c05a3736
+    m_importFrom: Assets/GameFrameWork/Editor/ScriptCreatorEditor.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 222564fa03adc1f4ca19502eee23c08d
+    m_importFrom: Assets/Scripts/Tools/NewBehaviourScript.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e7cc0b38d9cb41b0b0ca3b78f8657351
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/RectTransformExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 44ec7cd3ded72e546972a3072b0e2e19
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Collections/DictionaryExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: faeb0d008f6c07f49a1c0f6000aa7ff6
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/ReflectionHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8c2f356f8d9cfde4ca9ce374957bf11d
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Collections
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 40b0aa236dde57540b78a5f5a1ca803b
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Collections/CollectionExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 15a993e079013a247857db6bda3f1d4e
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/SceneHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 12c96b9544d4f684bb7200dc6a9e5af5
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/StringExtension.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 52040fdf612799f479f9d32898e0d670
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Collections/ListExtension.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bcc21f97096038240b2ec52419159572
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 41f1676fa3bda3c40846e8676aab8ba8
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/ColorExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 435fc50399495df47bf1f5db83b1abbb
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/MathHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: efb0d6987a7527f4aa60a16c55c4cc5f
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/EventHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ee677ae840129b9448078c928b5043e5
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/GameObjectExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7c17874847099c446a1d968cebdf96dd
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/TransformExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 81d0079bdfdf41c4f9001099a655d88b
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/UGUIExtensions.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 15b0bbd77f1646142919adb716aed38f
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/TextureExtension.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: df8f8cd936bb75147878429ad282a5d6
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/MeshHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 51257875a207f6040b3337441b09f89c
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Extension/Unity/VectorExtension.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 17a4ca17527bf4b0896febc8ec63ec08
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Helper/IOHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a705b68d4acf74b12b1129c8563d9ea4
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Helper/PathHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 01381ce3b0483024b95c943872d7574b
+    m_importFrom: Assets/Scripts/Main
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d299e486c5bb546498525f055716a06c
+    m_importFrom: Assets/Scripts/Main/GameLauncher.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 21cbf465081ece94ea4a2e619279d8d7
+    m_importFrom: Assets/GameFrameWork/Scripts/Renderer/RenderFeature/BaseRenderFeature.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6b087fc361a0b7a4ca37cc1f6f36ee87
+    m_importFrom: Assets/Scripts/GameModule/WorldModule/TerrainComponent/Data/MeshData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5c669f2a637f3534fa260f460073515f
+    m_importFrom: Assets/Scripts/GameModule/Base/IModule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 259c220bc03a00347b9e4b1ad400ea26
+    m_importFrom: Assets/Scripts/GameModule/GPUDrivenModule/IndirectRenderer.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0d432f1807c3f5a4ea3b5dd767c1bb5e
+    m_importFrom: Assets/Scripts/ScriptableObject/Grass/GrassPrefabInfoSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5c539a1b634a7024e92b8283556919ee
+    m_importFrom: Assets/Scripts/GameModule/Base/IModuleComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: aa3c614d27c83d544a1e890b98dadc3c
+    m_importFrom: Assets/GameFrameWork/Scripts/Utils/Helper/ComputeShaderHelper.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ab4f4193507bbff4696db91c069e7443
+    m_importFrom: Assets/Scripts/GameModule/CharacterModule/CharacterAiming.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ab5b7a0b2f2a82746a1567e050e14e8a
+    m_importFrom: Assets/Scripts/ScriptableObject/UnityEditor/WorldTerrainChunkSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 26956ed5131892a4b8fe3065b9015d4b
+    m_importFrom: Assets/Scripts/GameModule/CharacterModule/CharacterLocomotion.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7f42572040cac4a4baa1a6994fca6683
+    m_importFrom: Assets/Scripts/Demo/StreamTest.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d227428a0d4fc4c439d6ce961a8d4c83
+    m_importFrom: Assets/Scripts/GameModule/Base/AbstractModule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 05091049326eeac409e745ff9123be56
+    m_importFrom: Assets/GameFrameWork/Scripts/Base/Pool/ObjectPool/ObjectPool.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f8087a9e9e70c4544b66da46a7507fbf
+    m_importFrom: Assets/Scripts/GameModule/Base/AbstractModuleComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 60df1183ab40dd14caf881088e804d91
+    m_importFrom: Assets/Scripts/GameModule/GPUDrivenModule/Grass/StreamingGrassTileSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f034c6ce5f41b14488189c8a3e5c2be0
+    m_importFrom: Assets/Scripts/ScriptableObject/IndirectDrawSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 31106cc1ec1cbf445b8a84ebb00e5e30
+    m_importFrom: Assets/Scripts/Tools/Editor/GrassPrefabInfoWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ccb73bce56445e0478bfe7fe6ba3066a
+    m_importFrom: Assets/Scripts/ScriptableObject/UnityEditor/WorldTerrainBakeSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3cd5b74b976679941807589d21bd9b77
+    m_importFrom: Assets/Scripts/GameModule/WorldModule/TerrainComponent/QuadTree/TerrainQuadTree.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dfd6e3cb74a66d94b869dacf3f2ea2f6
+    m_importFrom: Assets/Scripts/ScriptableObject/UnityEditor/WorldSettingConfig.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: da7496fd8e0e660448668c69143ad1f0
+    m_importFrom: Assets/Scripts/ScriptableObject/Tree/TreeTileSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1d57dd9c75a3ab14c9e609af9fee1a62
+    m_importFrom: Assets/Scripts/Tools/Editor/World/WorldEditorWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 61ef85bad2797a04986925f225e654b3
+    m_importFrom: Assets/Scripts/ScriptableObject/Grass/GrassTileSO.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c67425a35e74e9442b4e1f7280b10c36
+    m_importFrom: Assets/Scripts/GameModule/WorldModule/AbstractWorldModuleComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b2f1938ba2a28a948ba69d886953cac6
+    m_importFrom: Assets/GameFrameWork/Scripts/Renderer/RenderFeature/ClusterBasedLightingRenderFeature/ClusterBasedLightingRenderFeature.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 749fbe67f9a1ca948aad6d9404d404a0
+    m_importFrom: Assets/GameFrameWork/Scripts/Renderer/RenderFeature/BufferPassRenderFeature/BufferPassRenderFeature.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bc911de0dabda44e98e083e0f266475f
+    m_importFrom: Assets/Scripts/GameModule/GPUDrivenModule/GPUDrivenModule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f913156a08fccca47bdd5e30b9593dde
+    m_importFrom: Assets/Scripts/ScriptableObject/UnityEditor/WorldPlantBakeConfig.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2c1247ff3bdc0e34ab0ec527b5754904
+    m_importFrom: Assets/Scripts/GameModule/GPUDrivenModule/IndirectInstanceData.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 00af715b885eafa4eb6790090110652d
+    m_importFrom: Assets/Scripts/GameModule/GPUDrivenModule/GrassComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 96491d5ea3b6138478749a24d85f97cd
+    m_importFrom: Assets/Scripts/GameModule/WorldModule/WorldModule.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0282190602f20fb46901e6059ef1c036
+    m_importFrom: Assets/Scripts/GameModule/WorldModule/TerrainComponent/TerrainComponent.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 112ed42ebca4050479c5f188b15f2395
+    m_importFrom: Assets/Scripts/Tools/World/Grass/GrassPainter/Editor/GrassPainterWindow.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: baca70ab76279f543a053ad34b2a9be1
+    m_importFrom: Assets/Scripts/Main/GameWorld.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d1c3109bdb54ad54c8a2b2838528e640
+    m_importFrom: Assets/Scenes/SampleScene.unity
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8f431da85a0586f49860b23c98342436
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_Lit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3d6d35daba095f94e84c9ff9074803c3
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/LitGBufferPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 6c38749df99bd7f4e94e0bbedba9a575
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_Lit_NoMetallic.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1052264f576c43e468277811908b5caa
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Utils
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c44e9a1aef618144ca003d565437de0b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/HMK_UI_DefaultAlpha4ComAndFont.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7ad5faeea98a7ce4e8adfb53a2904792
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_BlendTerrain.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 505f8b389ec4479439ee17ed1cc42f35
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_EdgeEmi.mat
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 60e6c679eb5571542bc75f892fe0214e
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Hidden/Terrain/HMK_Terrain_FarComposite.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9cdc7ad2ffca4424c846106cdd498d93
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/MaterialMenuEditor.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7b6c898773314f945afad5a5158f712b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/DissolveDisturbance.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ea26cd88f05300f499a811d778cc0984
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_VertexBlendLit_NoMetallic.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0c7fbd424b9ae774e94593db256e5985
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Impostor.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8910a12edd8a08142a93f2f6e66da32a
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Interior2D.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0c75f0554927d854ea67ddcc2690c359
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/HMK_Shadow.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c42d060778356424eab2eda6049ef358
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/Font.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e66bc64fabe2b444b917fe24f896077e
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_SubImage.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 207fbf8562abb7e4eaeace9705e7f99d
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Character/HMK_Character_Npr.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a5b180d425cd873489b8eca5a93fca27
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/PropertyGUI_Range.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9fdfdc3674f39bd42b1d190681874111
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/DissolveDisturbanceAdvance.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c849fe65f1acf954b9ae38ebdd677cd7
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_Ice.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7455d6af570f3174f9b4a842d17e7aa2
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/HMK_UI_DefaultAlpha4.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ddad70f0a2743fe4387e3da1e63666f3
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_InstancedIndirectGrassTexture.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ad13076b11738464087bca6e59af8db6
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain_SplatMegaEditor.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ea1baa9fce6dbe247ac4757ef7571177
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Flag.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3da3769dbcb25ed4e9849a43c76c98d3
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Lighting/HMK_IrradianceVolume.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d1f0bcedf46ae2f40ac0824778114240
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_GrassTexture.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1c0e13884b125a14e9179d6d3c7d173f
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/PropertyGUI_Int.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5c86f6c097d31f74fa482244f665ba6b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/PlanarReflection
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b65a4c4c54483834daba9984a718fcc4
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_AlphaBlend.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0678c538119826846afb0c83a1d13914
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_SkyAdVance.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1252148f462e23c46b2de5472a63f55e
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/ShaderContainer.prefab
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2d8b7e5bd3e4639498a98b6cd8aa8daa
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/DissolveDisturbanceZwrite.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fa0e3f5056d72604ca92940787fcc417
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/UI_DissolveDisturbance.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fbd9305130698b34fabc4b678ac47fc3
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/HMK_Common.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 00cb07eca392d2543858b2c5a68589e4
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/Mat_PropertyDrawer.mat
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 125669f31eb27ba459d423b08ea9c352
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0f45fd661ef233643a73f2f8ed71410e
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_TerrainLit_LitPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8917b491ec6f5ef488bbf5a4a91e05dd
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Effect
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e4f91cc9f5e3f844fbd982891e480f54
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_Lit_ForwardPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 45fe2c988da2b3140aff336626547c59
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/Grass/HMK_Grass_CullingCS.compute
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dae31b0233bdf13409b6ce4ca1b99840
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/ShaderContainer.prefab
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 316c7b2c56bda924793c72e25c220083
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5f848ccac29181542824220c249189ee
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Crystal.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cd60285791bdd764baafedcbb7f1d1d3
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Hidden/Terrain
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7e76d045f8bc5c84eada17b8ea8c9635
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI/HMKBaseShaderGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d500002744127c248926b45dc7beda10
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI/HMKLitShaderGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4dcd0e3cc518469488819588ea328c90
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Effect/HMK_Effect_Freeze.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 78c5967e13c4809499343c61e3619be7
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Hidden
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cf404e33a1a5afe4b9332a09ced6f1ed
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Fountain.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 26c8325d0ebb7f249b33ec880ca944bb
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/RenderFeature/HMK_RenderFeature_ShowBuffer.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cbd3237e399431445b4bd8017070b6fe
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/Grass/HMK_Grass_CalcLODCS.compute
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 010a06f4138df4843992f742ccf9b7ca
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Character/HMK_Character_Skin.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2388cfb24b536a64a9f8dcb581220ce4
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/IrradianceVolume/HMK_SHFromCubeMap.compute
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8211cec8b10427d47ae65ee59e185edf
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_CrystalBall.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c4e3990b342d71b43aefdaa580e978db
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1009400d6111ae246a7129719cd6e0af
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/Grass/HMk_Grass_3ScanInstanceCS.compute
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e258ff42836695542a6dce786aba551b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/HMK_UI_DefaultAlpha4ComAndFont_Effect.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9c8c64c1723f0d542b34b8174d852eae
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/ShaderContainer.prefab
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e15bebd004805144090615b782334fb8
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain_SplatMap.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3d85067c4c0ac3e4d91def5384dbbdbd
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Lighting/HMK_LightingEquation_Character.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 63f678fcbc0a93d4b91dd00e027dcdc3
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/UI-Default.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 52684d7ead6986e4fa12f53cf5b946ba
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/RenderFeature/HMK_RenderFeature_SSAO.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f5e2c4995f137154eb5ca7c8f9213865
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_EdgeEmi.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 83f257771661c884c998e839ff926669
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain_FarIndirect.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 640135503fa56a648b25da55747dda76
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/LensFlares
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: eb64e606158bc994a8e5eb227e22e1bb
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Lit_AutoEmission.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 87d85837b422b6d4cbc99b3136c6868e
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_Refract.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4b66e72177840714e9683f967a227feb
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain_SplatMega.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 706a439b219f7784ba994a2d66438d3c
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain_Far.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8b6d893167c86834cbb319ab795ca0c8
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/HMK_Dither.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2a8dc8780f8291d4bbe686b6ce18bbfd
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/DisturbanceAddMask.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f7d54362c16073e4e89017941e7fc177
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Hidden/ASETemplete/ASETemplete_HMKLit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 77206b0759139b041a9dadf1b12bd336
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_DepthOnlyPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c16467355449d674fa1f3ea47987682f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/Grass/HMk_Grass_CopyInstanceDataCS.compute
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4e5966856fe11fd40a68223b26c6d6d4
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Lighting/HMK_PBREquation.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a4d4aaacd7b635e49b99d96bdaef190c
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/WarmupShaderVariants.shadervariants
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 19b23b36127ca2a4e8d925fe873c73f4
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Utils/Utils_VertexColor.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4f7503e8bca873e46a0f54cee27e62bc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_Lit_NoMetallic_Input.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cf1346d5dbebd8a4faef1f0d29e97fca
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Lighting/HMK_LightingEquation.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a7d7393b572e09240b3d4113c0520873
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_Uber.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b58f187a7bd450d4d9e512b8f89d9d5a
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_VertexLit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b2d45db29f69c034da6281f59574933a
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden/Bending.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2f3bfba21037ea54b9e85427c35734b1
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_TerrainLit_Input.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 462a0706606c653498628da8caee42af
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/HMK_UI_ImageSprite.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 40fb8bbe252dad743a384a6555f6a0bc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden/GrassBender_Trial.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 11d05c9ff21651541ad21212bbac1e15
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/Grass
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8b3526fea758f08429b26648415030a0
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden/GrassBender_Mesh.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 29d9265a2a6d33f4787a74642db087fc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/WarmupShaderVariants.shadervariants
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 75473f583619c494286257669e2ef0ee
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_TerrainLit_DepthPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1281f953935c1bd43bdbede7f3fed580
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_DecalPbr.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9c6f1cffc61d8394fa020b985c8b750f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Vortex.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c029b67d2bd65f54e987b36224177742
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden/GrassBurner.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 707ce15c5cf1fee49a7a1f9cfdc231ce
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_StencilLit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cfea0f41477d1c64980bb05f6c13bd27
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden/GrassCutter.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8e94a7ab661ecb445b9c08da87843e3b
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI/ParticleUberShaderGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 11a698a82eb65894d96ead1443df1d6f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 44420d3f5636ce141a03f21482381297
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_Grass_Common.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 8cd5f3d6f25fdcf4cbedcf61ec315790
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/Wind/HMK_WindComposite.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a7e9e628f50ca1f4184d923d2f44cccc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Collection.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e45cf158143d8df4cb912bc4ff00ae79
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Sea.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c77fdfea0874c72468f2fa6b7adb829b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Sky.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 388d31a018178b149b12aa784a111ab4
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/Wind/HMK_WindVisualize.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2b9b27c3c9cdbbf40a152a3a1ec3da7c
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Effect/HMK_Effect.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dcf41dfb3bad32340b68f1c2b75dfa8c
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Pom.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 87b4e4652d773e04cba0bb5ef47ebbbb
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/LensFlares/HMK_SmallEffect_LensFlares.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 229cc54853ffbfd449f2c6aa7d74ed7f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/WarmupShaderVariants.shadervariants
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 11f743ec12981954f96be1804271a333
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_Grass.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 45e6a745ff614124bae9d11b0cc5590f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_ShadowOnly.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 17ab7fd3ac9215a44a9fa2466007ad94
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Effect/HMK_Effect_Freeze_Include.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: c4ef2b06a7301874c9da8766058c8119
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Hidden/Wind.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 73b38a8d6d6b82446be5180c9c113154
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_LeavesPBR.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 60a04b7826c6dc14a9cf05796efeaf70
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/PropertyGUI_ReadOnly.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1acde251f02171640a2f83f36a0f2408
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ShaderGlobalConstants.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: cbc4baceca80d6e42903d97add39172b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_WaterFallSty.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 311a62474ae111d4ca24077108f5458f
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1eb61318707e6c540adf9784477a9823
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_ShadowCasterPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 7ebb72244fea46944aca65cb396a0e2b
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/DissolveDisturbanceAdvanceOp.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b6c1f6c83793f8f48839863ca544638a
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI/HMKTerrainShaderGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 642dcf0846da0774f8ae315c93222d14
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/AmplifyImpostors.cginc
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e74f71c71cf1d894da39649b43032381
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/HMK_UI_ImageSpriteAlpha4.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 803d1eda1a059e845b06e8dd58e3d413
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_InstancedGrass.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f2dc7edccbdd7e8488ed7b5152856bdd
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/PropertyGUI_SingleLine.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 457c5787aa8bca640ba3ebc1297f8a64
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/Wind
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a90ed6e0deb4f864485f7e7ad87648d2
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/UI/HMKUI.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 0c5c15d0c1aada24aaf6d6a8899b1419
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Glass_Unlit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e3404a3279184b440b510fbc1b561605
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/FontAlpha_Scene.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b81154e6da22fb74690230aa1a73907d
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Utils/Utils_HeightToNormal.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 5de8e914b51e0c54bb26f03f7aa74767
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/Global.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: bb0807f38b7712f41ab01ee0b0fc465a
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_Lit_MetaPass.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e4cf2b448bdea6f43b4d738701c5e052
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/Fog/HMK_Scene_PlaneFog.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e0ea2724f200fb546a06532bb12ccec7
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Utils/Utils_ShowVertexColor.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 9569f7d139a42be45bb894b08edc24fc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_Decal.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dfc5493c99aa3dd41b2a05f1c1744cf1
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_Terrain_GPUDriven.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d98222eeeb511b545a589f3349adf18a
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI/ShaderEnum.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: a7dd134305fdb964f8788f75c301bccf
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/AmplifyImpostorsConfig.cginc
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: efb7f4a3986143c47bb972bdef7e92df
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_NoLit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 1de647a3b33100942947602406f4869f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/HMK_Normal.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2a77190373e34a64f8d7f7288b0c2dc1
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/WarmupShaderVariants.shadervariants
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4767219588a7f004186530de2d4d9264
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/UI
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: f64e39563181ded43809c95cc8a2c94f
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Terrain/HMK_TerrainLit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 82cafe9bf10899345a80bd1f7ff7c637
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_InteriorCube.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: e9996c8407fcbb443a1194c19636bc13
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/Fog.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 99a0f28bb9e9420448b6298aa7e71cbc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_InstancedIndirectGrass.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: b4ff0e84fcc3aea44b804d892c6d513a
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_SimpleLit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 83fa45a7a815d3846b2cc116ab2933fc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Grass/HMK_Scene_Grass_Input.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 84dc739d8b420c34a8e4549b4e76a5f3
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/PropertyDrawer.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: d5c26bbd4a5b8a946ab83272f2bdbe7e
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/Environment/Fog
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 3921da41f6a2a8d4bb3658abcce804ff
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/PropertyDraw/PropertyGUI_Vector3.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 2189871d7dd47364492b8e4c6ba593f8
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/ComputeShader/IrradianceVolume/HMK_SH2Texture.compute
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 607aaedde570a2a4bb961ff90f3a8593
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Lighting/HMK_SH.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 241190fbcc3996a4181af8a31e83c9d7
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Hidden/ASETemplete
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 14fc089099714074aa0c354de798a224
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/UI/FontAlpha.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: dc1fc7fd3eec6e549acc50ab2b2333a1
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Particle/HMK_Particle_TImeLimit.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: ebe5f7c7656ae844da65e3320a3487cc
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Base/HMK_Lit_Input.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 925ad89c1ded9214b9c4ecaae92b7d94
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/Scene/HMK_Scene_FakeSplotLight.shader
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 564619aa1b0f4ea4099d736521ce18d0
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Common/SpaceTransforms.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 73117cc2b7c72b141b4fe530ace822f1
+    m_importFrom: Assets/GameFrameWork/Shader/Editor/ShaderGUI/SceneDefaultShaderGUI.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: da0b931bd234a1e43b65f684d4b59bfb
+    m_importFrom: Assets/Plugins/AmplifyShaderEditor/Plugins/Editor/Templates/TemplateMenuItems.cs
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 790f28863ef204e4bbfbd4f30b1710a2
+    m_importFrom: Assets/GameFrameWork/Shader/Resources/HLSLIncludes/Lighting/GBuffer.hlsl
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 4a8e21d5c33334b11b34a596161b9360
+    m_importFrom: Assets/Settings/URP/ForwardRenderer.asset
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: fc767587ed4bdbb409ebb7fbabfe43f1
+    m_importFrom: Assets/Res/Material/Skybox/New Material.mat
+    m_exportTo: 
+    m_variantName: 
+  - m_assetDatabaseId: 19ba41d7c0026c3459d37c2fe90c55a0
+    m_importFrom: Assets/Settings/URP/UniversalRP-HighQuality.asset
+    m_exportTo: 
+    m_variantName: 
   m_version: 2

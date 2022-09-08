@@ -3,30 +3,40 @@ Shader "HMK/Scene/Sea"
     Properties
     {
         _Distortion ("Distortion", Range(0, 5)) = 2
-        _FlowSpeed ("FlowSpeed", Range(-5, 5)) = 1
-        [HideInInspector]_FoamColor ("FoamColor", Color) = (1, 1, 1, 1)
-        [NoScaleOffset]_FoamMap ("FoamMap", 2D) = "White" { }
-        _FoamMapTiling ("FoammapTiling", Range(0, 10)) = 8
-        // _FoamColorFrequence ("FoamColorFrequence", Float) = 1
-        _FoamFrequence ("FoamFrequence", Range(1, 100)) = 8
-        [HideInInspector]_FoamDepth ("FoamDepth", Range(0, 1)) = 1
-        [HideInInspector]_FoamBlendDepth ("FoamBlendDepth", Range(0, 1)) = 1
-        [HideInInspector]_FoamIntensity ("FoamIntensity", Range(0, 1)) = 1
-        _NormalTiling ("NormalTiling", Range(0, 10)) = 0.5
+        _FlowSpeed ("FlowSpeed", vector) = (0, 0, 0, 0)
+        // _FlowSpeedY ("FlowSpeedY", Range(-10, 10)) = 0
+        // [HideInInspector]_FoamColor ("FoamColor", Color) = (1, 1, 1, 1)
+        [SingleLine]_FoamMap ("FoamMap", 2D) = "White" { }
+        // [SingleLine]_FoamGrendientColor ("FoamGrendientColor ", 2D) = "White" { }
+        [SingleLine]_CubeMap ("CubeMap ", cube) = "White" { }
+        _FoamMapTiling ("FoamMapTiling", Range(0, 200)) = 1
 
-        _WaveSpeed ("FoamSpeed", Range(-5, 5)) = 1
 
-        _BlendDepth ("BlendDepth", Range(0.1, 100)) = 1
+        _NormalTiling ("NormalTiling", Range(0, 200)) = 0.5
+        [SingleLine]_NormalMap ("NormalMap", 2D) = "bump" { }
+        _normalScale ("NormalScale", float) = 1
+        // _WaveSpeed ("FoamSpeed", Range(-5, 5)) = 1
+
+        _BlendDepth ("BlendDepth", Range(0, 100)) = 1
         _BaseColor ("BaseColor", Color) = (1, 1, 1, 1)
-        [HDR]_CausticsColor ("CausticsColor", Color) = (1, 1, 1, 1)
-        _CausticsTiling ("CausticsTiling", Range(0, 10)) = 10
+        [HDR] _BaseColorFar ("BaseColorFar", Color) = (1, 1, 1, 1)
+        _CausticsColor ("CausticsColor", Color) = (1, 1, 1, 1)
+        _CausticsTiling ("CausticsTiling", Range(0, 100)) = 10
         _CausticsSpeed ("CausticsSpeed", Float) = 1
-        [NoScaleOffset]_CubeMap ("Cubemap", Cube) = "white" { }
 
-        [Toggle(UseHighlight)] UseHighlight ("UseHighlight", Float) = 0
-        _HighLightOffset ("HighLightOffset", vector) = (0, 0, 0, 1)
-        [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Int) = 4
-        _SphereMaskPosition ("MaskPosition", vector) = (0, 0, 0, 0)
+        _SpecularExponent ("SpecularExp", vector) = (0, 0, 0, 0)
+        _DepthOffset ("DepthOffset", vector) = (0, 0, 0, 1)
+        // [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Int) = 4
+
+        // _UseRainnyNormal ("userainnyNormal", float) = 0
+        _fresnelPow ("fresnelPow", float) = 1
+        _fresnelBias ("fresnelBias", float) = 0
+        _fresnelScale ("fresnelScale", float) = 1
+
+        [SingleLine] _SSSLut ("SSSLut", 2D) = "white" { }
+        _SubSurfaceSunFallOff ("SubSurfaceSunFallOff", float) = 1
+        _SubSurfaceSun ("SubSurfaceSun", float) = 1
+        _SubSurfaceBase ("SubSurfaceBase", float) = 1
     }
 
     SubShader
@@ -35,7 +45,7 @@ Shader "HMK/Scene/Sea"
         LOD 300
 
         // ZTest [_ZTest]
-        ZWrite On
+        ZWrite Off
 
         Blend one OneMinusSrcAlpha
 
@@ -47,24 +57,29 @@ Shader "HMK/Scene/Sea"
 
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature UseHighlight
-            // -------------------------------------
+            // #pragma shader_feature UseHighlight
+            // #pragma shader_feature UseRainnyNormal
+
             // Unity defined keywords
-            #pragma multi_compile_fog
+            // #pragma multi_compile_fog
+            #pragma shader_feature _FOG_ON
             #pragma vertex vert
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
-
-
+            #include "./../HLSLIncludes/Common/Fog.hlsl"
+            #include "./../HLSLIncludes/Lighting/HMK_LightingEquation.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
             struct appdata
             {
                 float4 positionOS: POSITION;
                 float4 normal: NORMAL;
                 float2 uv: TEXCOORD;
+                float4 tangent: TANGENT;
             };
 
             struct v2f
@@ -75,15 +90,14 @@ Shader "HMK/Scene/Sea"
                 float2 uv: TEXCOORD3;
                 float3 normalWS: TEXCOORD4;
                 half fogFactor: TEXCOORD5;
+                float3 tangent: TEXCOORD6;
+                float3 bitangent: TEXCOORD7;
             };
 
             CBUFFER_START(UnityPerMaterial)
-            float _FlowSpeed;
-
-            TEXTURE2D(_FoamMap);
-            SAMPLER(sampler_FoamMap);
-            TEXTURECUBE(_CubeMap);
-            SAMPLER(sampler_CubeMap);
+            half4 _FlowSpeed;
+            float _FlowSpeedX;
+            float _FlowSpeedY;
 
             float4 _FoamMap_ST;
 
@@ -103,18 +117,35 @@ Shader "HMK/Scene/Sea"
             half _FoamIntensity;
             half _FoamBlendDepth;
             half _FoamMapTiling;
-            half4 _HighLightOffset;
+            half4 _DepthOffset;
             half4 _SphereMaskPosition;
+            half _RefAlpha;
+            half4 _SpecularExponent;
+            half _normalScale;
+
+            half _fresnelBias, _fresnelPow, _fresnelScale;
+            half4 _BaseColorFar;
+            half _UseRainnyNormal;
+
+            half _SubSurfaceSunFallOff;
+            half _SubSurfaceBase, _SubSurfaceSun;
             CBUFFER_END
             SAMPLER(_CameraOpaqueTexture);
 
-            // TEXTURE2D(_ReflectionTex);
-            // SAMPLER(sampler_ReflectionTex);
+            TEXTURE2D(_NormalMap);
+            SAMPLER(sampler_NormalMap);
             TEXTURE2D(_ReflectionTex);
             SAMPLER(sampler_ReflectionTex);
-            // half4 reflection = SAMPLE_TEXTURE2D(_ReflectionTex, sampler_ReflectionTex, screenUV);
 
 
+            TEXTURE2D(_FoamMap);
+            SAMPLER(sampler_FoamMap);
+            TEXTURECUBE(_CubeMap);
+            SAMPLER(sampler_CubeMap);
+            // TEXTURE2D(_FoamGrendientColor);
+            // SAMPLER(sampler_FoamGrendientColor);
+            TEXTURE2D(_SSSLut);
+            SAMPLER(sampler_SSSLut);
 
             v2f vert(appdata v)
             {
@@ -127,75 +158,51 @@ Shader "HMK/Scene/Sea"
                 half fogFactor = ComputeFogFactor(output.positionCS.z);
 
                 output.fogFactor = fogFactor;
+
+
+                output.tangent = TransformObjectToWorldDir(v.tangent.xyz);
+                float vertexTangentSign = v.tangent.w * unity_WorldTransformParams.w;
+                output.bitangent = cross(output.normalWS, output.tangent) * vertexTangentSign;
+
                 return output;
             }
-            //利用cos生成的渐变色，使用网站：https://sp4ghet.github.io/grad/
-            real4 cosine_gradient(float x, real4 phase, real4 amp, real4 freq, real4 offset)
+            float3 NormalFromHeight_World(float In, float Strength, float3 Position, float3x3 TangentMatrix)
             {
-                float TAU = 2. * 3.14159265;
-                phase *= TAU;
-                x *= TAU;
+                float3 worldDerivativeX = ddx(Position);
+                float3 worldDerivativeY = ddy(Position);
 
-                return real4(
-                    offset.r + amp.r * 0.5 * cos(x * freq.r + phase.r) + 0.5,
-                    offset.g + amp.g * 0.5 * cos(x * freq.g + phase.g) + 0.5,
-                    offset.b + amp.b * 0.5 * cos(x * freq.b + phase.b) + 0.5,
-                    offset.a + amp.a * 0.5 * cos(x * freq.a + phase.a) + 0.5
-                );
+                float3 crossX = cross(TangentMatrix[2].xyz, worldDerivativeX);
+                float3 crossY = cross(worldDerivativeY, TangentMatrix[2].xyz);
+                float d = dot(worldDerivativeX, crossY);
+                float sgn = d < 0.0 ?(-1.f): 1.f;
+                float surface = sgn / max(0.00000000000001192093f, abs(d));
+
+                float dHdx = ddx(In);
+                float dHdy = ddy(In);
+                float3 surfGrad = surface * (dHdx * crossY + dHdy * crossX);
+                float3 Out = normalize(TangentMatrix[2].xyz - (Strength * surfGrad));
+                return Out;
             }
-            real3 toRGB(real3 grad)
+            half3 Desaturation(float3 In, float Saturation)
             {
-                return grad.rgb;
+                float luma = dot(In, float3(0.2126729, 0.7151522, 0.0721750));
+                return luma.xxx + Saturation.xxx * (In - luma.xxx);
             }
+
             //噪声图生成
             float2 rand(float2 st, int seed)
             {
                 float2 s = float2(dot(st, float2(127.1, 311.7)) + seed, dot(st, float2(269.5, 183.3)) + seed);
                 return -1 + 2 * frac(sin(s) * 43758.5453123);
             }
-            float noise(float2 st, int seed)
+
+
+            half3 BlendNormals(half3 n1, half3 n2)
             {
-
-
-                st.y += _Time.y * _FlowSpeed;
-
-
-                float2 p = floor(st);
-                float2 f = frac(st);
-
-                float w00 = dot(rand(p, seed), f);
-                float w10 = dot(rand(p + float2(1, 0), seed), f - float2(1, 0));
-                float w01 = dot(rand(p + float2(0, 1), seed), f - float2(0, 1));
-                float w11 = dot(rand(p + float2(1, 1), seed), f - float2(1, 1));
-
-                float2 u = f * f * (3 - 2 * f);
-
-                return lerp(lerp(w00, w10, u.x), lerp(w01, w11, u.x), u.y);
-            }
-            //海浪的涌起法线计算
-            float3 swell(float3 pos, float anisotropy)
-            {
-                float3 normal;
-
-                float height = noise(pos.xz * _NormalTiling, 0.1);
-
-                height = height + noise(pos.xz * _NormalTiling * 0.5, 0.1);
-                height = height + noise(pos.xz * _NormalTiling * 0.25, 0.1);
-                height *= anisotropy / 0.5;//使距离地平线近的区域的海浪高度降低
-                normal = normalize
-                (cross(
-                    float3(0, ddy(height), 1),
-                    float3(1, ddx(height), 0)
-                )//两片元间高度差值得到梯度
-                );
-                return normal;
+                return normalize(half3(n1.xy * n2.z + n2.xy * n1.z, n1.z * n2.z));
             }
 
-            // real4 blendSeaColor(real4 col1, real4 col2)
-            // {
-            //     real4 col = min(1, 1.5 - col2.a) * col1 + col2.a * col2;
-            //     return col;
-            // }
+
 
             float2 hash2(float2 p)//焦散
 
@@ -247,150 +254,333 @@ Shader "HMK/Scene/Sea"
                 }
                 return v;
             }
+            float3 NormalReconstructZ(float2 In)
+            {
+                float reconstructZ = sqrt(1.0 - saturate(dot(In.xy, In.xy)));
+                float3 normalVector = float3(In.x, In.y, reconstructZ);
+                return normalize(normalVector);
+            }
+            float RandomRange_float(float2 Seed, float Min, float Max)
+            {
+                float randomno = frac(sin(dot(Seed, float2(12.9898, 78.233))) * 43758.5453);
+                float Out = lerp(Min, Max, randomno);
 
+                return Out;
+            }
+            float4 Unity_SampleGradient_float(Gradient Gradient, float Time)
+            {
+                float3 color = Gradient.colors[0].rgb;
+                [unroll]
+                for (int c = 1; c < 8; c++)
+                {
+                    float colorPos = saturate((frac(Time) - Gradient.colors[c - 1].w) / (Gradient.colors[c].w - Gradient.colors[c - 1].w)) * step(c, Gradient.colorsLength - 1);
+                    color = lerp(color, Gradient.colors[c].rgb, lerp(colorPos, step(0.01, colorPos), Gradient.type));
+                }
+                #ifndef UNITY_COLORSPACE_GAMMA
+                    color = SRGBToLinear(color);
+                #endif
+                float alpha = Gradient.alphas[0].x;
+                [unroll]
+                for (int a = 1; a < 8; a++)
+                {
+                    float alphaPos = saturate((frac(Time) - Gradient.alphas[a - 1].y) / (Gradient.alphas[a].y - Gradient.alphas[a - 1].y)) * step(a, Gradient.alphasLength - 1);
+                    alpha = lerp(alpha, Gradient.alphas[a].x, lerp(alphaPos, step(0.01, alphaPos), Gradient.type));
+                }
+                float4 Out = float4(color, alpha);
 
-
+                return Out;
+            }
             real4 frag(v2f i): SV_Target
             {
-                real4 col = (1, 1, 1, 1);
-                float sceneZ = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, i.screenPos.xy / i.screenPos.w);
-                float sceneZ1 = Linear01Depth(sceneZ, _ZBufferParams);
-                sceneZ = LinearEyeDepth(sceneZ, _ZBufferParams);
-                half fre4 = (sceneZ - ComputeScreenPos(TransformWorldToHClip(i.positionWS)).w);
-                half fre4FF = clamp(fre4, 0, 1);
+                real4 col = 0;
+                Light mainLight = GetMainLight();
+                mainLight.color = clamp(Desaturate(mainLight.color, 0.9), 0.5, 1) ;
+                mainLight.direction.xyz = normalize(_LightDir);
+                half3 worldViewDir = _WorldSpaceCameraPos + half3(0, 10, 0) - i.positionWS;
 
-                half fre4F = fre4 / _FoamBlendDepth;
-                float distanceFadeFactor = i.positionCS.z * _ZBufferParams.z * 20;
+                half normalizeFresnel = _fresnelScale + (1 - _fresnelScale) * pow(1 - dot(normalize(worldViewDir), normalize(i.normalWS)), _fresnelPow);
+                normalizeFresnel = saturate(normalizeFresnel);
 
-                // fre4 = fre4 / (_BlendDepth * distanceFadeFactor) ;
+                half normalizeFresnelReflect = 0.02 + (1 - 0.02) * pow(1 - dot(normalize(worldViewDir), normalize(i.normalWS)), 10);
+                normalizeFresnelReflect = saturate(normalizeFresnelReflect);
+                float refractDis = -100;
+                half normalizeFresnelRefrac = refractDis + (1 - refractDis) * pow(1 - dot(normalize(worldViewDir), normalize(i.normalWS)), 0.1);
+                normalizeFresnelRefrac = saturate(normalizeFresnelRefrac);
 
-                fre4 = smoothstep(0, _BlendDepth, fre4);// * (1 - distanceFadeFactor);
-                float partZ = i.screenPos.w;
-                float diffZ = saturate((sceneZ - partZ) / 5);//片元深度与场景深度的差值
-                // float ratioZ = sceneZ / partZ;//场景深度与片元深度的比值
-                // const real4 phases = real4(0.28, 0.50, 0.07, 0);//周期
-                // const real4 amplitudes = real4(4.02, 0.34, 0.65, 0);//振幅
-                // const real4 frequencies = real4(0.3, 0.48, 0.08, 0) * _FoamColorFrequence;//频率
-                // const real4 offsets = real4(0.00, 0.16, 0.00, 0);//相位
-                // //按照距离海滩远近叠加渐变色
-                // real4 cos_grad = cosine_gradient(saturate(1.5 - fre4), phases, amplitudes, frequencies, offsets);
-                // cos_grad = clamp(cos_grad, 0, 1);
-                // // col.rgb = toRGB(cos_grad);
+                // half fresnel = 0.2 + saturate((1 - 0.2)) * pow(1 - dot(worldViewDir, i.normalWS), 1);
+                //
+                half reflectFact = reflect(worldViewDir, i.normalWS);
 
-                //海浪波动
-                half3 worldViewDir = normalize(_WorldSpaceCameraPos - i.positionWS);
-                float3 v = i.positionWS - _WorldSpaceCameraPos;
-                float anisotropy = saturate(1 / ddy(length(v.xz)) / 50) ;//通过临近像素点间摄像机到片元位置差值来计算哪里是接近地平线的部分
-                float3 swelledNormal = swell(i.positionWS, anisotropy); //SAMPLE_TEXTURE2D(_WaterNormal, sampler_WaterNormal, i.uv * 5);
+                half fresnel = pow((1 - max(0, dot(i.normalWS, normalize(worldViewDir)))), _fresnelBias) * 2;
+
+                fresnel = saturate(fresnel);
+                // half refractRatio = refract(worldViewDir, i.normalWS, _refractRatio);
 
 
 
+
+
+
+                float3 worldTangent = i.tangent;
+                float3 NormalWS = i.normalWS;
+                float3 worldBitangent = i.bitangent;
+                float3 tanToWorld0 = float3(worldTangent.x, worldBitangent.x, NormalWS.x);
+                float3 tanToWorld1 = float3(worldTangent.y, worldBitangent.y, NormalWS.y);
+                float3 tanToWorld2 = float3(worldTangent.z, worldBitangent.z, NormalWS.z);
+
+                float distanceFadeFactor = saturate(i.positionCS.z * _ZBufferParams.z * 5) ;
+
+
+
+
+                half2 uvPanner1 = (frac(_Time.y * _FlowSpeed.xy) + i.positionWS.xz / _NormalTiling);
+                half2 uvPanner2 = (frac(_Time.y * _FlowSpeed.zw) + i.positionWS.xz / _NormalTiling * 0.5);
+
+                float3 normalMap1 = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uvPanner1));
+                float3 normalMap2 = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uvPanner2));
+
+                half3 RainnyNormal = 0;
+                float rippleShape = 0;
+
+                if (_UseRainnyNormal != 0)
+                {
+                    Gradient _GradientColor = NewGradient(0, 3, 2, float4(1, 1, 1, 0.1906157), float4(0, 0, 0, 0.205803), float4(1, 1, 1, 0.2156542), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float2(1, 0), float2(1, 1), float2(0, 0), float2(0, 0), float2(0, 0), float2(0, 0), float2(0, 0), float2(0, 0));
+                    float rippleTiling = 0.5;//_DepthOffset.w;
+                    float2 randomMosaic = floor(i.positionWS.xz / rippleTiling);
+                    float randomMosaic1 = RandomRange_float(randomMosaic, 0.3, 0.7);
+
+                    float randomMosaic2 = RandomRange_float(randomMosaic + 1, 0.3, 0.7);
+
+                    float2 randomMosaicCombine = float2(randomMosaic1, randomMosaic2);
+
+
+
+                    float2 rippleMask = frac(i.positionWS.xz / rippleTiling);
+
+
+                    rippleShape = distance(0.5, rippleMask) * randomMosaicCombine;
+
+
+                    float randomFlowMask = frac(_Time.y) * 3;
+                    float randomRippleMask2 = RandomRange_float(randomMosaic + 2, 0, 1);
+                    float randomRippleMask = 1 - frac(RandomRange_float(randomMosaic + 2, 0, 1) + randomFlowMask);
+
+                    rippleShape += randomRippleMask;
+
+                    float4 rippleShapeColor = 0;
+                    rippleShape = 1 - Unity_SampleGradient_float(_GradientColor, rippleShape);
+                    rippleShape = min(rippleShape, pow(randomMosaic2, 2)) * step(distance(0.5, rippleMask), 0.5);
+                }
+                half3 worldNormal = BlendNormals(normalMap1, normalMap2);
+
+                half3 specularNormal = worldNormal;
+                _normalScale = lerp(_normalScale, 0, normalizeFresnel);
+                worldNormal = lerp(normalize(half3(0, 0, 1)), worldNormal, _normalScale);
+
+
+
+
+                float3 swelledNormal = float3(dot(tanToWorld0, worldNormal), dot(tanToWorld1, worldNormal), dot(tanToWorld2, worldNormal));
+                float3 specularNormalDis = float3(dot(tanToWorld0, specularNormal), dot(tanToWorld1, specularNormal), dot(tanToWorld2, specularNormal));
+                // swelledNormal = max(swelledNormal, RainnyNormal);
+                // return float4(distanceFadeFactor.rrr, 1);
 
                 float2 screenUV = i.screenPos.xy / i.screenPos.w;
-                // 反射天空盒
-                half3 reflDir = reflect(-worldViewDir, swelledNormal);
-                float4 reflectionColor = SAMPLE_TEXTURECUBE(_CubeMap, sampler_CubeMap, reflDir);
+
+                screenUV = float2((i.screenPos.x + swelledNormal.r * _Distortion * 100), i.screenPos.y) / i.screenPos.w;
+                float2 screenUVRefrac = screenUV;// float2((i.screenPos.x + swelledNormal.r * _Distortion * 100), i.screenPos.y) / i.screenPos.w;
 
 
-                half fresnel = pow(saturate(0.2 - dot(worldViewDir, i.normalWS)), 0.9) * 10 * distanceFadeFactor;
-                float camLength = length(_WorldSpaceCameraPos - i.positionWS);
+                float sceneZ = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, screenUV);
 
-                //岸边浪花
+                half pixelDepth = saturate(abs(i.positionCS.z - i.screenPos.w) / 500);
 
-                //缩放
-                float3 objectScale = float3(length(unity_ObjectToWorld[ 0 ].xyz), length(unity_ObjectToWorld[ 1 ].xyz), length(unity_ObjectToWorld[ 2 ].xyz));
+                // return float4(pixelDepth.rrr, 1);
 
-
-                half4 FoamMapCol = SAMPLE_TEXTURE2D(_FoamMap, sampler_FoamMap, i.uv * _FoamMapTiling * objectScale.x);
-                float foam = saturate(sin((fre4F + FoamMapCol.r * 0.3 - _Time.x * _WaveSpeed * - 1) * _FoamFrequence * 3.14159) * FoamMapCol.g);
-
-                foam = foam * (1 - smoothstep(0, _FoamDepth, fre4F)) * smoothstep(0, 0.5, fre4F);
+                half2 sssUv = saturate(half2(pow(pixelDepth, 0.45), pixelDepth));
 
 
+                half3 SSSColor = SAMPLE_TEXTURE2D(_SSSLut, sampler_SSSLut, sssUv);
+
+                SSSColor = pow(SSSColor, 2.2);
+                // return float4(SSSColor, 1);
 
 
-                // 菲涅尔反射
-                float f0 = 0.02;
-                float vReflect = f0 + (1 - f0) * pow(1 - dot(worldViewDir, swelledNormal), 2);
-                vReflect = saturate(vReflect * 0.5);
 
 
-                Light mainLight = GetMainLight();
+                float3 reflDir = reflect(-worldViewDir, swelledNormal);
 
-                // 菲涅尔反射
-                half3 specularLighting = 0;
-                #ifdef UseHighlight
-                    float3 lightColorAndAttenuation = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
-                    half NdotL = saturate(dot(i.normalWS, mainLight.direction));
-                    half3 specular = half3(1, 1, 1) * 10;
-                    half normalizationTerm = 10 * 4.0h + 2.0h;
-                    specularLighting = float3(0.5, 0.5, 1);
+                half4 EnvReflectColor = SAMPLE_TEXTURECUBE(_CubeMap, sampler_CubeMap, reflDir);
+                // half4 EnvReflectColor = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflDir, 0);
 
-                    float3 halfDir = SafeNormalize(float3(_HighLightOffset.xyz) + float3(worldViewDir.x, 0.12, worldViewDir. z));
-                    float NoH = saturate(dot(normalize(swelledNormal * float3(30, 2, 30)), halfDir));
-                    half LoH = saturate(dot(mainLight.direction, halfDir));
-                    float d = NoH * NoH * (0.001 - 1.h) + 1.0001f;
-                    half LoH2 = LoH * LoH;
-                    half specularTerm = 0.001 / ((d * d) * max(0.1h, LoH2) * normalizationTerm);
+                // half3 RefracColor = DecodeHDREnvironment(EnvReflectColor, unity_SpecCube0_HDR);
 
-                    specularLighting = specularTerm * specular * lightColorAndAttenuation ;
-                    specularLighting = specularLighting * NdotL * pow(FoamMapCol.r, _HighLightOffset.a) * 2 * distanceFadeFactor  ;
-                #endif
+                float4 reflectionColor = float4(EnvReflectColor.rgb, 1);
+                // float4 reflectionColor = float4(EnvReflectColor.rgb, 1);
+                // return reflectionColor;
 
-                //地平线处边缘光，使海水更通透
-                col += clamp(ddy(length(v.xz)) / 10, 0, 2);
-                //接近海滩部分更透明W
-
+                // float relectFresnel = smoothstep(_SpecularExponent.w, 1, saturate((worldViewDir.g - 7) / 2));
+                // reflectionColor.rgb = Desaturate(reflectionColor.rgb, 1);
 
                 float4 ndcPos = (i.screenPos / i.screenPos.w) * 2 - 1;
                 float3 clipVec = float3(ndcPos.x, ndcPos.y, 1.0) * _ProjectionParams.z;
                 float3 viewVec = mul(unity_CameraInvProjection, clipVec.xyzz).xyz;
+                float sceneZ1 = Linear01Depth(sceneZ, _ZBufferParams);
                 float3 viewPos = sceneZ1 * viewVec;
                 float3 worldPos = mul(UNITY_MATRIX_I_V, float4(viewPos, 1.0)).xyz;//深度重构世界坐标
+                sceneZ = LinearEyeDepth(sceneZ, _ZBufferParams) ;
+                // float4 screenPosNorm = (i.screenPos / i.screenPos.w);
+                // screenPosNorm.z = (UNITY_NEAR_CLIP_VALUE >= 0) ?  screenPosNorm.z: screenPosNorm.z * 0.5 + 0.5;
+                float depth = saturate(smoothstep(_DepthOffset.x, _DepthOffset.y, saturate(worldPos.y - _DepthOffset.z))) ;
+
+                half CausticsDepth = 1 - saturate(smoothstep(_DepthOffset.x, _DepthOffset.y, saturate(worldPos.y - _DepthOffset.z + 6))) ;
+
+                half FoamDepth = 1 - saturate(smoothstep(_DepthOffset.x, _DepthOffset.y, saturate(worldPos.y - _DepthOffset.z + 5))) ;
+                float screenDepth = sceneZ ;
+                // float distanceDepth = abs((screenDepth - LinearEyeDepth(screenPosNorm.z, _ZBufferParams)) / (_BlendDepth));
+                // return float4(FoamDepth.rrr, 1);
+
+                half DepthMask = (sceneZ - i.screenPos.w) ;
+
+
+                half DepthMask2 = smoothstep(0, 0.5, DepthMask);//g
+
+                DepthMask = smoothstep(0.5, 1, DepthMask);
+
+
+                float foamMask = SAMPLE_TEXTURE2D(_FoamMap, sampler_FoamMap, worldPos.xz / _FoamMapTiling - float2(_Time.y * 0.1, swelledNormal.g * 0.2)).r ;
+
+
+                //foam
+
+
+                // float cameraLength = length(_WorldSpaceCameraPos - i.positionWS);
+
+                // cameraLength = smoothstep(0.5, 1, saturate(cameraLength / 20));
+                // return float4(cameraLength.rrr, 1);
+                // float foamGrendient = SAMPLE_TEXTURE2D(_FoamGrendientColor, sampler_FoamGrendientColor, float2(distanceDepth + frac(_Time.x * 4), 0)).r * saturate(1 - DepthMask2 - 0.2) * DepthMask2;// * smoothstep(saturate(0.3 - DepthMask), 0, 0.1);
+
+                // float foamColor = (1 - saturate(sin(((sceneZ - i.screenPos.w) + _Time.x * 3) * _BlendDepth) * 1.5)) * (1 - DepthMask2 - 0.2) * DepthMask2 * 5 * FoamDepth * mainLight.color * foamMask;
+
+                float foamDiff = saturate((sceneZ - i.screenPos.w)) + foamMask * 0.2 ;
+                float foam = (foamDiff - (saturate(sin((foamDiff + _Time.y * 0.1) * _BlendDepth)) * (1.0 - foamDiff)) + foamMask) * (1 - DepthMask2) * DepthMask2 * 20 * FoamDepth * mainLight.color;// * foamMask;//* clamp(foamMask, 0.3, 1); // 1-foamDiff 为了让中间是空的和一些噪点
+                float foamColor = saturate(foam);
+                // return float4(foamColor.rrr, 1);
 
 
 
 
-                screenUV = float2((screenUV.x + swelledNormal.r * _Distortion * distanceFadeFactor * diffZ / i.screenPos.w), screenUV.y);
+
+
+
                 //反射
-                float4 reflection = SAMPLE_TEXTURECUBE(_ReflectionTex, sampler_ReflectionTex, float2((i.screenPos.x + swelledNormal.r * _Distortion * 100), i.screenPos.y) / i.screenPos.w);
-                //   float3 finalspecColor = tex2D(_ReflectionTex, screenPos);
 
-                float4 colrefrac = tex2D(_CameraOpaqueTexture, screenUV);
+                // float4 reflection = SAMPLE_TEXTURECUBE(_ReflectionTex, sampler_ReflectionTex, float2((i.screenPos.x + swelledNormal.r * _Distortion * 2000), i.screenPos.y) / i.screenPos.w);
 
-
-
-
-                //half foamMask = clamp(clamp(foam, 0, 1) * _FoamIntensity, 0, 0.67);
-
-
-                half foamMask = saturate(foam) * 5 ;
-                // float Caustics = float(lerp(0, 1, smoothstep(0, 0.7, ov(i.uv * _CausticsTiling * objectScale.x)))) * worldPos.z;
-                float Caustics = float(lerp(0, 1, smoothstep(0, 0.7, ov(worldPos.xz * _CausticsTiling / 100 * objectScale.x)))) ;
+                // reflection = lerp(reflection * _BaseColor, reflection * _BaseColorFar, normalizeFresnelReflect);
 
 
 
-                float3 colcau = Caustics * _CausticsColor.rgb * saturate(1 - fre4);
-
-                half FoamMapCol2 = SAMPLE_TEXTURE2D(_FoamMap, sampler_FoamMap, i.uv * _FoamMapTiling).r;
-
-                col.rgb += specularLighting * fresnel ;
-                col.rgb = lerp(colrefrac.rgb, (col.rgb * _BaseColor - (saturate(FoamMapCol2) * 0.15) + colcau), clamp(fre4, 0, 1))  ;
+                // reflection.rgb = lerp(reflection.rgb, reflectionColor.rgb, relectFresnel)  ;
 
 
-                col.rgb = lerp(col.rgb, 1, foamMask * smoothstep(0.1, 0.2, clamp(camLength * 0.01, 0, 1)));
 
 
-                col.rgb = lerp(col, max(lerp(reflectionColor, reflection.rgb, 0.5) - (saturate(FoamMapCol2) * 0.15), 0.1), vReflect * fre4FF) ;
 
-                col.rgb = MixFog(col.rgb, i.fogFactor);
-                // return float4(FoamMapCol2.rrr, 1);
-                // return float4(saturate(1 - i.fogFactor.rrr), 1);
+                // float4 reflectionMix = lerp(reflection, reflectionColor, relectFresnel);
 
-                half sphereMask = distance(i.uv, _SphereMaskPosition.xz);
-                sphereMask = 1 - step(sphereMask, _SphereMaskPosition.w);
-                clip(sphereMask - 0.1);
-                return float4(col.rgb, sphereMask);
+                // reflectionMix = lerp(reflectionMix * _BaseColor, reflectionMix * _BaseColorFar, normalizeFresnelReflect);
+
+                float4 reflectionMix = reflectionColor * half4(SSSColor, 1);
+
+
+                reflectionMix = lerp(reflectionMix * _BaseColor, reflectionMix * _BaseColorFar, normalizeFresnelReflect) * half4(mainLight.color, 1);
+
+
+
+                float4 colrefrac = tex2D(_CameraOpaqueTexture, screenUVRefrac);
+
+
+
+
+
+
+                // return float4(1 - CausticsDepth.rrr, 1);
+
+
+                float3 Caustics = float(smoothstep(0, 0.5, ov(worldPos.xz * _CausticsTiling / 100))) * mainLight.color * CausticsDepth / 2;
+
+                float3 color = (reflectionMix.rgb + Caustics * (1 - saturate(sceneZ / 50))) + rippleShape ;// lerp(_BaseColor * mainLight.color, reflectionMix.rgb, saturate(normalizeFresnel)) * saturate(2 - depth);
+
+
+
+
+                half3 specularLighting = 0;
+
+                if (_UseRainnyNormal == 0)
+                {
+                    half3 halfDir = normalize(mainLight.direction + normalize(worldViewDir)) ;
+                    specularLighting = _SpecularExponent.x * pow(max(0, dot(halfDir, specularNormalDis)), _SpecularExponent.y);
+                    float perceptualRoughness = 1 - _SpecularExponent.y;
+                    float roughness = perceptualRoughness * perceptualRoughness;
+                    float squareRoughness = roughness * roughness;
+                    float nh = max(saturate(dot(specularNormalDis, halfDir)), 0.000001);
+                    float nl = max(saturate(dot(specularNormalDis, mainLight.direction.xyz)), 0.000001);
+                    float nv = max(saturate(dot(specularNormalDis, normalize(worldViewDir))), 0.000001);
+                    float lerpSquareRoughness = pow(lerp(0.002, 1, roughness), 2);
+                    float D = lerpSquareRoughness / (pow((pow(nh, 2) * (lerpSquareRoughness - 1) + 1), 2) * 3.1416);
+                    float kInDirectLight = pow(squareRoughness + 1, 2) / 8;
+                    float kInIBL = pow(squareRoughness, 2) / 8;
+                    float GLeft = nl / lerp(nl, 1, kInDirectLight);
+                    float GRight = nv / lerp(nv, 1, kInDirectLight);
+                    float G = GLeft * GRight;
+                    float vh = max(saturate(dot(halfDir, worldViewDir)), 0.000001);
+                    float3 F0 = reflectionColor.rgb;
+                    float3 F = F0 + (1 - F0) * exp2((-5.55473 * vh - 6.98316) * vh);
+                    float spec = D * G * F / (nv * nl * 4);
+                    specularLighting = spec * _SpecularExponent.x * mainLight.color.rgb;
+                    specularLighting = half4(specularLighting * _SpecularExponent.z, 1);
+                }
+
+
+
+                color += specularLighting ;
+
+                float RefracDepth = saturate(depth) ;
+
+
+                half fresnelDepth = worldPos.y - _DepthOffset.z + 30 ;
+                fresnelDepth = saturate(smoothstep(0, 30, fresnelDepth));
+
+                fresnelDepth = saturate(1 - lerp(0, fresnelDepth, fresnelDepth));
+
+                fresnelDepth = lerp(fresnelDepth, 1, saturate(pixelDepth));
+
+
+                float refractMask = lerp(fresnelDepth, RefracDepth, fresnel);
+
+                refractMask = saturate(refractMask * 2) * DepthMask;
+
+
+
+
+                color = lerp(colrefrac.rgb, color, refractMask) + saturate(foamColor)    ;
+
+
+                #if _FOG_ON
+                    color.rgb = ApplyFog(color.rgb, i.positionWS);
+                    // col.rgb = MixFog(col.rgb, i.fogFactor);
+                    // return half4(i.positionWS, 1);
+                #endif
+                return float4(color.rgb, 1);
+
+
+
+
+
+
+
+                return float4(col.rgb, 1);
             }
 
             ENDHLSL

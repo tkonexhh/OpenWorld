@@ -1,7 +1,15 @@
 ﻿#pragma once
 
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+
 //球谐函数参考:https://zh.wikipedia.org/wiki/%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0
 
+CBUFFER_START(UnityLighting)
+half4 hmk_unity_SHAr;
+half4 hmk_unity_SHAg;
+half4 hmk_unity_SHAb;
+CBUFFER_END
 
 #define PI 3.1415926
 
@@ -67,3 +75,27 @@ float3 UnitDirFromThetaPhi(float theta, float phi)
     result.z = s_theta * s_phi;
     return result;
 }
+
+
+half3 ShadeGI(float3 normalWS)
+{
+    half4 x;
+    half4 normal = half4(normalWS, 1.0);
+    x.r = dot(unity_SHAr, normal);
+    x.g = dot(unity_SHAg, normal);
+    x.b = dot(unity_SHAb, normal);
+    half3 gi = max(half3(0, 0, 0), x.rgb);
+    return gi;
+}
+
+half3 ShadeCustomGI(float3 normalWS)
+{
+    half4 x;
+    half4 normal = half4(normalWS, 1.0);
+    x.r = dot(hmk_unity_SHAr, normal);
+    x.g = dot(hmk_unity_SHAg, normal);
+    x.b = dot(hmk_unity_SHAb, normal);
+    half3 gi = max(half3(0, 0, 0), x.rgb);
+    return gi;
+}
+

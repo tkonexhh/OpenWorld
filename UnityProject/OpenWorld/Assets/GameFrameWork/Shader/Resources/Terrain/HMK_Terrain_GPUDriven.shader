@@ -234,6 +234,7 @@ Shader "HMK/Terrain/GPUDriven"
                 surfaceData.metallic = 0;
                 surfaceData.roughness = 0;
                 surfaceData.occlusion = 1;
+                surfaceData.emission = 0;
 
                 HMKLightingData lighingtData = InitLightingData(positionWS, normalWS);
 

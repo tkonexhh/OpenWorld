@@ -1,0 +1,58 @@
+#include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+//--------------------------------------------------------------------------------------
+// Constants
+//--------------------------------------------------------------------------------------
+#define THREAD_GROUP_SIZE_X 1
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+
+
+RWStructuredBuffer<uint> _ArgsBuffer;
+ConsumeStructuredBuffer<uint2> _VisibleInfoBuffer;//可见信息Buffer
+RWStructuredBuffer<uint> _InsertCountBuffer;//已经插入的个数
+RWStructuredBuffer<uint> _OutputDataBuffer;//输出的排序后的buffer
+
+cbuffer CB
+{
+    uint _NumOfDrawcalls;//LOD 数量
+    uint _StartOffset;//可能需要的偏移
+
+}
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 id: SV_DispatchThreadID)
+{
+    uint tID = id.x + _StartOffset;
+
+    //首次执行 计算一下offset
+    if (tID == 0)
+    {
+        _ArgsBuffer[4] = 0;
+        for (uint k = 1; k < _NumOfDrawcalls; k++)
+        {
+            //当前的offset=之前的offet+之前的count
+            _ArgsBuffer[k * NUMBER_OF_ARGS_PER_DRAW + 4] = _ArgsBuffer[(k - 1) * NUMBER_OF_ARGS_PER_DRAW + 4] + _ArgsBuffer[(k - 1) * NUMBER_OF_ARGS_PER_DRAW + 1];
+        }
+    }
+
+    uint2 visibleInfo = _VisibleInfoBuffer.Consume();//[tID];
+    int grassId = visibleInfo.x;
+    int lod = visibleInfo.y;
+
+    if (grassId > 0)
+    {
+        int lodIndex = lod ;
+        //获得插入下标和当前已经插入的数量
+        uint insertOffset = _ArgsBuffer[lodIndex * NUMBER_OF_ARGS_PER_DRAW + 4];
+        uint insertedCount = 1;
+        InterlockedAdd(_InsertCountBuffer[lodIndex], 1, insertedCount);
+        
+        uint insertIndex = insertOffset +insertedCount;
+
+        _OutputDataBuffer[insertIndex] = grassId;
+    }
+}

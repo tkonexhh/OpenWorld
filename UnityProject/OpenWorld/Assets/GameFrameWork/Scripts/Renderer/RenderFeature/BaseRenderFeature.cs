@@ -4,7 +4,7 @@
 // using UnityEngine.Rendering;
 // using UnityEngine.Rendering.Universal;
 
-// namespace XHH
+// namespace OpenWorld
 // {
 //     public abstract class BaseRenderFeature : ScriptableRendererFeature
 //     {

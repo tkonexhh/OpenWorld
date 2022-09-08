@@ -140,9 +140,9 @@
       }
     },
     "com.unity.render-pipelines.universal": {
-      "version": "14.0.3",
+      "version": "file:com.unity.render-pipelines.universal@14.0.3",
       "depth": 0,
-      "source": "builtin",
+      "source": "embedded",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
         "com.unity.burst": "1.6.4",

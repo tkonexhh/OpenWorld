@@ -10,25 +10,30 @@ Shader "HMK/Scene/GrassTexture"
     {
         [Header(Option)]
         [Toggle(_ALPHATEST_ON)]_AlphaClip ("__clip", Float) = 0.0
-        _Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
+        _CutOff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         
         _BaseColor ("Base Color", color) = (1, 1, 1, 1)
         _BaseMap ("BaseMap", 2D) = "white" { }
         
+        [Header(Specular)]
+        _SpecularStrength ("Specular Strength", range(0, 3)) = 1
+        _SpecularColor ("Specular Color", Color) = (0, 0, 0, 0)
 
-        [Header(Wind)]
-        _WindStrength ("Wind Strength", range(0, 3)) = 1
-        _WindHeight ("Wind Height", range(0, 3)) = 0.7
 
-        [Header(Interactive)]//交互
-        _InteractRange ("交互范围", range(0, 10)) = 1
-        _InteractForce ("交互力量", range(0, 4)) = 1
-        _InteractTopOffset ("交互上偏移", range(0, 4)) = 1
-        _InteractBottomOffset ("交互下偏移", range(0, 4)) = 1
+        [Header(Randomlized)]
+        _WindVertexRand ("Vertex randomization", Range(0.0, 1.0)) = 0.6
+        _WindObjectRand ("Object randomization", Range(0.0, 1.0)) = 0.5
+        _WindRandStrength ("Random per-object strength", Range(0.0, 1.0)) = 0.5
+        
 
-        //Make SRP Batch works
-        [HideInInspector]_InteractivesCount ("", float) = 100
-        [HideInInspector]_Interactives ("", vector) = (0, 0, 0, 0)
+        [Header(Bending)]
+        _BendTint ("Bending tint", Color) = (0.8, 0.8, 0.8, 1.0)
+
+
+        [Header(Hue)]
+        _HueVariation ("Hue Variation xyz:color w:weight", Color) = (1, 0.63, 0, 0)
+        [Header(Fade)]
+        _FadeParams ("Fade params (X=Start, Y=End, Z=Toggle W =Interverse", vector) = (50, 60, 0, 0)
     }
     SubShader
     {
@@ -49,7 +54,6 @@ Shader "HMK/Scene/GrassTexture"
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
-            #pragma multi_compile _ DOTS_INSTANCING_ON
             // -------------------------------------
             // Universal Pipeline keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
@@ -63,21 +67,10 @@ Shader "HMK/Scene/GrassTexture"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
+            #include "./HMK_Scene_Grass_Input.hlsl"
             #include "./HMK_Scene_Grass_Common.hlsl"
+            #include "./../../HLSLIncludes/Common/Fog.hlsl"
 
-            CBUFFER_START(UnityPerMaterial)
-            half4 _BaseColor;
-            // #if defined(_ALPHATEST_ON)
-            half _Cutoff;
-            // #endif
-
-            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-            //Global Property
-            int _InteractivesCount;//交互物体数量
-            half3 _Interactives[100];//交互物体 最大支持20个交互物体
-
-            half _WindStrength, _WindHeight;
-            CBUFFER_END
 
             TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
 
@@ -85,6 +78,9 @@ Shader "HMK/Scene/GrassTexture"
             {
                 float4 positionOS: POSITION;
                 float2 uv: TEXCOORD0;
+                float2 uv2: TEXCOORD1;
+                half4 color: COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
 
@@ -94,25 +90,32 @@ Shader "HMK/Scene/GrassTexture"
                 float4 positionCS: SV_POSITION;
                 float3 positionWS: TEXCOORD2;
                 float2 uv: TEXCOORD0;
+                float2 uv2: TEXCOORD1;
             };
 
 
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                half3 positionWS = TransformObjectToWorld(input.positionOS);
-                half mask = input.uv.y;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+                float3 positionOS = input.positionOS.xyz;
+                float3 positionWS = TransformObjectToWorld(positionOS);
+                half mask = input.uv2.y;
 
-                //风力效果
-                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
-                
-                //交互效果
-                // ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
+                WindSettings windSettings = InitWindSettings(mask, _WindVertexRand, _WindObjectRand, _WindRandStrength);
+                BendSettings bendSettings = InitBendSettings(mask);
+                float4 windVec = GetWindOffset2(positionOS, positionWS, windSettings, ObjectPosRand01());
+                float4 bendVec = GetBendOffset(positionWS, bendSettings);
+                float3 offsets = lerp(windVec.xyz, bendVec.xyz, bendVec.a);
+                positionWS.xz -= offsets.xz;
+                positionWS.y -= offsets.y;
 
                 output.positionWS = positionWS;
                 output.positionOS = input.positionOS;
                 output.positionCS = TransformWorldToHClip(positionWS);
                 output.uv = input.uv;
+                output.uv2 = input.uv2;
                 
                 return output;
             }
@@ -120,7 +123,7 @@ Shader "HMK/Scene/GrassTexture"
 
             half4 frag(Varyings input): SV_Target
             {
-                // return input.uv.y;
+                // return input.uv2.y;
                 //需要采样贴图了 光照不能放在顶点阶段做了
                 half3 N = normalize(half3(0, 1, 0));
                 HMKLightingData lightingData = InitLightingData(input.positionWS, N);
@@ -130,10 +133,14 @@ Shader "HMK/Scene/GrassTexture"
                 surfaceData.albedo = var_MainTex.rgb * _BaseColor.rgb;
                 surfaceData.alpha = var_MainTex.a;
                 #if defined(_ALPHATEST_ON)
-                    clip(surfaceData.alpha - _Cutoff);
+                    clip(surfaceData.alpha - _CutOff);
                 #endif
-                half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y);
+                half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y, _SpecularStrength);
                 half3 finalRGB = lightingResult;
+                // #if _FOG_ON
+                //     finalRGB = ApplyFog(finalRGB, input.positionWS);
+                // #endif
+
                 return half4(finalRGB, 1);
             }
             ENDHLSL
@@ -151,7 +158,6 @@ Shader "HMK/Scene/GrassTexture"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthOnlyVertex
@@ -164,42 +170,33 @@ Shader "HMK/Scene/GrassTexture"
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
-            #pragma multi_compile _ DOTS_INSTANCING_ON
 
             // #include "./../Base/HMK_DepthOnlyPass.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "./../../HLSLIncludes/Common/HMK_Common.hlsl"
+            #include "./HMK_Scene_Grass_Input.hlsl"
             #include "./HMK_Scene_Grass_Common.hlsl"
             
             struct Attributes
             {
                 float4 positionOS: POSITION;
                 float2 uv: TEXCOORD0;
+                float2 uv2: TEXCOORD1;
+                half4 color: COLOR;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
             {
                 float4 positionCS: SV_POSITION;
+                float3 positionWS: TEXCOORD2;
                 float2 uv: TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             
 
-            CBUFFER_START(UnityPerMaterial)
-            half4 _BaseColor;
-            // #if defined(_ALPHATEST_ON)
-            half _Cutoff;
-            // #endif
-
-            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-            //Global Property
-            int _InteractivesCount;//交互物体数量
-            half3 _Interactives[100];//交互物体 最大支持20个交互物体
-
-            half _WindStrength, _WindHeight;
-            CBUFFER_END
+            
 
             // #if defined(_ALPHATEST_ON)
             TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
@@ -211,16 +208,23 @@ Shader "HMK/Scene/GrassTexture"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                half3 positionWS = TransformObjectToWorld(input.positionOS);
+                float3 positionOS = input.positionOS.xyz;
+                float3 positionWS = TransformObjectToWorld(positionOS);
+                half mask = input.uv2.y;
 
-                //风力效果
-                half mask = input.uv.y;
-                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
-                //交互效果
-                // ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
+                WindSettings windSettings = InitWindSettings(mask, _WindVertexRand, _WindObjectRand, _WindRandStrength);
+                BendSettings bendSettings = InitBendSettings(mask);
+                float4 windVec = GetWindOffset2(positionOS, positionWS, windSettings, ObjectPosRand01());
+                float4 bendVec = GetBendOffset(positionWS, bendSettings);
+                float3 offsets = lerp(windVec.xyz, bendVec.xyz, bendVec.a);
+                positionWS.xz -= offsets.xz;
+                positionWS.y -= offsets.y;
 
+
+                output.positionWS = positionWS;
                 output.positionCS = TransformWorldToHClip(positionWS);
                 output.uv = input.uv;
+
                 return output;
             }
 
@@ -230,7 +234,7 @@ Shader "HMK/Scene/GrassTexture"
                 #if defined(_ALPHATEST_ON)
                     half4 var_Base = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
                     half alpha = var_Base.a;
-                    clip(alpha - _Cutoff);
+                    clip(alpha - _CutOff);
                 #endif
 
                 return 0;

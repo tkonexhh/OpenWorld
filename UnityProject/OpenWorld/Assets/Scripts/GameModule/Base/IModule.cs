@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace XHH
+namespace OpenWorld
 {
     public interface IModule
     {
         void OnInit();
         void OnUpdate();
         void OnLateUpdate();
+        void OnGizmos();
     }
 
 }

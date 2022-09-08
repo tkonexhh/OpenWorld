@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace XHH.World
+namespace OpenWorld.World
 {
     public class TerrainQuadTree
     {

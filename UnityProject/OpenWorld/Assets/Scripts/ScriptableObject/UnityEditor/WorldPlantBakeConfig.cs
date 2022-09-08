@@ -4,7 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 
-namespace XHH
+namespace OpenWorld
 {
     public class WorldPlantBakeConfig : SerializedScriptableObject
     {

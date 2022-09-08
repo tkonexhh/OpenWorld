@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace XHH
+namespace OpenWorld
 {
     public class ComputeShaderHelper
     {

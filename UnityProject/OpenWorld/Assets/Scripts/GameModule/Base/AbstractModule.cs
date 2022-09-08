@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace XHH
+namespace OpenWorld
 {
-    public abstract class AbstractModule : MonoBehaviour, IModule
+    public abstract class AbstractModule : IModule
     {
-        public virtual void OnInit() { }
-        public virtual void OnLateUpdate() { }
-        public virtual void OnUpdate() { }
 
         protected List<IModuleComponent> m_ComponentList = new List<IModuleComponent>();
 
@@ -26,32 +23,42 @@ namespace XHH
             }
 
             m_ComponentList.Add(component);
+            component.OnInit();
+            OnAddComponment(component);
             return component;
         }
 
+        protected virtual void OnAddComponment(IModuleComponent component) { }
 
-        private void Start()
+        public virtual void OnInit()
         {
-            OnInit();
-        }
-
-        private void Update()
-        {
-            OnUpdate();
-
-            for (int i = 0; i < m_ComponentList.Count; i++)
+            foreach (var component in m_ComponentList)
             {
-                m_ComponentList[i].OnUpdate();
+                component.OnInit();
             }
         }
 
-        private void LateUpdate()
+        public virtual void OnLateUpdate()
         {
-            OnLateUpdate();
-
-            for (int i = 0; i < m_ComponentList.Count; i++)
+            foreach (var component in m_ComponentList)
             {
-                m_ComponentList[i].OnLateUpdate();
+                component.OnLateUpdate();
+            }
+        }
+
+        public virtual void OnUpdate()
+        {
+            foreach (var component in m_ComponentList)
+            {
+                component.OnUpdate();
+            }
+        }
+
+        public virtual void OnGizmos()
+        {
+            foreach (var component in m_ComponentList)
+            {
+                component.OnGizmos();
             }
         }
     }

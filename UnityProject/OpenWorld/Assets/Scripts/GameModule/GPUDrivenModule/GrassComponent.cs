@@ -3,7 +3,7 @@
 // using UnityEngine;
 
 
-// namespace XHH
+// namespace OpenWorld
 // {
 //     public class GrassComponent
 //     {

@@ -33,7 +33,7 @@
 		{
 			CGPROGRAM
 
-			#pragma shader_feature_local UseFog
+			#pragma shader_feature UseFog
 
 			#pragma vertex vert
 			#pragma fragment frag
@@ -42,17 +42,17 @@
 
 			sampler2D _StaticCloudTexture;
 			sampler2D _SunTexture;
-			half3 _SunTheta;
+			float3 _SunTheta;
 
-			half3 _SunDirection;
-			half _Size;
-			half _Scatter;
+			float3 _SunDirection;
+			float _Size;
+			float _Scatter;
 			float4x4 _NoiseMatrix = 0;
-			half _StaticCloudRotationSpeed;
-			half _FogHeight;
-			half _FogOffset;
-			half _GamaRange;
-			half _Exposure;
+			float _StaticCloudRotationSpeed;
+			float _FogHeight;
+			float _FogOffset;
+			float _GamaRange;
+			float _Exposure;
 			half4 _RayleighColor;
 			half4 _MieColor;
 			half4 _BmColor;

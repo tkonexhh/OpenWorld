@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-namespace XHH
+namespace OpenWorld
 {
     [InlineEditor]
     [CreateAssetMenu(menuName = "ScriptableObject/WorldTerrainChunkSO", fileName = "WorldTerrainChunkSO")]

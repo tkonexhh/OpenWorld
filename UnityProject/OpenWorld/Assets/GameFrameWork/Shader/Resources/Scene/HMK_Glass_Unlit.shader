@@ -3,27 +3,56 @@ Shader "HMK/Scene/GlassUnlit"
     Properties
     {
         [HDR]_colorTint ("ColorTint", color) = (1, 1, 1, 1)
-        _MainTex ("MainTex", 2D) = "white" { }
-        _NRATex ("NRA", 2D) = "white" { }
+        _BaseMap ("BaseMap", 2D) = "white" { }
+        // _NRATex ("NRA", 2D) = "white" { }
         _CubeMap ("Cubemap", Cube) = "white" { }
-        _roughnessMax ("RoughnessMax", range(0, 1)) = 1
-        _roughnessMin ("RoughnessMin", range(0, 1)) = 0
+        // _roughnessMax ("RoughnessMax", range(0, 1)) = 1
+        // _roughnessMin ("RoughnessMin", range(0, 1)) = 0
         _OpacityMax ("OpacityMax", range(0, 1)) = 1
         _OpacityMin ("OpacityMin", range(0, 1)) = 0
         _FresnelInt ("FresnelInt", range(0.001, 5)) = 1
         _FresnelRange ("FresnelRange", range(0, 5)) = 1
     }
+
+
+
+
+    HLSLINCLUDE
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+
+    CBUFFER_START(UnityPerMaterial)
+    half _roughnessMax;
+    half _roughnessMin;
+    half _OpacityMax;
+    half _OpacityMin;
+    half _FresnelInt;
+    half _FresnelRange;
+    half4 _colorTint;
+
+    CBUFFER_END
+
+    TEXTURE2D(_BaseMap);
+    SAMPLER(sampler_BaseMap);
+    TEXTURECUBE(_CubeMap);
+    SAMPLER(sampler_CubeMap);
+
+    // TEXTURE2D(_NRATex);
+    // SAMPLER(sampler_NRATex);
+
+
+    ENDHLSL
+
     SubShader
     {
-        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Opaque" "Queue" = "Geometry" }
+        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Opaque" "Queue" = "Transparent" }
 
         Pass
         {
-            Tags { "RenderType" = "Geometry" "RenderPipeline" = "UniversalPipeline" "Queue" = "Geometry" }
+            Tags { "RenderType" = "Geometry" "RenderPipeline" = "UniversalPipeline" "Queue" = "Transparent" }
 
             Cull Back
-            Blend one OneMinusSrcAlpha
-
+            Blend SrcAlpha OneMinusSrcAlpha
             HLSLPROGRAM
 
             #pragma vertex vert
@@ -33,25 +62,11 @@ Shader "HMK/Scene/GlassUnlit"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
-
-            CBUFFER_START(UnityPerMaterial)
-            half _roughnessMax;
-            half _roughnessMin;
-            half _OpacityMax;
-            half _OpacityMin;
-            half _FresnelInt;
-            half _FresnelRange;
-            half4 _colorTint;
-
-            CBUFFER_END
-
-            TEXTURE2D(_MainTex);
-            SAMPLER(sampler_MainTex);
-            TEXTURECUBE(_CubeMap);
-            SAMPLER(sampler_CubeMap);
-
-            TEXTURE2D(_NRATex);
-            SAMPLER(sampler_NRATex);
+            half3 Saturation_float(float3 In, float Saturation)
+            {
+                float luma = dot(In, float3(0.2126729, 0.7151522, 0.0721750));
+                return luma.xxx + Saturation.xxx * (In - luma.xxx);
+            }
 
             struct Attributes
             {
@@ -87,27 +102,47 @@ Shader "HMK/Scene/GlassUnlit"
             float4 frag(Varyings input): SV_Target
             {
                 Light mainLight = GetMainLight();
+
+
+                float4 screenPos = ComputeScreenPos(input.positionCS);
+
+
+                float2 screenUv = screenPos.xy / screenPos.w;
+
+                // float4 colrefrac = tex2D(_CameraOpaqueTexture, screenUv);
                 float3 worldViewDir = normalize((_WorldSpaceCameraPos.xyz - input.positionWS));
 
-                half4 MainTex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-                half4 NRATexMap = SAMPLE_TEXTURE2D(_NRATex, sampler_NRATex, input.uv);
+                half4 MainTex = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
+                // half4 NRATexMap = SAMPLE_TEXTURE2D(_NRATex, sampler_NRATex, input.uv);
 
-                float reconstructZ = sqrt(1.0 - saturate(dot(NRATexMap.xy, NRATexMap.xy)));
-                float3 normalVector = normalize(float3(NRATexMap.x, NRATexMap.y, reconstructZ));
-                float3 worldReflection = reflect(-worldViewDir, normalize(normalVector + input.normalWS));
+                // float reconstructZ = sqrt(1.0 - saturate(dot(NRATexMap.xy, NRATexMap.xy)));
+                // float3 normalVector = normalize(float3(NRATexMap.x, NRATexMap.y, reconstructZ));
+                float3 worldReflection = reflect(-worldViewDir, normalize(input.normalWS));
 
                 float4 reflectionColor = SAMPLE_TEXTURECUBE(_CubeMap, sampler_CubeMap, worldReflection);
-                half Roughness = lerp(_roughnessMin, _roughnessMax, NRATexMap.b);
+
+                reflectionColor.rgb *= _colorTint.rgb;
 
 
 
-                half4 finalcolor = lerp(MainTex, reflectionColor, Roughness) * max(saturate(mainLight.color.rgbr), 0.3);
-                half fresnel = saturate(pow(dot(worldViewDir, input.normalWS), _FresnelInt) * _FresnelRange);
+                float4 Lightcolor = float4(Saturation_float(mainLight.color.rgb, 0.5), 1);
+                float reflectMask = step(0.5, MainTex.a);
 
-                finalcolor = lerp((finalcolor * _colorTint), finalcolor, fresnel);
-                half Opacity = lerp(_OpacityMin, _OpacityMax, NRATexMap.b);
+
+                half4 finalcolor = (reflectMask * MainTex + (1 - reflectMask) * lerp(reflectionColor, MainTex, 0.5)) * clamp(Lightcolor, 0.5, 1.5) ;
+
+
+
+                // half fresnel = saturate(pow(dot(worldViewDir, input.normalWS), _FresnelInt) * _FresnelRange);
+
+                // finalcolor = lerp((finalcolor * _colorTint), finalcolor, fresnel);
+                half Opacity = lerp(_OpacityMin, _OpacityMax, MainTex.a);
+
+
+
+
                 // return float4(fresnel.rrr, 1);
-                return float4(finalcolor.rgb * NRATexMap.a, Opacity);
+                return float4(finalcolor.rgb, Opacity);
             }
 
             ENDHLSL
@@ -125,7 +160,7 @@ Shader "HMK/Scene/GlassUnlit"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
+            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -141,7 +176,7 @@ Shader "HMK/Scene/GlassUnlit"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "./../Base/HMK_Lit_Input.hlsl"
+            // #include "./../Base/HMK_Lit_Input.hlsl"
             #include "./../Base/HMK_ShadowCasterPass.hlsl"
 
 
@@ -159,7 +194,7 @@ Shader "HMK/Scene/GlassUnlit"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
+            #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthOnlyVertex
@@ -175,7 +210,7 @@ Shader "HMK/Scene/GlassUnlit"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "./../Base/HMK_Lit_Input.hlsl"
+            // #include "./../Base/HMK_Lit_Input.hlsl"
             #include "./../Base/HMK_DepthOnlyPass.hlsl"
 
             ENDHLSL

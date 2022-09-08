@@ -11,55 +11,55 @@ using SimpleJSON;
 
 
 
-namespace XHH.item
+namespace OpenWorld.item
 {
 
-public sealed partial class TDEquipTable
-{
-    private readonly Dictionary<int, item.TDEquip> _dataMap;
-    private readonly List<item.TDEquip> _dataList;
-    
-    public TDEquipTable(JSONNode _json)
+    public sealed partial class TDEquipTable
     {
-        _dataMap = new Dictionary<int, item.TDEquip>();
-        _dataList = new List<item.TDEquip>();
-        
-        foreach(JSONNode _row in _json.Children)
+        private readonly Dictionary<int, item.TDEquip> _dataMap;
+        private readonly List<item.TDEquip> _dataList;
+
+        public TDEquipTable(JSONNode _json)
         {
-            var _v = item.TDEquip.DeserializeTDEquip(_row);
-            _dataList.Add(_v);
-            _dataMap.Add(_v.Id, _v);
+            _dataMap = new Dictionary<int, item.TDEquip>();
+            _dataList = new List<item.TDEquip>();
+
+            foreach (JSONNode _row in _json.Children)
+            {
+                var _v = item.TDEquip.DeserializeTDEquip(_row);
+                _dataList.Add(_v);
+                _dataMap.Add(_v.Id, _v);
+            }
+            PostInit();
         }
-        PostInit();
-    }
 
-    public Dictionary<int, item.TDEquip> DataMap => _dataMap;
-    public List<item.TDEquip> DataList => _dataList;
+        public Dictionary<int, item.TDEquip> DataMap => _dataMap;
+        public List<item.TDEquip> DataList => _dataList;
 
-    public item.TDEquip GetOrDefault(int key) => _dataMap.TryGetValue(key, out var v) ? v : null;
-    public item.TDEquip Get(int key) => _dataMap[key];
-    public item.TDEquip this[int key] => _dataMap[key];
+        public item.TDEquip GetOrDefault(int key) => _dataMap.TryGetValue(key, out var v) ? v : null;
+        public item.TDEquip Get(int key) => _dataMap[key];
+        public item.TDEquip this[int key] => _dataMap[key];
 
-    public void Resolve(Dictionary<string, object> _tables)
-    {
-        foreach(var v in _dataList)
+        public void Resolve(Dictionary<string, object> _tables)
         {
-            v.Resolve(_tables);
+            foreach (var v in _dataList)
+            {
+                v.Resolve(_tables);
+            }
+            PostResolve();
         }
-        PostResolve();
-    }
 
-    public void TranslateText(System.Func<string, string, string> translator)
-    {
-        foreach(var v in _dataList)
+        public void TranslateText(System.Func<string, string, string> translator)
         {
-            v.TranslateText(translator);
+            foreach (var v in _dataList)
+            {
+                v.TranslateText(translator);
+            }
         }
+
+
+        partial void PostInit();
+        partial void PostResolve();
     }
-    
-    
-    partial void PostInit();
-    partial void PostResolve();
-}
 
 }

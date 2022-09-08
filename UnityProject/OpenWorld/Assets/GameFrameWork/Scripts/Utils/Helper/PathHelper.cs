@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class PathHelper
 {
@@ -25,5 +26,10 @@ public class PathHelper
     {
         int index = filepath.LastIndexOf("/");
         return filepath.Substring(0, index);
+    }
+
+    public static string GetParentForderName(string assetPath)
+    {
+        return Directory.GetParent(assetPath).Name;
     }
 }

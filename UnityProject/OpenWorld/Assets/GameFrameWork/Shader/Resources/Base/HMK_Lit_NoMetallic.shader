@@ -4,24 +4,22 @@ Shader "HMK/Lit_NoMetallic"
 {
     Properties
     {
+        [Header(Option)]
+        [Toggle(_ALPHATEST_ON)] _AlphaClip ("__clip", Float) = 0.0
+        [Enum(UnityEngine.Rendering.CullMode)]  _Cull ("__Cull", float) = 2.0
+
+        
         _Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         [Header(Base Color)]
         [MainColor]_BaseColor ("固有色", color) = (1, 1, 1, 1)
-        [NoScaleOffset] _BaseMap ("BaseMap", 2D) = "white" { }
+        _BaseMap ("BaseMap", 2D) = "white" { }
         [NoScaleOffset]_NormalPBRMap ("RG:法线 B:粗糙度 A:AO", 2D) = "bump" { }
         _BumpScale ("Bump Scale", range(0, 3)) = 1
-        _RoughnessScale ("RoughnessScale", range(0, 3)) = 1
-        _OcclusionScale ("OcclusionScale", range(0, 3)) = 1
+        _RoughnessScale ("RoughnessScale", range(0, 1)) = 1
+        _OcclusionScale ("OcclusionScale", range(0, 1)) = 1
 
+        // _Dithering ("Dithering", range(0, 1)) = 1
 
-        [Header(Option)]
-        [HideInInspector] _Surface ("__surface", Float) = 0.0
-        [HideInInspector] _Blend ("__blend", Float) = 0.0
-        [HideInInspector] _SrcBlend ("__src", Float) = 1.0
-        [HideInInspector] _DstBlend ("__dst", Float) = 0.0
-        [HideInInspector] _ZWrite ("__zw", Float) = 1.0
-        [Toggle(_ALPHATEST_ON)] _AlphaClip ("__clip", Float) = 0.0
-        [Enum(UnityEngine.Rendering.CullMode)]  _Cull ("__Cull", float) = 2.0
     }
     SubShader
     {
@@ -32,8 +30,6 @@ Shader "HMK/Lit_NoMetallic"
             Tags { "LightMode" = "UniversalForward" }
             
             Cull[_Cull]
-            Blend[_SrcBlend][_DstBlend]
-            ZWrite[_ZWrite]
             
             HLSLPROGRAM
 
@@ -46,13 +42,14 @@ Shader "HMK/Lit_NoMetallic"
             // -------------------------------------
             // Unity defined keywords
             #pragma multi_compile _ LIGHTMAP_ON
-            #pragma multi_compile_fog
+            // #pragma multi_compile _ LOD_FADE_CROSSFADE
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma multi_compile_fragment _ NOT_SCENE
 
             #pragma vertex vert
             #pragma fragment frag
@@ -62,9 +59,9 @@ Shader "HMK/Lit_NoMetallic"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
             #include "./../HLSLIncludes/Common/HMK_Normal.hlsl"
             
-            #include "./HMK_Lit_Input.hlsl"
+            #include "./HMK_Lit_NoMetallic_Input.hlsl"
 
-            TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
+            
             TEXTURE2D(_NormalPBRMap);SAMPLER(sampler_NormalPBRMap);
             
             struct Attributes
@@ -90,7 +87,6 @@ Shader "HMK/Lit_NoMetallic"
                 half3 normalWS: NORMAL;
                 half3 tangentWS: TEXCOORD3;
                 half3 bitangentWS: TEXCOORD4;
-                half fogFactor: TEXCOORD5;
                 
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
@@ -115,19 +111,19 @@ Shader "HMK/Lit_NoMetallic"
             Varyings vert(Attributes input)
             {
                 Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                
                 output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
                 output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
-                output.uv = input.uv;
+                output.uv = TRANSFORM_TEX(input.uv, _BaseMap) ;
                 float3 normalWS = normalize(TransformObjectToWorldNormal(input.normalOS));
                 float3 tangentWS = TransformObjectToWorldDir(input.tangentOS);
                 half tangentSign = input.tangentOS.w * unity_WorldTransformParams.w;
                 float3 bitangentWS = cross(normalWS, tangentWS) * tangentSign;
-                half fogFactor = ComputeFogFactor(output.positionCS.z);
                 
                 output.normalWS = normalWS;
                 output.tangentWS = tangentWS;
                 output.bitangentWS = bitangentWS;
-                output.fogFactor = fogFactor;
                 
                 #if defined(LIGHTMAP_ON)
                     HMK_OUTPUT_LIGHTMAP_UV(input.lightmapUV, unity_LightmapST, output.lightmapUV);
@@ -147,12 +143,14 @@ Shader "HMK/Lit_NoMetallic"
                 float roughness = var_NormalPBRMap.b;
                 float occlusion = var_NormalPBRMap.a;
 
-                HMKSurfaceData surfaceData;
-                surfaceData.albedo = var_BaseMap.rgb * _BaseColor.rgb;
-                surfaceData.alpha = var_BaseMap.a;
-                surfaceData.metallic = 0;
-                surfaceData.occlusion = LerpWhiteTo(occlusion, _OcclusionScale);
-                surfaceData.roughness = roughness * _RoughnessScale;
+                
+                half3 albedo = var_BaseMap.rgb * _BaseColor.rgb;
+                half alpha = var_BaseMap.a;
+                half metallic = 0;
+                occlusion = LerpWhiteTo(occlusion, _OcclusionScale);
+                roughness = roughness * _RoughnessScale;
+
+                HMKSurfaceData surfaceData = InitSurfaceData(albedo, alpha, metallic, roughness, occlusion);
 
                 #if defined(_ALPHATEST_ON)
                     clip(surfaceData.alpha - _Cutoff);
@@ -162,7 +160,13 @@ Shader "HMK/Lit_NoMetallic"
                 HMKLightingData lightingData = InitLightingData(input, normalXY);
                 
                 half3 finalRGB = ShadeAllLightPBR(surfaceData, lightingData);
-                finalRGB = MixFog(finalRGB, input.fogFactor);
+                // finalRGB = MixFog(finalRGB, input.fogFactor);
+
+                // #ifdef LOD_FADE_CROSSFADE
+                //     LODDitheringTransition(input.positionCS.xyz, unity_LODFade.x);
+                // #endif
+                
+
                 return half4(finalRGB, surfaceData.alpha);
             }
             
@@ -182,7 +186,6 @@ Shader "HMK/Lit_NoMetallic"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             // -------------------------------------
@@ -193,12 +196,12 @@ Shader "HMK/Lit_NoMetallic"
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+            // #pragma multi_compile _ DOTS_INSTANCING_ON
 
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "./HMK_Lit_Input.hlsl"
+            #include "./HMK_Lit_NoMetallic_Input.hlsl"
             #include "./HMK_ShadowCasterPass.hlsl"
 
             ENDHLSL
@@ -216,7 +219,6 @@ Shader "HMK/Lit_NoMetallic"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthOnlyVertex
@@ -226,13 +228,15 @@ Shader "HMK/Lit_NoMetallic"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile _ LIGHTMAP_ON
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
-            #pragma multi_compile _ DOTS_INSTANCING_ON
+            // #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "./HMK_Lit_Input.hlsl"
+            #include "./HMK_Lit_NoMetallic_Input.hlsl"
             #include "./HMK_DepthOnlyPass.hlsl"
 
             ENDHLSL
@@ -240,5 +244,4 @@ Shader "HMK/Lit_NoMetallic"
         }
     }
     FallBack "Diffuse"
-    CustomEditor "LitNoMetallicShaderGUI"
 }

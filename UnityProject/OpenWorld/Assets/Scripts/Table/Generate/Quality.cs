@@ -6,7 +6,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace XHH
+namespace OpenWorld
 {
     public enum Quality
     {

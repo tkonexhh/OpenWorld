@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
-namespace XHH.Character
+namespace OpenWorld.Character
 {
     public class CharacterAiming : MonoBehaviour
     {

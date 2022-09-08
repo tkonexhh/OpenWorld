@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: b58f187a7bd450d4d9e512b8f89d9d5a
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: '{"shaderPath":"HMK/Scene/VertexLit","attributes":[{"isBaseTexture":false,"channel":4,"index":0,"range":{"x":0.0,"y":1.0},"propertyTarget":"_Texture1","mask":0},{"isBaseTexture":false,"channel":4,"index":1,"range":{"x":0.0,"y":1.0},"propertyTarget":"_Texture2","mask":0},{"isBaseTexture":false,"channel":4,"index":2,"range":{"x":0.0,"y":1.0},"propertyTarget":"_Texture3","mask":0},{"isBaseTexture":false,"channel":4,"index":3,"range":{"x":0.0,"y":1.0},"propertyTarget":"_Texture4","mask":0}]}'
+  assetBundleName: 
+  assetBundleVariant: 

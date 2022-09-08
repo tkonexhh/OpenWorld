@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace XHH
+namespace OpenWorld
 {
     [System.Serializable]
     public class IndirectInstanceData

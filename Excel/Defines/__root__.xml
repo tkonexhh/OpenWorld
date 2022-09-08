@@ -1,6 +1,6 @@
 <root>
 
-	<topmodule name="XHH"/>
+	<topmodule name="OpenWorld"/>
 
 	<patch name="cn"/>
 	<patch name="en"/>

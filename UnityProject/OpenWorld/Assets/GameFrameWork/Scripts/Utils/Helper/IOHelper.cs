@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+
+
 public class IOHelper
 {
     /// <summary>
@@ -29,20 +31,43 @@ public class IOHelper
         }
     }
 
-    // public static void DeleteAssetPath(string assetPath)
-    // {
-    //     DeletePath(PathHelper.AssetsPath2ABSPath(assetPath));
-    // }
-
     public static void CreatePath(string path)
     {
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
     }
 
-    // public static void CreateAssetPath(string assetPath)
-    // {
-    //     CreatePath(PathHelper.AssetsPath2ABSPath(assetPath));
-    // }
+    public static void DeleteAssetPath(string assetPath)
+    {
+        string path = PathHelper.AssetsPath2ABSPath(assetPath);
+        DeletePath(path);
+    }
+
+    public static void CreateDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+    }
+
+    public static string GetParentDirectoryName(string assetPath)
+    {
+        var parentName = GetDirectory(assetPath).Parent.Name;
+        return parentName;
+    }
+
+    public static string GetParentPath(string assetPath)
+    {
+        var parentPath = GetDirectory(assetPath).Parent.FullName;
+        parentPath = parentPath.Replace("\\", "/");
+        return "Assets" + parentPath.Replace(Application.dataPath, "");
+    }
+
+    public static DirectoryInfo GetDirectory(string assetPath)
+    {
+        var absPath = Application.dataPath + assetPath.Replace("Assets", "");
+        var parentPath = new DirectoryInfo(absPath);//.FullName;
+        return parentPath;
+    }
 
 }
+

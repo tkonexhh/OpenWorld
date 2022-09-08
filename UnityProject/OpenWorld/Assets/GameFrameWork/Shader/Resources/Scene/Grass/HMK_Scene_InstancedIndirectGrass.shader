@@ -2,24 +2,35 @@ Shader "HMK/Scene/InstancedIndirectGrass"
 {
     Properties
     {
-        //_MainTex ("BaseColor", 2D) = "white" { }
+        [Header(BaseColor)]
+        _CutOff ("Cut off", range(0, 1)) = 0.5
         _ColorTop ("ColorTop", color) = (0.5, 1, 0, 1)
         _ColorBottom ("ColorBottom", color) = (0, 1, 0, 1)
         _ColorRange ("ColorRange", range(-1, 1)) = 1.0
-        
-        [Header(Wind)]
-        _WindStrength ("Wind Strength", range(0, 3)) = 1
-        _WindHeight ("Wind Height", range(0, 3)) = 0.7
+        _SpecularStrength ("Specular Strength", range(0, 2)) = 0.3
 
-        [Header(Interactive)]//交互
-        _InteractRange ("交互范围", range(0, 10)) = 1
-        _InteractForce ("交互力量", range(0, 4)) = 1
-        _InteractTopOffset ("交互上偏移", range(0, 4)) = 1
-        _InteractBottomOffset ("交互下偏移", range(0, 4)) = 1
+
+        [Header(Randomlized)]
+        _WindVertexRand ("Vertex randomization", Range(0.0, 1.0)) = 0.6
+        _WindObjectRand ("Object randomization", Range(0.0, 1.0)) = 0.5
+        _WindRandStrength ("Random per-object strength", Range(0.0, 1.0)) = 0.5
+        
+
+        // [Header(Gusting)]
+        // _WindGustStrength ("Gusting strength", Range(0.0, 1.0)) = 0.2
+        // _WindGustFreq ("Gusting frequency", Range(0.0, 10.0)) = 4
+        // [NoScaleOffset] _WindGustMap ("Gust map", 2D) = "black" { }
+        // _WindGustTint ("Gusting tint", Range(0.0, 1.0)) = 0.066
+
+        [Header(Bending)]
+        _BendTint ("Bending tint", Color) = (0.8, 0.8, 0.8, 1.0)
+        _BurnTint ("Burn tint", Color) = (0, 0, 0, 1)
+
 
         [Header(Hue)]
-        [Toggle(EFFECT_HUE_VARIATION)] _Hue ("Use Color Hue", Float) = 0
-        _HueVariation ("Hue Variation xyz:color w:weight", Color) = (0, 0, 0, 0)
+        _HueVariation ("Hue Variation xyz:color w:weight", Color) = (1, 0.63, 0, 0)
+        [Header(Fade)]
+        _FadeParams ("Fade params (X=Start, Y=End, Z=Toggle W =Interverse", vector) = (50, 100, 0, 0)
     }
     SubShader
     {
@@ -52,37 +63,21 @@ Shader "HMK/Scene/InstancedIndirectGrass"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
             #include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+            #include "./HMK_Scene_Grass_Input.hlsl"
             #include "./HMK_Scene_Grass_Common.hlsl"
-
-            CBUFFER_START(UnityPerMaterial)
-            half4 _ColorTop;
-            half4 _ColorBottom;
-            half _ColorRange;
-
-            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-            //Global Property
-            int _InteractivesCount;//交互物体数量
-            half3 _Interactives[100];//交互物体 最大支持20个交互物体
-
-            half _WindStrength, _WindHeight;
             
-            #ifdef EFFECT_HUE_VARIATION
-                half4 _HueVariation;
-            #endif
 
+            
             StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//只含有坐标信息 下面需要吧缩放旋转也考虑上
             StructuredBuffer<uint> _VisibleInstanceOnlyTransformIDBuffer;
-            // StructuredBuffer<uint> _ArgsBuffer;
-            // uint _ArgsOffset;
-            CBUFFER_END
-
 
             struct Attributes
             {
                 float4 positionOS: POSITION;
                 float2 uv: TEXCOORD0;
+                half4 color: COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
-
 
             struct Varyings
             {
@@ -104,13 +99,18 @@ Shader "HMK/Scene/InstancedIndirectGrass"
                 half3 positionWS = perGrassPivotPosWS;
                 
                 //适用缩放
-                input.positionOS.xyz *= (trs.scale + 0.2);
+                input.positionOS.xyz *= (trs.scale + 0.5);
 
                 half mask = input.uv.y;
                 //风力效果
-                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
+                WindSettings windSettings = InitWindSettings(mask, _WindVertexRand, _WindObjectRand, _WindRandStrength);
+                float4 windOffset = GetWindOffset(input.positionOS, positionWS, windSettings, ObjectPosRand01());
+                positionWS.xz += windOffset.xz;
+                positionWS.y -= windOffset.y;
+
+
                 //交互效果
-                ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
+                // ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
 
                 //光照
                 //草的顶点数量少,着色直接在顶点阶段做完
@@ -120,9 +120,9 @@ Shader "HMK/Scene/InstancedIndirectGrass"
                 surfaceData.albedo = lerp(_ColorBottom, _ColorTop, saturate(input.positionOS.y + _ColorRange));
 
                 #ifdef EFFECT_HUE_VARIATION
-                    half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y, _HueVariation);
+                    half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y, _SpecularStrength, _HueVariation);
                 #else
-                    half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y);
+                    half3 lightingResult = GrassShadeAllLight(surfaceData, lightingData, input.positionOS.y, _SpecularStrength);
                 #endif
                 output.color = lightingResult;
                 output.positionCS = TransformWorldToHClip(positionWS);
@@ -150,51 +150,31 @@ Shader "HMK/Scene/InstancedIndirectGrass"
 
             HLSLPROGRAM
 
-            // #pragma exclude_renderers gles gles3 glcore
             #pragma target 4.5
 
             #pragma vertex DepthOnlyVertex
             #pragma fragment DepthOnlyFragment
 
-            // -------------------------------------
-            // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-
-            //--------------------------------------
-            // GPU Instancing
-            // #pragma multi_compile_instancing
-            // #pragma multi_compile _ DOTS_INSTANCING_ON
-
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "./../../HLSLIncludes/Common/HMK_Struct.hlsl"
+            #include "./HMK_Scene_Grass_Input.hlsl"
             #include "./HMK_Scene_Grass_Common.hlsl"
             
             struct Attributes
             {
                 float4 positionOS: POSITION;
                 float2 uv: TEXCOORD0;
+                half4 color: COLOR;
             };
-
+            
             struct Varyings
             {
                 float4 positionCS: SV_POSITION;
             };
 
-            
-
-            CBUFFER_START(UnityPerMaterial)
-
-            half _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset;
-            //Global Property
-            int _InteractivesCount;//交互物体数量
-            half3 _Interactives[100];//交互物体 最大支持20个交互物体
-
-            half _WindStrength, _WindHeight;
-            
             StructuredBuffer<GrassTRS> _AllInstancesTransformBuffer;//只含有坐标信息 下面需要吧缩放旋转也考虑上
             StructuredBuffer<uint> _VisibleInstanceOnlyTransformIDBuffer;
-            CBUFFER_END
+
 
             Varyings DepthOnlyVertex(Attributes input, uint instanceID: SV_InstanceID)
             {
@@ -212,9 +192,13 @@ Shader "HMK/Scene/InstancedIndirectGrass"
 
                 //风力效果
                 half mask = input.uv.y;
-                GrassApplyWind(_WindStrength, _WindHeight, mask, positionWS);
+                WindSettings windSettings = InitWindSettings(mask, _WindVertexRand, _WindObjectRand, _WindRandStrength);
+                float4 windOffset = GetWindOffset(input.positionOS, positionWS, windSettings, ObjectPosRand01());
+                positionWS.xz += windOffset.xz;
+                positionWS.y -= windOffset.y;
+                
                 //交互效果
-                ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
+                // ApplyInteractive(_InteractivesCount, _Interactives, _InteractRange, _InteractForce, _InteractTopOffset, _InteractBottomOffset, mask, positionWS);
 
                 output.positionCS = TransformWorldToHClip(positionWS);
                 return output;

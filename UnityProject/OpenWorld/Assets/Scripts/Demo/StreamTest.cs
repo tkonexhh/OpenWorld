@@ -5,7 +5,7 @@ using System.IO;
 using Sirenix.OdinInspector;
 
 
-namespace XHH
+namespace OpenWorld
 {
     public class StreamTest : MonoBehaviour
     {

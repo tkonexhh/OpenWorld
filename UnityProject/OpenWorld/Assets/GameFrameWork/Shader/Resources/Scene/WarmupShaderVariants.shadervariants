@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WarmupShaderVariants
+  m_Shaders:
+  - first: {fileID: 4800000, guid: d1f0bcedf46ae2f40ac0824778114240, type: 3}
+    second:
+      variants:
+      - keywords: _ALPHATEST_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: e45cf158143d8df4cb912bc4ff00ae79, type: 3}
+    second:
+      variants:
+      - keywords: _FOG_ON
+        passType: 0
+      - keywords: UseHighlight
+        passType: 0
+      - keywords: UseHighlight _FOG_ON
+        passType: 0
+      - keywords: UseRainnyNormal
+        passType: 0
+      - keywords: UseRainnyNormal _FOG_ON
+        passType: 0
+      - keywords: UseHighlight UseRainnyNormal
+        passType: 0
+      - keywords: UseHighlight UseRainnyNormal _FOG_ON
+        passType: 0
+  - first: {fileID: 4800000, guid: 7ad5faeea98a7ce4e8adfb53a2904792, type: 3}
+    second:
+      variants:
+      - keywords: INSTANCING_ON
+        passType: 13
+      - keywords: UseAlphaMask
+        passType: 13
+      - keywords: UseBlend
+        passType: 13
+      - keywords: UseAlphaMask UseBlend
+        passType: 13
+      - keywords: UseDetailBlend
+        passType: 13
+      - keywords: UseAlphaMask UseDetailBlend
+        passType: 13
+      - keywords: UseBlend UseDetailBlend
+        passType: 13
+      - keywords: UseAlphaMask UseBlend UseDetailBlend
+        passType: 13
+  - first: {fileID: 4800000, guid: 73b38a8d6d6b82446be5180c9c113154, type: 3}
+    second:
+      variants:
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _FOG_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: 66f136bdc9a6b1040976c754048d9378, type: 3}
+    second:
+      variants:
+      - keywords: _FOG_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: ea1baa9fce6dbe247ac4757ef7571177, type: 3}
+    second:
+      variants:
+      - keywords: _ALPHATEST_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: 0c7fbd424b9ae774e94593db256e5985, type: 3}
+    second:
+      variants:
+      - keywords: _FOG_ON
+        passType: 13
+      - keywords: INSTANCING_ON _FOG_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: eb64e606158bc994a8e5eb227e22e1bb, type: 3}
+    second:
+      variants:
+      - keywords: _ALPHATEST_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: a7e9e628f50ca1f4184d923d2f44cccc, type: 3}
+    second:
+      variants:
+      - keywords: _PBRMAP_ON
+        passType: 13
+      - keywords: _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _PBRMAP_ON _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _PBRMAP_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _RECEIVE_SHADOWS_OFF
+        passType: 13
+      - keywords: _ALPHATEST_ON _PBRMAP_ON _RECEIVE_SHADOWS_OFF
+        passType: 13

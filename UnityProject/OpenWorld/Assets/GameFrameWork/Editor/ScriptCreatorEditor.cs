@@ -4,7 +4,7 @@ using UnityEditor;
 
 public class ScriptCreatorEditor : UnityEditor.AssetModificationProcessor
 {
-    static string namespaceName = "XHH";
+    static string namespaceName = "OpenWorld";
 
     /// <summary>
     /// 将要创建资源时会调用这个函数

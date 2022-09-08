@@ -7,7 +7,7 @@
 // using Sirenix.Utilities.Editor;
 // using UnityEditor;
 
-// namespace XHH
+// namespace OpenWorld
 // {
 //     public class GrassPrefabInfoWindow : OdinEditorWindow
 //     {

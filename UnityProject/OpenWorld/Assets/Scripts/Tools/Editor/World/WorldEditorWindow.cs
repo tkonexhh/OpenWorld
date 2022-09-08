@@ -8,7 +8,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using MonKey;
 
-namespace XHH
+namespace OpenWorld
 {
     public class WorldEditorWindow : OdinMenuEditorWindow
     {

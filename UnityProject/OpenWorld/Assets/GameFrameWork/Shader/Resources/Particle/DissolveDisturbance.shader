@@ -23,17 +23,24 @@ Shader "VFX/DissolveDisturbance"
         _V_v ("V_v", Float) = 0
         _alpha ("alpha", Float) = 1
         [HideInInspector]_Cutoff ("Alpha cutoff", Range(0, 1)) = 0.5
+        [Enum(UnityEngine.Rendering.BlendMode)] _SrcB ("bSrcBlend", Float) = 5
+        [Enum(UnityEngine.Rendering.BlendMode)] _DstB ("DstBlend", Float) = 10
+        // [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Int) = 4
+        // _ZWrite ("ZWrite", float) = 1
+
     }
     SubShader
     {
-        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Transparent" "Queue" = "Transparent+100" }
+        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Transparent" "Queue" = "Transparent" }
         Pass
         {
             Name "FORWARD"
             Tags { "LightMode" = "UniversalForward" }
-            Blend SrcAlpha OneMinusSrcAlpha
+            Blend [_SrcB][_DstB]
+            // Blend SrcAlpha OneMinusSrcAlpha
             Cull Off
-            ZWrite Off
+            ZWrite off
+
 
             HLSLPROGRAM
 
@@ -42,23 +49,36 @@ Shader "VFX/DissolveDisturbance"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            #pragma multi_compile_fwdbase
+            // #pragma multi_compile_fwdbase
+            // -------------------------------------
+            // Unity defined keywords
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles3 metal
+
             #pragma target 3.0
-            uniform sampler2D _Tertur; uniform float4 _Tertur_ST;
-            uniform float4 _color;
-            uniform sampler2D _Dissolution; uniform float4 _Dissolution_ST;
-            uniform half _Dissolvingswitch;
-            uniform sampler2D _Disturbance; uniform float4 _Disturbance_ST;
-            uniform float _NoiseU;
-            uniform float _NoiseV;
-            uniform float _Noiseqiangdu;
-            uniform sampler2D _mask; uniform float4 _mask_ST;
-            uniform half _maskon;
-            uniform float _D_U;
-            uniform float _V_v;
-            uniform float _alpha;
+
+            CBUFFER_START(UnityPerMaterial)
+            float _NoiseU;
+            float _NoiseV;
+            float _Noiseqiangdu;
+            half _maskon;
+            float _D_U;
+            float _V_v;
+            float _alpha;
+            float4 _color;
+            half _Dissolvingswitch;
+
+
+            float4 _Tertur_ST;
+            float4 _Dissolution_ST;
+            float4 _Disturbance_ST;
+            float4 _mask_ST;
+            CBUFFER_END
+
+            TEXTURE2D(_Tertur);SAMPLER(sampler_Tertur);
+            TEXTURE2D(_Dissolution); SAMPLER(sampler_Dissolution);
+            TEXTURE2D(_Disturbance); SAMPLER(sampler_Disturbance);
+            TEXTURE2D(_mask); SAMPLER(sampler_mask);
+
             struct VertexInput
             {
                 float4 vertex: POSITION;
@@ -66,6 +86,7 @@ Shader "VFX/DissolveDisturbance"
                 float4 texcoord1: TEXCOORD1;
                 float4 vertexColor: COLOR;
             };
+
             struct VertexOutput
             {
                 float4 pos: SV_POSITION;
@@ -73,6 +94,7 @@ Shader "VFX/DissolveDisturbance"
                 float4 uv1: TEXCOORD1;
                 float4 vertexColor: COLOR;
             };
+
             VertexOutput vert(VertexInput v)
             {
                 VertexOutput o = (VertexOutput)0;
@@ -82,26 +104,28 @@ Shader "VFX/DissolveDisturbance"
                 o.pos = TransformObjectToHClip(v.vertex.xyz);
                 return o;
             }
-            float4 frag(VertexOutput i, float facing: VFACE): COLOR
+
+            float4 frag(VertexOutput i): SV_Target
             {
-                float isFrontFace = (facing >= 0 ? 1: 0);
-                float faceSign = (facing >= 0 ? 1: - 1);
+                // float isFrontFace = (facing >= 0 ? 1: 0);
+                // float faceSign = (facing >= 0 ? 1: - 1);
                 ////// Lighting:
                 ////// Emissive:
                 float4 node_2703 = _Time;
                 float2 node_5823 = (i.uv0 + float2((_NoiseU * node_2703.g), (node_2703.g * _NoiseV)));
-                float4 _Disturbance_var = tex2D(_Disturbance, TRANSFORM_TEX(node_5823, _Disturbance));
+                float4 _Disturbance_var = SAMPLE_TEXTURE2D(_Disturbance, sampler_Disturbance, TRANSFORM_TEX(node_5823, _Disturbance));
+
                 float2 node_3847 = (float2(((_Noiseqiangdu * i.uv0.y * _Disturbance_var.r) + i.uv0.r), i.uv0.g) + float2(i.uv1.g, i.uv1.b));
-                float4 _Tertur_var = tex2D(_Tertur, TRANSFORM_TEX(node_3847, _Tertur));
-                float4 _Tertur_var2 = tex2D(_Tertur, TRANSFORM_TEX(i.uv0, _Tertur));
+                float4 _Tertur_var = SAMPLE_TEXTURE2D(_Tertur, sampler_Tertur, TRANSFORM_TEX(node_3847, _Tertur));
+                float4 _Tertur_var2 = SAMPLE_TEXTURE2D(_Tertur, sampler_Tertur, TRANSFORM_TEX(i.uv0, _Tertur));
                 float3 emissive = (_Tertur_var.rgb * i.vertexColor.rgb * _color.rgb);
                 float3 finalColor = emissive;
                 float4 node_6887 = _Time;
                 float2 _Dissolvingswitch_var = lerp(1.0, float2(((_D_U * node_6887.g) + i.uv0.r), (i.uv0.g + (node_6887.g * _V_v))), _Dissolvingswitch);
-                float4 _Dissolution_var = tex2D(_Dissolution, TRANSFORM_TEX(_Dissolvingswitch_var, _Dissolution));
-                float4 _mask_var = tex2D(_mask, TRANSFORM_TEX(i.uv0, _mask));
+                float4 _Dissolution_var = SAMPLE_TEXTURE2D(_Dissolution, sampler_Dissolution, TRANSFORM_TEX(_Dissolvingswitch_var, _Dissolution));
+                float4 _mask_var = SAMPLE_TEXTURE2D(_mask, sampler_mask, TRANSFORM_TEX(i.uv0, _mask));
                 half4 finalRGBA = half4(finalColor, (i.vertexColor.a * _Tertur_var.a * step(i.uv1.r, _Dissolution_var.r) * lerp(1.0, (_Tertur_var.a * _mask_var.r), _maskon)));
-                
+
                 finalRGBA.a = _alpha * _Tertur_var2.a * finalRGBA.a;
                 return finalRGBA;
             }
@@ -150,5 +174,103 @@ Shader "VFX/DissolveDisturbance"
             ENDCG
 
             }*/
+            Pass
+            {
+                Name "DepthOnly"
+                Tags { "LightMode" = "DepthOnly" }
+
+                ZWrite On
+                ColorMask 0
+                Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+                Cull off
+
+                HLSLPROGRAM
+
+                #pragma multi_compile_fwdbase
+                #pragma multi_compile_fog
+                #pragma only_renderers d3d9 d3d11 glcore gles3 metal
+                #pragma target 3.0
+                uniform sampler2D _Tertur; uniform float4 _Tertur_ST;
+                uniform float4 _color;
+                uniform sampler2D _Dissolution; uniform float4 _Dissolution_ST;
+                uniform half _Dissolvingswitch;
+                uniform sampler2D _Disturbance; uniform float4 _Disturbance_ST;
+                uniform float _NoiseU;
+                uniform float _NoiseV;
+                uniform float _Noiseqiangdu;
+                uniform sampler2D _mask; uniform float4 _mask_ST;
+                uniform half _maskon;
+                uniform float _D_U;
+                uniform float _V_v;
+                uniform float _alpha;
+                #pragma target 4.5
+                #pragma shader_feature UseBlend
+                #pragma vertex vert
+                #pragma fragment DepthOnlyFragment
+                #pragma enable_cbuffer
+                #define UNITY_ENABLE_CBUFFER
+
+                //--------------------------------------
+                // GPU Instancing
+                #pragma multi_compile_instancing
+
+                #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+                // #ifndef UNIVERSAL_DEPTH_ONLY_PASS_INCLUDED
+                //     #define UNIVERSAL_DEPTH_ONLY_PASS_INCLUDED
+
+                struct VertexInput
+                {
+                    float4 vertex: POSITION;
+                    float2 texcoord0: TEXCOORD0;
+                    float4 texcoord1: TEXCOORD1;
+                    float4 vertexColor: COLOR;
+                };
+                struct VertexOutput
+                {
+                    float4 pos: SV_POSITION;
+                    float2 uv0: TEXCOORD0;
+                    float4 uv1: TEXCOORD1;
+                    float4 vertexColor: COLOR;
+                };
+
+
+                VertexOutput vert(VertexInput v)
+                {
+                    VertexOutput o = (VertexOutput)0;
+                    o.uv0 = v.texcoord0;
+                    o.uv1 = v.texcoord1;
+                    o.vertexColor = v.vertexColor;
+                    o.pos = TransformObjectToHClip(v.vertex.xyz);
+                    return o;
+                }
+                half4 DepthOnlyFragment(VertexOutput i): SV_TARGET
+                {
+
+
+                    float4 node_2703 = _Time;
+                    float2 node_5823 = (i.uv0 + float2((_NoiseU * node_2703.g), (node_2703.g * _NoiseV)));
+                    float4 _Disturbance_var = tex2D(_Disturbance, TRANSFORM_TEX(node_5823, _Disturbance));
+                    float2 node_3847 = (float2(((_Noiseqiangdu * i.uv0.y * _Disturbance_var.r) + i.uv0.r), i.uv0.g) + float2(i.uv1.g, i.uv1.b));
+                    float4 _Tertur_var = tex2D(_Tertur, TRANSFORM_TEX(node_3847, _Tertur));
+                    float4 _Tertur_var2 = tex2D(_Tertur, TRANSFORM_TEX(i.uv0, _Tertur));
+                    float3 emissive = (_Tertur_var.rgb * i.vertexColor.rgb * _color.rgb);
+                    float3 finalColor = emissive;
+                    float4 node_6887 = _Time;
+                    float2 _Dissolvingswitch_var = lerp(1.0, float2(((_D_U * node_6887.g) + i.uv0.r), (i.uv0.g + (node_6887.g * _V_v))), _Dissolvingswitch);
+                    float4 _Dissolution_var = tex2D(_Dissolution, TRANSFORM_TEX(_Dissolvingswitch_var, _Dissolution));
+                    float4 _mask_var = tex2D(_mask, TRANSFORM_TEX(i.uv0, _mask));
+                    half4 finalRGBA = half4(finalColor, (i.vertexColor.a * _Tertur_var.a * step(i.uv1.r, _Dissolution_var.r) * lerp(1.0, (_Tertur_var.a * _mask_var.r), _maskon)));
+
+                    finalRGBA.a = _alpha * _Tertur_var2.a * finalRGBA.a;
+                    clip(finalRGBA.a - 0.2);
+                    UNITY_SETUP_INSTANCE_ID(input);
+                    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                    return 0;
+                }
+
+                ENDHLSL
+
+            }
         }
     }

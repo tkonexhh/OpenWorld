@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using System.Runtime.InteropServices;
 
 
-namespace XHH
+namespace OpenWorld
 {
     public class ClusterBasedLightingRenderFeature : ScriptableRendererFeature
     {

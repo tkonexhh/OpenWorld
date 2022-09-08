@@ -15,6 +15,11 @@ Shader "HMK/Lit"
         _RoughnessScale ("RoughnessScale", range(0, 3)) = 1
         _OcclusionScale ("OcclusionScale", range(0, 3)) = 1
         
+        [Header(Emission)]
+        _EmissionScale ("Emission Scale", range(0, 3)) = 0
+        [HDR] _EmissionColor ("Emission Color", color) = (1, 1, 1)
+        [Toggle(_EMISSION_BREATH_ON)]_Emission_Breath_On ("_Emission_Breath_On", Int) = 0
+        _BreathSpeed ("_BreathSpeed", float) = 1
 
         [Header(Option)]
         // Blending state
@@ -92,7 +97,6 @@ Shader "HMK/Lit"
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
-            // #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
             //--------------------------------------
             // GPU Instancing
@@ -105,6 +109,37 @@ Shader "HMK/Lit"
             #include "./HMK_Lit_Input.hlsl"
             #include "./HMK_ShadowCasterPass.hlsl"
 
+            ENDHLSL
+
+        }
+
+
+        Pass
+        {
+            // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
+            // no LightMode tag are also rendered by Universal Render Pipeline
+            Name "GBuffer"
+            Tags { "LightMode" = "UniversalGBuffer" }
+
+            ZWrite[_ZWrite]
+            ZTest LEqual
+            Cull[_Cull]
+
+            HLSLPROGRAM
+
+            #pragma target 4.5
+
+            #pragma vertex LitGBufferPassVertex
+            #pragma fragment LitGBufferPassFragment
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+
+            #include "./HMK_Lit_Input.hlsl"
+            #include "./LitGBufferPass.hlsl"
+            
             ENDHLSL
 
         }
@@ -129,7 +164,6 @@ Shader "HMK/Lit"
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
             //--------------------------------------
             // GPU Instancing

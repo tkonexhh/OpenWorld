@@ -10,7 +10,7 @@ namespace GrassPainter
 {
     public class GrassPainterWindow : EditorWindow
     {
-        [MenuItem(XHH.ToolsPathDefine.WorldPath + "植被工具(GrassPainterWindow)")]
+        [MenuItem(OpenWorld.ToolsPathDefine.WorldPath + "植被工具(GrassPainterWindow)")]
         public static void ShowExample()
         {
             GrassPainterWindow window = GetWindow<GrassPainterWindow>();

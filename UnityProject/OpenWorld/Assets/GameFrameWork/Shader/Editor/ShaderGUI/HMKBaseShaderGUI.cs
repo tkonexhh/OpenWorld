@@ -40,6 +40,8 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
     protected MaterialProperty surfaceTypeProp { get; set; }
     protected MaterialProperty blendModeProp { get; set; }
     private MaterialProperty receiveShadowsProp { get; set; }
+    private MaterialProperty queueOffsetProp { get; set; }
+    private const int queueOffsetRange = 100;
 
     private bool m_OptionFoldout;
 
@@ -55,6 +57,7 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
 
         OptionGUI();
         InputGUI();
+
     }
 
     protected virtual void UpdateMaterialProperty(MaterialProperty[] props)
@@ -65,6 +68,7 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
         surfaceTypeProp = FindProperty("_Surface", props);
         blendModeProp = FindProperty("_Blend", props);
         receiveShadowsProp = FindProperty(ShaderProperty._ReceiveShadows, props, false);
+        queueOffsetProp = FindProperty("_QueueOffset", props, false);
     }
 
     private void OptionGUI()
@@ -127,6 +131,8 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
 
             OnOptionGUI();
         }
+
+
         EditorGUILayout.EndFoldoutHeaderGroup();
 
         GUILayout.Space(10);
@@ -178,12 +184,31 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
                 m_Material.renderQueue = (int)RenderQueue.Transparent;
                 m_Material.renderQueue += m_Material.HasProperty("_QueueOffset") ? (int)m_Material.GetFloat("_QueueOffset") : 0;
             }
+
         }
 
         // Receive Shadows
         if (m_Material.HasProperty(ShaderProperty._ReceiveShadows))
         {
             CoreUtils.SetKeyword(m_Material, ShaderKeywords._RECEIVE_SHADOWS_OFF, m_Material.GetFloat(ShaderProperty._ReceiveShadows) == 0.0f);
+        }
+
+    }
+
+    protected void DrawQueueOffsetField()
+    {
+        if (queueOffsetProp != null)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.showMixedValue = queueOffsetProp.hasMixedValue;
+            var queue = EditorGUILayout.IntSlider(Styles.queueSlider, (int)queueOffsetProp.floatValue, -queueOffsetRange, queueOffsetRange);
+            if (EditorGUI.EndChangeCheck())
+            {
+                queueOffsetProp.floatValue = queue;
+                SetupKeywords();
+            }
+            queueOffsetProp.floatValue = queue;
+            EditorGUI.showMixedValue = false;
         }
     }
 
@@ -221,6 +246,13 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
         EditorGUI.showMixedValue = false;
     }
 
+    protected static void DrawTileOffset(MaterialEditor materialEditor, MaterialProperty textureProp)
+    {
+        materialEditor.TextureScaleOffsetProperty(textureProp);
+    }
+
+
+
     protected static class Styles
     {
         public static readonly GUIContent baseMap = new GUIContent("Base Color");
@@ -239,6 +271,9 @@ public abstract class HMKBaseShaderGUI : ShaderGUI
                 "Sets where the Alpha Clipping starts. The higher the value is, the brighter the  effect is when clipping starts.");
         public static readonly GUIContent receiveShadowText = new GUIContent("Receive Shadows",
                 "When enabled, other GameObjects can cast shadows onto this GameObject.");
+
+        public static readonly GUIContent queueSlider = new GUIContent("Priority",
+                "Determines the chronological rendering order for a Material. High values are rendered first.");
     }
 
 
