@@ -1,0 +1,13 @@
+{
+  "name": "com.xhh.openworldrenderpipeline",
+  "displayName": "RenderPipeline",
+  "version": "1.0.0",
+  "unity": "2022.2",
+  "unityRelease": "18f1",
+  "dependencies": {
+    "com.unity.render-pipelines.core": "14.0.3"
+  },
+  "keywords": [],
+  "repository": {},
+  "description": "this custom pipeline"
+}
