@@ -30,6 +30,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 // Disable instancing for preview cameras. This is consistent with the built-in forward renderer. Also fixes case 1127324.
                 enableInstancing = camera.cameraType == CameraType.Preview ? false : true,
             };
+
             return settings;
         }
 

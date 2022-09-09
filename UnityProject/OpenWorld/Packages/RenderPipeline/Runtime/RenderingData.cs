@@ -7,6 +7,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 {
     public struct RenderingData
     {
+        public CullingResults cullResults;
         public CameraData cameraData;
         public ShadowData shadowData;
         public LightData lightData;
@@ -22,6 +23,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// This settings doesn't apply when drawing shadow casters. Dynamic batching is always disabled when drawing shadow casters.
         /// </summary>
         public bool supportsDynamicBatching;
+
+
+        public CommandBuffer cmd;
 
 
     }
