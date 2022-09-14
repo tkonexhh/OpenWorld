@@ -25,7 +25,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public bool supportsDynamicBatching;
 
 
-        public CommandBuffer cmd;
+        public CommandBuffer commandBuffer;
 
 
     }
@@ -83,13 +83,10 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// The camera component.
         /// </summary>
         public Camera camera;
+        public CameraType cameraType;
 
 
-        /// <summary>
-        /// Returns the current renderer used by this camera.
-        /// <see cref="ScriptableRenderer"/>
-        /// </summary>
-        // public ScriptableRenderer renderer;
+
     }
 
     public struct ShadowData

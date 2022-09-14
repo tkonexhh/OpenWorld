@@ -1,0 +1,17 @@
+﻿#ifndef RENDERPIPELINE_UNITYINPUT_INCLUDED
+#define RENDERPIPELINE_UNITYINPUT_INCLUDED
+
+
+CBUFFER_START(UnityPerMaterial)
+half4 _BaseColor;
+real _Cutoff;
+CBUFFER_END
+
+
+// UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
+// UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
+// UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
+
+TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
+
+#endif

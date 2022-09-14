@@ -6,9 +6,9 @@ using UnityEngine.Experimental.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
-    public class DrawOpacityPass : ScriptableRenderPass
+    public class DrawOpacityPass : DrawObjectPass
     {
-        private static readonly ShaderTagId k_ShaderTagId = new ShaderTagId("UniversalForward");
+
 
         FilteringSettings m_FilteringSettings;
 
@@ -19,9 +19,12 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            Debug.LogError("[DrawOpacityPass][Execute]");
-            var drawSettings = RenderingUtils.CreateDrawingSettings(k_ShaderTagId, ref renderingData, SortingCriteria.CommonOpaque);
-            context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
+            var cmd = renderingData.commandBuffer;
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawOpaqueObjects)))
+            {
+                var drawSettings = RenderingUtils.CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
+                context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
+            }
         }
     }
 }

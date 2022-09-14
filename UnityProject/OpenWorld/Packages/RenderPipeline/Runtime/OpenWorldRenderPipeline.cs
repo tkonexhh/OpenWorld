@@ -12,8 +12,10 @@ namespace OpenWorld.RenderPipelines.Runtime
         public OpenWorldRenderPipeline(OpenWorldRenderPipelineAsset asset)
         {
             m_Renderer = new ForwardRender();
-        }
 
+            GraphicsSettings.useScriptableRenderPipelineBatching = asset.UseSRPBatcher;
+            // Shader.globalRenderPipeline = "UniversalPipeline";
+        }
 
         protected override void Render(ScriptableRenderContext renderContext, Camera[] cameras)
         {
@@ -28,9 +30,9 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
-        void InitRenderingData(ScriptableRenderContext renderContext, out RenderingData renderingData, Camera camera, ScriptableCullingParameters cullingParameters)
+        void InitRenderingData(ScriptableRenderContext renderContext, out RenderingData renderingData, Camera camera, ref ScriptableCullingParameters cullingParameters)
         {
-            cullingParameters.shadowDistance = 10;//Mathf.Min(camera.farClipPlane,)
+            // cullingParameters.shadowDistance = 10;//Mathf.Min(camera.farClipPlane,)
 
             renderingData.cullResults = renderContext.Cull(ref cullingParameters);
             renderingData.supportsDynamicBatching = true;
@@ -41,40 +43,58 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             renderingData.cameraData = new CameraData();
             renderingData.cameraData.camera = camera;
+            renderingData.cameraData.cameraType = camera.cameraType;
             renderingData.cameraData.SetViewAndProjectionMatrix(camera.cameraToWorldMatrix, camera.projectionMatrix);
 
-            renderingData.cmd = new CommandBuffer()
-            {
-                name = camera.name
-            };
+            renderingData.commandBuffer = CommandBufferPool.Get();
         }
 
         void RenderSingleCamera(ScriptableRenderContext renderContext, Camera camera)
         {
-            ScriptableCullingParameters cullingParameters;
-            if (!camera.TryGetCullingParameters(out cullingParameters))
+            if (!camera.TryGetCullingParameters(out ScriptableCullingParameters cullingParameters))
             {
                 return;
             }
 
-            InitRenderingData(renderContext, out var renderingData, camera, cullingParameters);
+            InitRenderingData(renderContext, out var renderingData, camera, ref cullingParameters);
 
-            CommandBuffer cmd = renderingData.cmd;
-            renderContext.SetupCameraProperties(camera);
-            cmd.ClearRenderTarget(true, false, Color.clear);
-            // cmd.BeginSample(camera.name);
+            CommandBuffer cmd = renderingData.commandBuffer;
+
+            CommandBuffer cmdScope = cmd;
+            ProfilingSampler sampler = Profiling.TryGetOrAddCameraSampler(camera);
+            using (new ProfilingScope(cmdScope, sampler))
+            {
+                renderContext.SetupCameraProperties(camera);
+                CameraClearFlags clearFlags = camera.clearFlags;
+                bool clearDepth = camera.clearFlags == CameraClearFlags.Nothing ? false : true;
+                bool clearColor = camera.clearFlags == CameraClearFlags.Color;
+                cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor.linear);
+
+                ExecuteCommandBuffer(renderContext, ref renderingData);
+
+                m_Renderer.Setup(renderContext, ref renderingData);
+                m_Renderer.Render(renderContext, ref renderingData);
+
+#if UNITY_EDITOR
+                // Emit scene view UI
+                if (camera.cameraType == CameraType.SceneView)
+                    ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
+#endif
+
+                DrawUnsupportdShaders(renderContext, ref renderingData);
+                DrawGizmos(renderContext, ref renderingData);
+            }
+
             renderContext.ExecuteCommandBuffer(cmd);
-            cmd.Clear();
-
-            m_Renderer.Setup(renderContext, ref renderingData);
-            m_Renderer.Render(renderContext, ref renderingData);
-
-            // cmd.EndSample(camera.name);
-            cmd.Release();
-
-            DrawGizmos(renderContext, ref renderingData);
+            CommandBufferPool.Release(cmd);
 
             renderContext.Submit();
+        }
+
+        void ExecuteCommandBuffer(ScriptableRenderContext renderContext, ref RenderingData renderingData)
+        {
+            renderContext.ExecuteCommandBuffer(renderingData.commandBuffer);
+            renderingData.commandBuffer.Clear();
         }
 
 
@@ -89,5 +109,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
 #endif
         }
+
+        void DrawUnsupportdShaders(ScriptableRenderContext renderContext, ref RenderingData renderingData)
+        {
+            RenderingUtils.RenderObjectsWithError(renderContext, ref renderingData.cullResults, renderingData.cameraData.camera, FilteringSettings.defaultValue, SortingCriteria.CommonOpaque);
+        }
+
     }
 }

@@ -19,9 +19,14 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            Debug.LogError("[DepthOnlyPass][Execute]");
-            var drawSettings = RenderingUtils.CreateDrawingSettings(k_ShaderTagId, ref renderingData, SortingCriteria.CommonOpaque);
-            context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
+            var cmd = renderingData.commandBuffer;
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DepthPrepass)))
+            {
+                // var drawSettings = RenderingUtils.CreateDrawingSettings(k_ShaderTagId, ref renderingData, SortingCriteria.CommonOpaque);
+                var sortingSettings = new SortingSettings(renderingData.cameraData.camera);
+                var drawSettings = new DrawingSettings(k_ShaderTagId, sortingSettings);
+                context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
+            }
         }
     }
 }

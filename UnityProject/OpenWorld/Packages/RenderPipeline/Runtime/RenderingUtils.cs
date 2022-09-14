@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
-
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
@@ -54,6 +55,60 @@ namespace OpenWorld.RenderPipelines.Runtime
             for (int i = 1; i < shaderTagIdList.Count; ++i)
                 settings.SetShaderPassName(i, shaderTagIdList[i]);
             return settings;
+        }
+
+
+        static List<ShaderTagId> m_LegacyShaderPassNames = new List<ShaderTagId>
+        {
+            new ShaderTagId("Always"),
+            new ShaderTagId("ForwardBase"),
+            new ShaderTagId("PrepassBase"),
+            new ShaderTagId("Vertex"),
+            new ShaderTagId("VertexLMRGBM"),
+            new ShaderTagId("VertexLM"),
+        };
+
+        static Material s_ErrorMaterial;
+        static Material errorMaterial
+        {
+            get
+            {
+                if (s_ErrorMaterial == null)
+                {
+                    // TODO: When importing project, AssetPreviewUpdater::CreatePreviewForAsset will be called multiple times.
+                    // This might be in a point that some resources required for the pipeline are not finished importing yet.
+                    // Proper fix is to add a fence on asset import.
+                    try
+                    {
+                        s_ErrorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
+                    }
+                    catch { }
+                }
+
+                return s_ErrorMaterial;
+            }
+        }
+
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
+        internal static void RenderObjectsWithError(ScriptableRenderContext context, ref CullingResults cullResults, Camera camera, FilteringSettings filterSettings, SortingCriteria sortFlags)
+        {
+            // TODO: When importing project, AssetPreviewUpdater::CreatePreviewForAsset will be called multiple times.
+            // This might be in a point that some resources required for the pipeline are not finished importing yet.
+            // Proper fix is to add a fence on asset import.
+            if (errorMaterial == null)
+                return;
+
+            SortingSettings sortingSettings = new SortingSettings(camera) { criteria = sortFlags };
+            DrawingSettings errorSettings = new DrawingSettings(m_LegacyShaderPassNames[0], sortingSettings)
+            {
+                perObjectData = PerObjectData.None,
+                overrideMaterial = errorMaterial,
+                overrideMaterialPassIndex = 0
+            };
+            for (int i = 1; i < m_LegacyShaderPassNames.Count; ++i)
+                errorSettings.SetShaderPassName(i, m_LegacyShaderPassNames[i]);
+
+            context.DrawRenderers(cullResults, ref errorSettings, ref filterSettings);
         }
     }
 }

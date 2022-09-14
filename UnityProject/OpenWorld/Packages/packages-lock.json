@@ -245,6 +245,14 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.xhh.openworldrenderpipeline": {
+      "version": "file:RenderPipeline",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.render-pipelines.core": "14.0.3"
+      }
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

@@ -44,13 +44,10 @@ namespace UnityEngine.Rendering.Universal
             public static class Pipeline
             {
                 // TODO: Would be better to add Profiling name hooks into RenderPipeline.cs, requires changes outside of Universal.
-#if UNITY_2021_1_OR_NEWER
+
                 public static readonly ProfilingSampler beginContextRendering = new ProfilingSampler($"{nameof(RenderPipeline)}.{nameof(BeginContextRendering)}");
                 public static readonly ProfilingSampler endContextRendering = new ProfilingSampler($"{nameof(RenderPipeline)}.{nameof(EndContextRendering)}");
-#else
-                public static readonly ProfilingSampler beginFrameRendering = new ProfilingSampler($"{nameof(RenderPipeline)}.{nameof(BeginFrameRendering)}");
-                public static readonly ProfilingSampler endFrameRendering = new ProfilingSampler($"{nameof(RenderPipeline)}.{nameof(EndFrameRendering)}");
-#endif
+
                 public static readonly ProfilingSampler beginCameraRendering = new ProfilingSampler($"{nameof(RenderPipeline)}.{nameof(BeginCameraRendering)}");
                 public static readonly ProfilingSampler endCameraRendering = new ProfilingSampler($"{nameof(RenderPipeline)}.{nameof(EndCameraRendering)}");
 
@@ -221,22 +218,14 @@ namespace UnityEngine.Rendering.Universal
             CameraCaptureBridge.enabled = false;
         }
 
-#if UNITY_2021_1_OR_NEWER
-        /// <inheritdoc/>
+
         protected override void Render(ScriptableRenderContext renderContext, Camera[] cameras)
         {
             Render(renderContext, new List<Camera>(cameras));
         }
 
-#endif
 
-#if UNITY_2021_1_OR_NEWER
-        /// <inheritdoc/>
         protected override void Render(ScriptableRenderContext renderContext, List<Camera> cameras)
-#else
-        /// <inheritdoc/>
-        protected override void Render(ScriptableRenderContext renderContext, Camera[] cameras)
-#endif
         {
             useRenderGraph = m_GlobalSettings.enableRenderGraph;
 
@@ -244,17 +233,11 @@ namespace UnityEngine.Rendering.Universal
             // C#8 feature, only in >= 2020.2
             using var profScope = new ProfilingScope(null, ProfilingSampler.Get(URPProfileId.UniversalRenderTotal));
 
-#if UNITY_2021_1_OR_NEWER
             using (new ProfilingScope(null, Profiling.Pipeline.beginContextRendering))
             {
                 BeginContextRendering(renderContext, cameras);
             }
-#else
-            using (new ProfilingScope(null, Profiling.Pipeline.beginFrameRendering))
-            {
-                BeginFrameRendering(renderContext, cameras);
-            }
-#endif
+
 
             GraphicsSettings.lightsUseLinearIntensity = (QualitySettings.activeColorSpace == ColorSpace.Linear);
             GraphicsSettings.lightsUseColorTemperature = true;
@@ -278,11 +261,8 @@ namespace UnityEngine.Rendering.Universal
 #endif
 
             SortCameras(cameras);
-#if UNITY_2021_1_OR_NEWER
+
             for (int i = 0; i < cameras.Count; ++i)
-#else
-            for (int i = 0; i < cameras.Length; ++i)
-#endif
             {
                 var camera = cameras[i];
                 camera.allowDynamicResolution = false;
@@ -313,17 +293,11 @@ namespace UnityEngine.Rendering.Universal
 
             s_RenderGraph.EndFrame();
 
-#if UNITY_2021_1_OR_NEWER
             using (new ProfilingScope(null, Profiling.Pipeline.endContextRendering))
             {
                 EndContextRendering(renderContext, cameras);
             }
-#else
-            using (new ProfilingScope(null, Profiling.Pipeline.endFrameRendering))
-            {
-                EndFrameRendering(renderContext, cameras);
-            }
-#endif
+
 
 #if ENABLE_SHADER_DEBUG_PRINT
             ShaderDebugPrintManager.instance.EndFrame();
@@ -467,9 +441,7 @@ namespace UnityEngine.Rendering.Universal
             // exec(cmd.start, scope.start, cmd.end) and exec(cmd.start, scope.end, cmd.end)
             CommandBuffer cmd = CommandBufferPool.Get();
 
-            // TODO: move skybox code from C++ to URP in order to remove the call to context.Submit() inside DrawSkyboxPass
             CommandBuffer cmdScope = cmd;
-
             ProfilingSampler sampler = Profiling.TryGetOrAddCameraSampler(camera);
             using (new ProfilingScope(cmdScope, sampler)) // Enqueues a "BeginSample" command into the CommandBuffer cmd
             {
