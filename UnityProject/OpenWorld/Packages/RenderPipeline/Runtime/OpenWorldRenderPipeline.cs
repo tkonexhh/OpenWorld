@@ -14,6 +14,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_Renderer = new ForwardRender();
 
             GraphicsSettings.useScriptableRenderPipelineBatching = asset.UseSRPBatcher;
+            GraphicsSettings.lightsUseLinearIntensity = true;
             // Shader.globalRenderPipeline = "UniversalPipeline";
         }
 

@@ -4,6 +4,13 @@
 
 CBUFFER_START(UnityPerMaterial)
 half4 _BaseColor;
+half _MetallicScale;
+half _RoughnessScale;
+half _OcclusionScale;
+
+half3 _EmissionColor;
+half _EmissionScale;
+
 real _Cutoff;
 CBUFFER_END
 
