@@ -12,7 +12,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         [SerializeField] ShadowSettings shadowSettings = default;
         [SerializeField] bool useSRPBatcher = true;
 
-
+        public ShadowSettings ShadowSettings => shadowSettings;
         public bool UseSRPBatcher => useSRPBatcher;
 
         protected override RenderPipeline CreatePipeline()

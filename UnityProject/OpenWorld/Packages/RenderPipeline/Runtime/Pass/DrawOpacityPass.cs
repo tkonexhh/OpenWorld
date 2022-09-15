@@ -22,6 +22,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             var cmd = renderingData.commandBuffer;
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawOpaqueObjects)))
             {
+                context.ExecuteCommandBuffer(cmd);
+                cmd.Clear();
                 var drawSettings = RenderingUtils.CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
                 context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
             }

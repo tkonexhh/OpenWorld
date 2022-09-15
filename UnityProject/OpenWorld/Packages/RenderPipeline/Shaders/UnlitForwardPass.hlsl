@@ -38,7 +38,11 @@ float4 UnlitPassFragment(Varyings input): SV_Target
 
     half4 baseMap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
     half4 baseColor = baseMap * _BaseColor;
-    clip(baseColor.a - _Cutoff);
+    
+    #ifdef _ALPHATEST_ON
+        clip(baseColor.a - _Cutoff);
+    #endif
+
     return baseColor;
 }
 

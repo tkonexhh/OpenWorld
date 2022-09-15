@@ -9,9 +9,12 @@ namespace OpenWorld.RenderPipelines.Runtime
     {
         BaseRender m_Renderer;
 
+        ShadowSettings m_ShadowSettings;
+
         public OpenWorldRenderPipeline(OpenWorldRenderPipelineAsset asset)
         {
             m_Renderer = new ForwardRender();
+            m_ShadowSettings = asset.ShadowSettings;
 
             GraphicsSettings.useScriptableRenderPipelineBatching = asset.UseSRPBatcher;
             GraphicsSettings.lightsUseLinearIntensity = true;
@@ -33,14 +36,21 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         void InitRenderingData(ScriptableRenderContext renderContext, out RenderingData renderingData, Camera camera, ref ScriptableCullingParameters cullingParameters)
         {
-            // cullingParameters.shadowDistance = 10;//Mathf.Min(camera.farClipPlane,)
+            cullingParameters.shadowDistance = Mathf.Min(m_ShadowSettings.maxDistance, camera.farClipPlane);
 
             renderingData.cullResults = renderContext.Cull(ref cullingParameters);
             renderingData.supportsDynamicBatching = true;
 
+            //Shadow Data
             renderingData.shadowData = new ShadowData();
+            int shadowResolution = (int)m_ShadowSettings.directional.resolution;
+            renderingData.shadowData.mainLightShadowmapWidth = shadowResolution;
+            renderingData.shadowData.mainLightShadowmapHeight = shadowResolution;
+            renderingData.shadowData.mainLightShadowCascadesCount = m_ShadowSettings.directional.cascadeCount;
+
+
             renderingData.lightData = new LightData();
-            renderingData.lightData.mainLightIndex = 0;
+            renderingData.lightData.mainLightIndex = -1;
 
             renderingData.cameraData = new CameraData();
             renderingData.cameraData.camera = camera;

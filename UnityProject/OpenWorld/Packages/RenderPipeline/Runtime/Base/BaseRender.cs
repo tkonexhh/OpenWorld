@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
-    public abstract class BaseRender
+    public abstract class BaseRender : ScriptableRenderer
     {
         List<ScriptableRenderPass> m_ActiveRenderPassQueue = new List<ScriptableRenderPass>(32);
 

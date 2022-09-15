@@ -11,7 +11,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         public Directional directional = new Directional
         {
             resolution = ShadowResolution._2048,
-            filter = FilterMode.PCF2x2
+            filter = FilterMode.PCF2x2,
+            cascadeCount = 4
         };
 
 

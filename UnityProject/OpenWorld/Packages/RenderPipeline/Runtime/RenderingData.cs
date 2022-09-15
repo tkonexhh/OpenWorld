@@ -91,6 +91,9 @@ namespace OpenWorld.RenderPipelines.Runtime
 
     public struct ShadowData
     {
+        public int mainLightShadowmapWidth;
+        public int mainLightShadowmapHeight;
+        public int mainLightShadowCascadesCount;
     }
 
     /// <summary>

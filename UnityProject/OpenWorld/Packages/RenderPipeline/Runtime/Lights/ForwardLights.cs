@@ -26,6 +26,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public void Setup(ref RenderingData renderingData)
         {
             var visibleLights = renderingData.cullResults.visibleLights;
+            renderingData.lightData.mainLightIndex = GetMainLightIndex(visibleLights);
             SetupMainLight(renderingData.commandBuffer, ref renderingData.lightData);
 
             m_AdditionalLightPositions = new Vector4[MAX_ADDITIONAL_LIGHT_COUNT];
@@ -34,6 +35,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         void SetupMainLight(CommandBuffer cmd, ref LightData lightData)
         {
+
             Light mainLight = RenderSettings.sun;
             cmd.SetGlobalVector(ShaderIDs.MainLightPosition, -mainLight.transform.forward);
             cmd.SetGlobalColor(ShaderIDs.MainLightColor, mainLight.color.linear * mainLight.intensity);

@@ -1,6 +1,9 @@
 ﻿#ifndef RENDERPIPELINE_LIT_INPUT_INCLUDED
 #define RENDERPIPELINE_LIT_INPUT_INCLUDED
 
+#include "Packages/RenderPipeline/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
+
 
 CBUFFER_START(UnityPerMaterial)
 half4 _BaseColor;
@@ -12,6 +15,8 @@ half3 _EmissionColor;
 half _EmissionScale;
 
 real _Cutoff;
+
+float4 _MainTex_ST;
 CBUFFER_END
 
 
