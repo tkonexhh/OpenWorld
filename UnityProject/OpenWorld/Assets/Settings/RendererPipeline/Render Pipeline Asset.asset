@@ -17,5 +17,8 @@ MonoBehaviour:
     directional:
       resolution: 2048
       filter: 0
-      cascadeCount: 1
+      cascadeCount: 4
+      cascadeRatio1: 0.1
+      cascadeRatio2: 0.25
+      cascadeRatio3: 0.5
   useSRPBatcher: 0

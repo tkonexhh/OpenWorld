@@ -102,6 +102,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 var shadowSettings = new ShadowDrawingSettings(cullResults, shadowLightIndex, BatchCullingProjectionType.Orthographic);
 
                 for (int cascadeIndex = 0; cascadeIndex < m_ShadowCasterCascadesCount; ++cascadeIndex)
+                // int cascadeIndex = 2;
                 {
                     shadowSettings.splitData = m_CascadeSlices[cascadeIndex].splitData;
                     ShadowUtils.RenderShadowSlice(cmd, ref context, ref m_CascadeSlices[cascadeIndex], ref shadowSettings);

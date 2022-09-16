@@ -44,7 +44,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         protected override void Dispose(bool disposing)
         {
-            m_MainLightShadowCasterPass.Dispose();
+            m_MainLightShadowCasterPass?.Dispose();
         }
 
     }

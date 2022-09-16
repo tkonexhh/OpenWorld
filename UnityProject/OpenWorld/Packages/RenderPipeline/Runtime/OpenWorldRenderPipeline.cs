@@ -42,11 +42,30 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderingData.supportsDynamicBatching = true;
 
             //Shadow Data
-            renderingData.shadowData = new ShadowData();
+            var shadowData = new ShadowData();
             int shadowResolution = (int)m_ShadowSettings.directional.resolution;
-            renderingData.shadowData.mainLightShadowmapWidth = shadowResolution;
-            renderingData.shadowData.mainLightShadowmapHeight = shadowResolution;
-            renderingData.shadowData.mainLightShadowCascadesCount = m_ShadowSettings.directional.cascadeCount;
+            shadowData.mainLightShadowmapWidth = shadowResolution;
+            shadowData.mainLightShadowmapHeight = shadowResolution;
+            shadowData.mainLightShadowCascadesCount = m_ShadowSettings.directional.cascadeCount;
+            switch (shadowData.mainLightShadowCascadesCount)
+            {
+                case 1:
+                    shadowData.mainLightShadowCascadesSplit = new Vector3(1.0f, 0.0f, 0.0f);
+                    break;
+
+                case 2:
+                    shadowData.mainLightShadowCascadesSplit = new Vector3(m_ShadowSettings.directional.cascadeRatio1, 1.0f, 0.0f);
+                    break;
+
+                case 3:
+                    shadowData.mainLightShadowCascadesSplit = new Vector3(m_ShadowSettings.directional.cascadeRatio1, m_ShadowSettings.directional.cascadeRatio2, 0.0f);
+                    break;
+
+                default:
+                    shadowData.mainLightShadowCascadesSplit = m_ShadowSettings.directional.CascadeRatios;
+                    break;
+            }
+            renderingData.shadowData = shadowData;
 
 
             renderingData.lightData = new LightData();
@@ -124,6 +143,12 @@ namespace OpenWorld.RenderPipelines.Runtime
         void DrawUnsupportdShaders(ScriptableRenderContext renderContext, ref RenderingData renderingData)
         {
             RenderingUtils.RenderObjectsWithError(renderContext, ref renderingData.cullResults, renderingData.cameraData.camera, FilteringSettings.defaultValue, SortingCriteria.CommonOpaque);
+        }
+
+
+        protected override void Dispose(bool disposing)
+        {
+            m_Renderer?.Dispose();
         }
 
     }

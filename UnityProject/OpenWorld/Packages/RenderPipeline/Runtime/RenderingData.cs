@@ -94,6 +94,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public int mainLightShadowmapWidth;
         public int mainLightShadowmapHeight;
         public int mainLightShadowCascadesCount;
+        public Vector3 mainLightShadowCascadesSplit;
     }
 
     /// <summary>
