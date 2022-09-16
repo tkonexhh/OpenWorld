@@ -214,6 +214,7 @@ namespace UnityEngine.Rendering.Universal
 
         /// <summary>
         /// Used for baking bake cascade transforms in each shadow matrix.
+        /// 应用偏移量和比例
         /// </summary>
         /// <param name="shadowSliceData"></param>
         /// <param name="atlasWidth"></param>
@@ -221,12 +222,12 @@ namespace UnityEngine.Rendering.Universal
         public static void ApplySliceTransform(ref ShadowSliceData shadowSliceData, int atlasWidth, int atlasHeight)
         {
             Matrix4x4 sliceTransform = Matrix4x4.identity;
-            float oneOverAtlasWidth = 1.0f / atlasWidth;
-            float oneOverAtlasHeight = 1.0f / atlasHeight;
-            sliceTransform.m00 = shadowSliceData.resolution * oneOverAtlasWidth;
-            sliceTransform.m11 = shadowSliceData.resolution * oneOverAtlasHeight;
-            sliceTransform.m03 = shadowSliceData.offsetX * oneOverAtlasWidth;
-            sliceTransform.m13 = shadowSliceData.offsetY * oneOverAtlasHeight;
+            float scaleWidth = 1.0f / atlasWidth;
+            float scaleHeight = 1.0f / atlasHeight;
+            sliceTransform.m00 = shadowSliceData.resolution * scaleWidth;
+            sliceTransform.m11 = shadowSliceData.resolution * scaleHeight;
+            sliceTransform.m03 = shadowSliceData.offsetX * scaleWidth;
+            sliceTransform.m13 = shadowSliceData.offsetY * scaleHeight;
 
             // Apply shadow slice scale and offset
             shadowSliceData.shadowTransform = sliceTransform * shadowSliceData.shadowTransform;

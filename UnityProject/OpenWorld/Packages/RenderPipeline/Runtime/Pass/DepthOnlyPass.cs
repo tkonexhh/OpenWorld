@@ -15,6 +15,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public DepthOnlyPass(RenderPassEvent evt, RenderQueueRange renderQueueRange, LayerMask layerMask)
         {
             m_FilteringSettings = new FilteringSettings(renderQueueRange);
+            renderPassEvent = evt;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)

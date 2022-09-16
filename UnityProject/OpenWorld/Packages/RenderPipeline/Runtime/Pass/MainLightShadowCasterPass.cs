@@ -18,6 +18,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         int renderTargetWidth;
         int renderTargetHeight;
 
+        Matrix4x4[] m_MainLightShadowMatrices;
         Vector4[] m_CascadeSplitDistances;
         ShadowSliceData[] m_CascadeSlices;
 
@@ -26,15 +27,23 @@ namespace OpenWorld.RenderPipelines.Runtime
         FilteringSettings m_FilteringSettings;
 
 
+        static class ShaderIDs
+        {
+            public static readonly int WorldToShadow = Shader.PropertyToID("_MainLightWorldToShadow");
+            public static readonly string MainLightShadowmapTexture = "_MainLightShadowmapTexture";
+        }
+
+
         public MainLightShadowCasterPass(RenderPassEvent evt)
         {
             base.profilingSampler = new ProfilingSampler(nameof(MainLightShadowCasterPass));
-
+            //TODO URP中 +1 是为什么?
+            m_MainLightShadowMatrices = new Matrix4x4[k_MaxCascades];
             m_CascadeSlices = new ShadowSliceData[k_MaxCascades];
             m_CascadeSplitDistances = new Vector4[k_MaxCascades];
 
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
-            m_MainLightShadowmapID = Shader.PropertyToID("_MainLightShadowmapTexture");
+            m_MainLightShadowmapID = Shader.PropertyToID(ShaderIDs.MainLightShadowmapTexture);
         }
 
         public bool Setup(ref RenderingData renderingData)
@@ -75,15 +84,22 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             if (m_MainLightShadowmapTexture == null)
             {
-                m_MainLightShadowmapTexture = ShadowUtils.AllocShadowRT(renderTargetWidth, renderTargetHeight, k_ShadowmapBufferBits, "_MainLightShadowmapTexture");
-                Debug.LogError("Create New Shadowmap");
+                m_MainLightShadowmapTexture = ShadowUtils.AllocShadowRT(renderTargetWidth, renderTargetHeight, k_ShadowmapBufferBits, ShaderIDs.MainLightShadowmapTexture);
             }
 
             return true;
         }
 
+        public override void Configure(CommandBuffer cmd)
+        {
+            ConfigureTarget(m_MainLightShadowmapTexture);
+            ConfigureColorStoreAction(RenderBufferStoreAction.Store);
+            ConfigureClear(ClearFlag.All, Color.black);
+        }
+
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+
             var cmd = renderingData.commandBuffer;
 
             var cullResults = renderingData.cullResults;
@@ -94,21 +110,31 @@ namespace OpenWorld.RenderPipelines.Runtime
             if (shadowLightIndex == -1)
                 return;
 
+            VisibleLight shadowLight = cullResults.visibleLights[shadowLightIndex];
+
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.MainLightShadow)))
             {
-                CoreUtils.SetRenderTarget(cmd, m_MainLightShadowmapTexture, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
-                cmd.ClearRenderTarget(true, false, Color.clear);
-
                 var shadowSettings = new ShadowDrawingSettings(cullResults, shadowLightIndex, BatchCullingProjectionType.Orthographic);
 
                 for (int cascadeIndex = 0; cascadeIndex < m_ShadowCasterCascadesCount; ++cascadeIndex)
-                // int cascadeIndex = 2;
                 {
                     shadowSettings.splitData = m_CascadeSlices[cascadeIndex].splitData;
                     ShadowUtils.RenderShadowSlice(cmd, ref context, ref m_CascadeSlices[cascadeIndex], ref shadowSettings);
                 }
+
+                SetupMainLightShadowReceiverConstants(cmd, ref shadowLight, ref shadowData);
             }
 
+        }
+
+        void SetupMainLightShadowReceiverConstants(CommandBuffer cmd, ref VisibleLight shadowLight, ref ShadowData shadowData)
+        {
+            int cascadeCount = m_ShadowCasterCascadesCount;
+            for (int i = 0; i < cascadeCount; ++i)
+                m_MainLightShadowMatrices[i] = m_CascadeSlices[i].shadowTransform;
+
+
+            cmd.SetGlobalMatrixArray(ShaderIDs.WorldToShadow, m_MainLightShadowMatrices);
         }
 
         public void Dispose()

@@ -16,9 +16,17 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            ref CameraData cameraData = ref renderingData.cameraData;
-            Camera camera = cameraData.camera;
-            context.DrawSkybox(camera);
+            var cmd = renderingData.commandBuffer;
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawSkybox)))
+            {
+                // ConfigureTarget(renderingData.cameraData.renderer.cameraColorTargetHandle);
+                context.ExecuteCommandBuffer(cmd);
+                cmd.Clear();
+
+                ref CameraData cameraData = ref renderingData.cameraData;
+                Camera camera = cameraData.camera;
+                context.DrawSkybox(camera);
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ namespace OpenWorld.RenderPipelines.Runtime
     {
         public Matrix4x4 viewMatrix;
         public Matrix4x4 projectionMatrix;
+        public Matrix4x4 shadowTransform;//阴影矩阵 给定世界空间位置的阴影纹理坐标
         public ShadowSplitData splitData; // splitData contains culling information
 
         // offset in cascade shadow
@@ -58,13 +59,62 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public static bool ExtractDirectionalLightMatrix(ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, int cascadeIndex, int shadowmapWidth, int shadowmapHeight, int shadowResolution, float shadowNearPlane, out ShadowSliceData shadowSliceData)
         {
+            //如果要突破4级 级联阴影的话 就需要自行实现下列API 计算额外的VP
             bool success = cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(shadowLightIndex, cascadeIndex, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit,
                                shadowResolution, shadowNearPlane, out shadowSliceData.viewMatrix, out shadowSliceData.projectionMatrix, out shadowSliceData.splitData);
             //暂时定为2*2 大小的4级级联阴影
             shadowSliceData.offsetX = (cascadeIndex % 2) * shadowResolution;
             shadowSliceData.offsetY = (cascadeIndex / 2) * shadowResolution;
             shadowSliceData.resolution = shadowResolution;
+            shadowSliceData.shadowTransform = GetShadowTransform(shadowSliceData.projectionMatrix, shadowSliceData.viewMatrix);
+
+            // If we have shadow cascades baked into the atlas we bake cascade transform
+            // in each shadow matrix to save shader ALU and L/S
+            if (shadowData.mainLightShadowCascadesCount > 1)
+                ApplySliceTransform(ref shadowSliceData, shadowmapWidth, shadowmapHeight);
+
             return success;
+        }
+
+
+        static Matrix4x4 GetShadowTransform(Matrix4x4 proj, Matrix4x4 view)
+        {
+            // Currently CullResults ComputeDirectionalShadowMatricesAndCullingPrimitives doesn't
+            // apply z reversal to projection matrix. We need to do it manually here.
+            if (SystemInfo.usesReversedZBuffer)
+            {
+                proj.m20 = -proj.m20;
+                proj.m21 = -proj.m21;
+                proj.m22 = -proj.m22;
+                proj.m23 = -proj.m23;
+            }
+
+            Matrix4x4 worldToShadow = proj * view;
+
+            var textureScaleAndBias = Matrix4x4.identity;
+            textureScaleAndBias.m00 = 0.5f;
+            textureScaleAndBias.m11 = 0.5f;
+            textureScaleAndBias.m22 = 0.5f;
+            textureScaleAndBias.m03 = 0.5f;
+            textureScaleAndBias.m13 = 0.5f;
+            textureScaleAndBias.m23 = 0.5f;
+            // textureScaleAndBias maps texture space coordinates from [-1,1] to [0,1]
+
+            // Apply texture scale and offset to save a MAD in shader.
+            return textureScaleAndBias * worldToShadow;
+        }
+
+        /// <summary>
+        /// Used for baking bake cascade transforms in each shadow matrix.
+        /// </summary>
+        static void ApplySliceTransform(ref ShadowSliceData shadowSliceData, int shadowmapWidth, int shadowmapHeight)
+        {
+            Matrix4x4 sliceTransform = Matrix4x4.identity;
+            float oneOverAtlasWidth = 1.0f / shadowmapWidth;
+            float oneOverAtlasHeight = 1.0f / shadowmapHeight;
+
+            // Apply shadow slice scale and offset
+            shadowSliceData.shadowTransform = sliceTransform * shadowSliceData.shadowTransform;
         }
 
         public static void RenderShadowSlice(CommandBuffer cmd, ref ScriptableRenderContext context, ref ShadowSliceData shadowSliceData, ref ShadowDrawingSettings settings)

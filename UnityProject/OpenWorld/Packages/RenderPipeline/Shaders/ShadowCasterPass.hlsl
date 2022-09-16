@@ -3,6 +3,7 @@
 
 #include "Packages/RenderPipeline/ShaderLibrary/Core.hlsl"
 
+
 struct Attributes
 {
     float4 positionOS: POSITION;

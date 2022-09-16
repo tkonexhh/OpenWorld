@@ -69,10 +69,10 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <param name="viewIndex"> View index in case of stereo rendering. By default <c>viewIndex</c> is set to 0. </param>
         /// <seealso cref="GL.GetGPUProjectionMatrix(Matrix4x4, bool)"/>
         /// <returns></returns>
-        // public Matrix4x4 GetGPUProjectionMatrix()
-        // {
-        //     return GL.GetGPUProjectionMatrix(GetProjectionMatrix(), IsCameraProjectionMatrixFlipped());
-        // }
+        public Matrix4x4 GetGPUProjectionMatrix()
+        {
+            return GL.GetGPUProjectionMatrix(GetProjectionMatrix(), false);
+        }
 
         internal Matrix4x4 GetGPUProjectionMatrix(bool renderIntoTexture)
         {
@@ -84,7 +84,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// </summary>
         public Camera camera;
         public CameraType cameraType;
-
+        public ScriptableRenderer renderer;
+        public RenderTextureDescriptor cameraTargetDescriptor;
 
 
     }

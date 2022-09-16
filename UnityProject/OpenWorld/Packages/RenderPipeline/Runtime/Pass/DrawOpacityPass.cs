@@ -14,17 +14,23 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public DrawOpacityPass(RenderPassEvent evt, LayerMask layerMask)
         {
+            base.profilingSampler = new ProfilingSampler(nameof(DrawOpacityPass));
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+            renderPassEvent = evt;
         }
+
+
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var cmd = renderingData.commandBuffer;
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawOpaqueObjects)))
             {
+                // ConfigureTarget(renderingData.cameraData.renderer.cameraColorTargetHandle);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
-                var drawSettings = RenderingUtils.CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
+
+                var drawSettings = CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
                 context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
             }
         }

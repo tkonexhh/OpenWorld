@@ -54,9 +54,7 @@ float4 LitPassFragment(Varyings input): SV_Target
     surfaceData.occlusion = _OcclusionScale;
     surfaceData.emission = _EmissionColor * _EmissionScale;
 
-    LightingData lightingData;
-    lightingData.normal = normalWS;
-    lightingData.viewDir = normalize(GetCameraPositionWS() - input.positionWS);
+    LightingData lightingData = InitLightingData(input.positionWS, normalWS);
 
 
     half3 finalRGB = ShadeAllLightPBR(surfaceData, lightingData);

@@ -612,12 +612,6 @@ namespace UnityEngine.Rendering.Universal
             m_CameraResolveTarget = new RTHandleRenderTargetIdentifierCompat { handle = resolveTarget };
         }
 
-        // This should be removed when early camera color target assignment is removed.
-        [Obsolete("Use RTHandle for colorTarget")]
-        internal void ConfigureCameraColorTarget(RenderTargetIdentifier colorTarget)
-        {
-            m_CameraColorTarget = new RTHandleRenderTargetIdentifierCompat { fallback = colorTarget };
-        }
 
         // This should be removed when early camera color target assignment is removed.
         internal void ConfigureCameraColorTarget(RTHandle colorTarget)

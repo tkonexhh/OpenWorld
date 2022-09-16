@@ -111,86 +111,64 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <summary>
         /// List for the g-buffer attachment handles.
         /// </summary>
-        public RTHandle[] colorAttachmentHandles
-        {
-            get => m_ColorAttachments;
-        }
+        public RTHandle[] colorAttachmentHandles => m_ColorAttachments;
 
         /// <summary>
         /// The main color attachment handle.
         /// </summary>
-        public RTHandle colorAttachmentHandle
-        {
-            get => m_ColorAttachments[0];
-        }
+        public RTHandle colorAttachmentHandle => m_ColorAttachments[0];
 
         /// <summary>
         /// The depth attachment handle.
         /// </summary>
-        public RTHandle depthAttachmentHandle
-        {
-            get => m_DepthAttachment;
-        }
+        public RTHandle depthAttachmentHandle => m_DepthAttachment;
 
         /// <summary>
         /// The store actions for Color.
         /// </summary>
-        public RenderBufferStoreAction[] colorStoreActions
-        {
-            get => m_ColorStoreActions;
-        }
+        public RenderBufferStoreAction[] colorStoreActions => m_ColorStoreActions;
+
+        public RenderBufferStoreAction colorStoreAction => m_ColorStoreActions[0];
 
         /// <summary>
         /// The store actions for Depth.
         /// </summary>
-        public RenderBufferStoreAction depthStoreAction
-        {
-            get => m_DepthStoreAction;
-        }
+        public RenderBufferStoreAction depthStoreAction => m_DepthStoreAction;
 
-        internal bool[] overriddenColorStoreActions
-        {
-            get => m_OverriddenColorStoreActions;
-        }
+        // internal bool[] overriddenColorStoreActions
+        // {
+        //     get => m_OverriddenColorStoreActions;
+        // }
 
-        internal bool overriddenDepthStoreAction
-        {
-            get => m_OverriddenDepthStoreAction;
-        }
+        // internal bool overriddenDepthStoreAction
+        // {
+        //     get => m_OverriddenDepthStoreAction;
+        // }
 
         /// <summary>
         /// The input requirements for the <c>ScriptableRenderPass</c>, which has been set using <c>ConfigureInput</c>
         /// </summary>
         /// <seealso cref="ConfigureInput"/>
-        public ScriptableRenderPassInput input
-        {
-            get => m_Input;
-        }
+        public ScriptableRenderPassInput input => m_Input;
 
         /// <summary>
         /// The flag to use when clearing.
         /// </summary>
         /// <seealso cref="ClearFlag"/>
-        public ClearFlag clearFlag
-        {
-            get => m_ClearFlag;
-        }
+        public ClearFlag clearFlag => m_ClearFlag;
 
         /// <summary>
         /// The color value to use when clearing.
         /// </summary>
-        public Color clearColor
-        {
-            get => m_ClearColor;
-        }
+        public Color clearColor => m_ClearColor;
 
         RenderBufferStoreAction[] m_ColorStoreActions = new RenderBufferStoreAction[] { RenderBufferStoreAction.Store };
         RenderBufferStoreAction m_DepthStoreAction = RenderBufferStoreAction.Store;
 
         // by default all store actions are Store. The overridden flags are used to keep track of explicitly requested store actions, to
         // help figuring out the correct final store action for merged render passes when using the RenderPass API.
-        private bool[] m_OverriddenColorStoreActions = new bool[] { false };
-        private bool m_OverriddenDepthStoreAction = false;
+        // private bool[] m_OverriddenColorStoreActions = new bool[] { false };
+        // private bool m_OverriddenDepthStoreAction = false;
 
         /// <summary>
         /// A ProfilingSampler for the entire render pass. Used as a profiling name by <c>ScriptableRenderer</c> when executing the pass.
@@ -237,8 +215,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_DepthAttachment = k_CameraTarget;
             m_ColorStoreActions = new RenderBufferStoreAction[] { RenderBufferStoreAction.Store, 0, 0, 0, 0, 0, 0, 0 };
             m_DepthStoreAction = RenderBufferStoreAction.Store;
-            m_OverriddenColorStoreActions = new bool[] { false, false, false, false, false, false, false, false };
-            m_OverriddenDepthStoreAction = false;
+            // m_OverriddenColorStoreActions = new bool[] { false, false, false, false, false, false, false, false };
+            // m_OverriddenDepthStoreAction = false;
             m_DepthAttachment = k_CameraTarget;
             m_DepthAttachmentId = m_DepthAttachment.nameID;
             m_ColorAttachmentIds = new RenderTargetIdentifier[] { k_CameraTarget.nameID, 0, 0, 0, 0, 0, 0, 0 };
@@ -275,7 +253,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public void ConfigureColorStoreAction(RenderBufferStoreAction storeAction, uint attachmentIndex = 0)
         {
             m_ColorStoreActions[attachmentIndex] = storeAction;
-            m_OverriddenColorStoreActions[attachmentIndex] = true;
+            // m_OverriddenColorStoreActions[attachmentIndex] = true;
         }
 
         /// <summary>
@@ -288,7 +266,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             for (uint i = 0; i < count; ++i)
             {
                 m_ColorStoreActions[i] = storeActions[i];
-                m_OverriddenColorStoreActions[i] = true;
+                // m_OverriddenColorStoreActions[i] = true;
             }
         }
 
@@ -299,7 +277,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public void ConfigureDepthStoreAction(RenderBufferStoreAction storeAction)
         {
             m_DepthStoreAction = storeAction;
-            m_OverriddenDepthStoreAction = true;
+            // m_OverriddenDepthStoreAction = true;
         }
 
         internal void ConfigureInputAttachments(RTHandle input, bool isTransient = false)
@@ -319,15 +297,15 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_InputAttachmentIsTransient = isTransient;
         }
 
-        internal void SetInputAttachmentTransient(int idx, bool isTransient)
-        {
-            m_InputAttachmentIsTransient[idx] = isTransient;
-        }
+        // internal void SetInputAttachmentTransient(int idx, bool isTransient)
+        // {
+        //     m_InputAttachmentIsTransient[idx] = isTransient;
+        // }
 
-        internal bool IsInputAttachmentTransient(int idx)
-        {
-            return m_InputAttachmentIsTransient[idx];
-        }
+        // internal bool IsInputAttachmentTransient(int idx)
+        // {
+        //     return m_InputAttachmentIsTransient[idx];
+        // }
 
         /// <summary>
         /// Resets render targets to default.
@@ -402,22 +380,6 @@ namespace OpenWorld.RenderPipelines.Runtime
                 renderTargetFormat[i] = formats[i];
         }
 
-        /// <summary>
-        /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.
-        /// This method should be called inside Configure.
-        /// </summary>
-        /// <param name="colorAttachment">Color attachment identifier.</param>
-        /// <seealso cref="Configure"/>
-        [Obsolete("Use RTHandle for colorAttachment")]
-        public void ConfigureTarget(RenderTargetIdentifier colorAttachment)
-        {
-            m_UsesRTHandles = false;
-            overrideCameraTarget = true;
-
-            m_ColorAttachmentIds[0] = colorAttachment;
-            for (int i = 1; i < m_ColorAttachmentIds.Length; ++i)
-                m_ColorAttachmentIds[i] = 0;
-        }
 
         /// <summary>
         /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.
@@ -474,8 +436,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <param name="renderingData">Current rendering state information</param>
         /// <seealso cref="ConfigureTarget"/>
         /// <seealso cref="ConfigureClear"/>
-        public virtual void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
-        { }
+        public virtual void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData) { }
 
         /// <summary>
         /// This method is called by the renderer before executing the render pass.
@@ -487,8 +448,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <param name="cameraTextureDescriptor">Render texture descriptor of the camera render target.</param>
         /// <seealso cref="ConfigureTarget"/>
         /// <seealso cref="ConfigureClear"/>
-        public virtual void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-        { }
+        public virtual void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) { }
+
+        public virtual void Configure(CommandBuffer cmd) { }
 
 
         /// <summary>
@@ -520,14 +482,14 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <param name="renderingData">Current rendering state information</param>
         public abstract void Execute(ScriptableRenderContext context, ref RenderingData renderingData);
 
-        /// <summary>
-        /// TODO RENDERGRAPH
-        /// </summary>
-        /// <param name="renderingData"></param>
-        internal virtual void RecordRenderGraph(RenderGraph renderGraph, ref RenderingData renderingData)
-        {
-            Debug.LogWarning("RecordRenderGraph is not implemented, the pass " + this.ToString() + " won't be recorded in the current RenderGraph.");
-        }
+        // /// <summary>
+        // /// TODO RENDERGRAPH
+        // /// </summary>
+        // /// <param name="renderingData"></param>
+        // internal virtual void RecordRenderGraph(RenderGraph renderGraph, ref RenderingData renderingData)
+        // {
+        //     Debug.LogWarning("RecordRenderGraph is not implemented, the pass " + this.ToString() + " won't be recorded in the current RenderGraph.");
+        // }
 
 
         // /// <summary>
@@ -576,59 +538,44 @@ namespace OpenWorld.RenderPipelines.Runtime
         //     Blit(cmd, source, renderer.cameraColorTargetHandle, material, passIndex);
         // }
 
-        /// <summary>
-        /// Creates <c>DrawingSettings</c> based on current the rendering state.
-        /// </summary>
-        /// <param name="shaderTagId">Shader pass tag to render.</param>
-        /// <param name="renderingData">Current rendering state.</param>
-        /// <param name="sortingCriteria">Criteria to sort objects being rendered.</param>
-        /// <returns></returns>
-        /// <seealso cref="DrawingSettings"/>
+
         public DrawingSettings CreateDrawingSettings(ShaderTagId shaderTagId, ref RenderingData renderingData, SortingCriteria sortingCriteria)
         {
             return RenderingUtils.CreateDrawingSettings(shaderTagId, ref renderingData, sortingCriteria);
         }
 
-        /// <summary>
-        /// Creates <c>DrawingSettings</c> based on current rendering state.
-        /// </summary>
-        /// /// <param name="shaderTagIdList">List of shader pass tag to render.</param>
-        /// <param name="renderingData">Current rendering state.</param>
-        /// <param name="sortingCriteria">Criteria to sort objects being rendered.</param>
-        /// <returns></returns>
-        /// <seealso cref="DrawingSettings"/>
         public DrawingSettings CreateDrawingSettings(List<ShaderTagId> shaderTagIdList, ref RenderingData renderingData, SortingCriteria sortingCriteria)
         {
             return RenderingUtils.CreateDrawingSettings(shaderTagIdList, ref renderingData, sortingCriteria);
         }
 
 
-        static internal int GetRenderPassEventRange(RenderPassEvent renderPassEvent)
-        {
-            int numEvents = RenderPassEventsEnumValues.values.Length;
-            int currentIndex = 0;
+        // static internal int GetRenderPassEventRange(RenderPassEvent renderPassEvent)
+        // {
+        //     int numEvents = RenderPassEventsEnumValues.values.Length;
+        //     int currentIndex = 0;
 
-            // find the index of the renderPassEvent in the values array
-            for (int i = 0; i < numEvents; ++i)
-            {
-                if (RenderPassEventsEnumValues.values[currentIndex] == (int)renderPassEvent)
-                    break;
+        //     // find the index of the renderPassEvent in the values array
+        //     for (int i = 0; i < numEvents; ++i)
+        //     {
+        //         if (RenderPassEventsEnumValues.values[currentIndex] == (int)renderPassEvent)
+        //             break;
 
-                currentIndex++;
-            }
+        //         currentIndex++;
+        //     }
 
-            if (currentIndex >= numEvents)
-            {
-                Debug.LogError("GetRenderPassEventRange: invalid renderPassEvent value cannot be found in the RenderPassEvent enumeration");
-                return 0;
-            }
+        //     if (currentIndex >= numEvents)
+        //     {
+        //         Debug.LogError("GetRenderPassEventRange: invalid renderPassEvent value cannot be found in the RenderPassEvent enumeration");
+        //         return 0;
+        //     }
 
-            if (currentIndex + 1 >= numEvents)
-                return 50; // if this was the last event in the enum, then add 50 as the range
+        //     if (currentIndex + 1 >= numEvents)
+        //         return 50; // if this was the last event in the enum, then add 50 as the range
 
-            int nextValue = RenderPassEventsEnumValues.values[currentIndex + 1];
+        //     int nextValue = RenderPassEventsEnumValues.values[currentIndex + 1];
 
-            return nextValue - (int)renderPassEvent;
-        }
+        //     return nextValue - (int)renderPassEvent;
+        // }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
-    public class ForwardRender : BaseRender
+    public class ForwardRender : ScriptableRenderer
     {
         MainLightShadowCasterPass m_MainLightShadowCasterPass;
         DepthOnlyPass m_DepthOnlyPass;
@@ -14,6 +14,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         DrawTransparentPass m_TransparentPass;
 
         ForwardLights m_ForwardLights;
+
+
+        RTHandle m_OpaqueColor;
 
         public ForwardRender()
         {
@@ -28,12 +31,32 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public override void Setup(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            bool drawSkyBox = renderingData.cameraData.camera.clearFlags == CameraClearFlags.Skybox ? true : false;
-
             m_ForwardLights.Setup(ref renderingData);
+
+            var cmd = renderingData.commandBuffer;
+            var camera = renderingData.cameraData.camera;
+            var cameraTargetDescriptor = renderingData.cameraData.cameraTargetDescriptor;
+
+            if (m_OpaqueColor == null)
+            {
+                m_OpaqueColor = RTHandles.Alloc(cameraTargetDescriptor.width, cameraTargetDescriptor.height, name: ShaderTextureId.OpacityTexture);
+            }
+
+            ConfigureCameraColorTarget(m_OpaqueColor);
+
+            bool drawSkyBox = renderingData.cameraData.camera.clearFlags == CameraClearFlags.Skybox ? true : false;
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
 
             if (mainLightShadows) EnqueuePass(m_MainLightShadowCasterPass);
+
+            cmd.BeginSample("SETVP");
+            cmd.SetViewProjectionMatrices(camera.worldToCameraMatrix, camera.projectionMatrix);
+            context.ExecuteCommandBuffer(cmd);
+            cmd.Clear();
+            cmd.EndSample("SETVP");
+
+
+
             EnqueuePass(m_DepthOnlyPass);
             EnqueuePass(m_OpacityPass);
 
@@ -45,6 +68,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         protected override void Dispose(bool disposing)
         {
             m_MainLightShadowCasterPass?.Dispose();
+            m_OpaqueColor?.Release();
         }
 
     }

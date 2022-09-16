@@ -5,9 +5,9 @@ using UnityEngine.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
-    public class OpenWorldRenderPipeline : RenderPipeline
+    public partial class OpenWorldRenderPipeline : RenderPipeline
     {
-        BaseRender m_Renderer;
+        ScriptableRenderer m_Renderer;
 
         ShadowSettings m_ShadowSettings;
 
@@ -52,15 +52,12 @@ namespace OpenWorld.RenderPipelines.Runtime
                 case 1:
                     shadowData.mainLightShadowCascadesSplit = new Vector3(1.0f, 0.0f, 0.0f);
                     break;
-
                 case 2:
                     shadowData.mainLightShadowCascadesSplit = new Vector3(m_ShadowSettings.directional.cascadeRatio1, 1.0f, 0.0f);
                     break;
-
                 case 3:
                     shadowData.mainLightShadowCascadesSplit = new Vector3(m_ShadowSettings.directional.cascadeRatio1, m_ShadowSettings.directional.cascadeRatio2, 0.0f);
                     break;
-
                 default:
                     shadowData.mainLightShadowCascadesSplit = m_ShadowSettings.directional.CascadeRatios;
                     break;
@@ -71,10 +68,13 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderingData.lightData = new LightData();
             renderingData.lightData.mainLightIndex = -1;
 
-            renderingData.cameraData = new CameraData();
-            renderingData.cameraData.camera = camera;
-            renderingData.cameraData.cameraType = camera.cameraType;
-            renderingData.cameraData.SetViewAndProjectionMatrix(camera.cameraToWorldMatrix, camera.projectionMatrix);
+            var cameraData = new CameraData();
+            cameraData.camera = camera;
+            cameraData.cameraType = camera.cameraType;
+            cameraData.SetViewAndProjectionMatrix(camera.cameraToWorldMatrix, camera.projectionMatrix);
+            cameraData.renderer = m_Renderer;
+            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, 1, true, 1, false, true);
+            renderingData.cameraData = cameraData;
 
             renderingData.commandBuffer = CommandBufferPool.Get();
         }
