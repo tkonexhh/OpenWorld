@@ -23,6 +23,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             var cmd = renderingData.commandBuffer;
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DepthPrepass)))
             {
+                context.ExecuteCommandBuffer(cmd);
+                cmd.Clear();
                 // var drawSettings = RenderingUtils.CreateDrawingSettings(k_ShaderTagId, ref renderingData, SortingCriteria.CommonOpaque);
                 var sortingSettings = new SortingSettings(renderingData.cameraData.camera);
                 var drawSettings = new DrawingSettings(k_ShaderTagId, sortingSettings);

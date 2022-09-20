@@ -24,7 +24,7 @@ namespace OpenWorld.RenderPipelines.Runtime
     {
         public static readonly int projectionParams = Shader.PropertyToID("_ProjectionParams");
         public static readonly int zBufferParams = Shader.PropertyToID("_ZBufferParams");
-
+        public static readonly int worldSpaceCameraPos = Shader.PropertyToID("_WorldSpaceCameraPos");
         public static readonly int cameraProjectionMatrix = Shader.PropertyToID("unity_CameraProjection");
         public static readonly int inverseCameraProjectionMatrix = Shader.PropertyToID("unity_CameraInvProjection");
         public static readonly int worldToCameraMatrix = Shader.PropertyToID("unity_WorldToCamera");

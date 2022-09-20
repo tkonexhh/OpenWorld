@@ -70,8 +70,22 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             var cameraData = new CameraData();
             cameraData.camera = camera;
+            cameraData.worldSpaceCameraPos = camera.transform.position;
             cameraData.cameraType = camera.cameraType;
-            cameraData.SetViewAndProjectionMatrix(camera.cameraToWorldMatrix, camera.projectionMatrix);
+            cameraData.aspectRatio = camera.aspect;
+
+            Matrix4x4 projectionMatrix = camera.projectionMatrix;
+            if (!camera.orthographic)
+            {
+                // m00 = (cotangent / aspect), therefore m00 * aspect gives us cotangent.
+                float cotangent = camera.projectionMatrix.m00 * camera.aspect;
+
+                // Get new m00 by dividing by base camera aspectRatio.
+                float newCotangent = cotangent / cameraData.aspectRatio;
+                projectionMatrix.m00 = newCotangent;
+            }
+
+            cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix);
             cameraData.renderer = m_Renderer;
             cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, 1, true, 1, false, true);
             renderingData.cameraData = cameraData;

@@ -57,11 +57,15 @@ namespace OpenWorld.RenderPipelines.Runtime
             return rtd;
         }
 
-        public static bool ExtractDirectionalLightMatrix(ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, int cascadeIndex, int shadowmapWidth, int shadowmapHeight, int shadowResolution, float shadowNearPlane, out ShadowSliceData shadowSliceData)
+        public static bool ExtractDirectionalLightMatrix(ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, int cascadeIndex, int shadowmapWidth, int shadowmapHeight, int shadowResolution, float shadowNearPlane, out Vector4 cascadeSplitDistance, out ShadowSliceData shadowSliceData)
         {
             //如果要突破4级 级联阴影的话 就需要自行实现下列API 计算额外的VP
             bool success = cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(shadowLightIndex, cascadeIndex, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit,
                                shadowResolution, shadowNearPlane, out shadowSliceData.viewMatrix, out shadowSliceData.projectionMatrix, out shadowSliceData.splitData);
+
+            Vector4 cullingSphere = shadowSliceData.splitData.cullingSphere;
+            cullingSphere.w *= cullingSphere.w;
+            cascadeSplitDistance = cullingSphere;
             //暂时定为2*2 大小的4级级联阴影
             shadowSliceData.offsetX = (cascadeIndex % 2) * shadowResolution;
             shadowSliceData.offsetY = (cascadeIndex / 2) * shadowResolution;
@@ -121,11 +125,12 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             cmd.SetGlobalDepthBias(1.0f, 2.5f); // these values match HDRP defaults (see https://github.com/Unity-Technologies/Graphics/blob/9544b8ed2f98c62803d285096c91b44e9d8cbc47/com.unity.render-pipelines.high-definition/Runtime/Lighting/Shadow/HDShadowAtlas.cs#L197 )
             cmd.SetViewport(new Rect(shadowSliceData.offsetX, shadowSliceData.offsetY, shadowSliceData.resolution, shadowSliceData.resolution));
+            // cmd.EnableScissorRect(new Rect(4, 4, shadowSliceData.resolution - 8, shadowSliceData.resolution - 8));
             cmd.SetViewProjectionMatrices(shadowSliceData.viewMatrix, shadowSliceData.projectionMatrix);
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
             context.DrawShadows(ref settings);
-            cmd.DisableScissorRect();
+            // cmd.DisableScissorRect();
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
 

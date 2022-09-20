@@ -19,8 +19,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         int renderTargetHeight;
 
         Matrix4x4[] m_MainLightShadowMatrices;
-        Vector4[] m_CascadeSplitDistances;
         ShadowSliceData[] m_CascadeSlices;
+        Vector4[] m_CascadeShadowSplitSpheres;
 
         internal RTHandle m_MainLightShadowmapTexture;
 
@@ -30,6 +30,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         static class ShaderIDs
         {
             public static readonly int WorldToShadow = Shader.PropertyToID("_MainLightWorldToShadow");
+            public static readonly int ShadowParams = Shader.PropertyToID("_MainLightShadowParams");
+            public static readonly int CascadeCount = Shader.PropertyToID("_MainLightCascadeCount");
+            public static readonly int CascadeShadowSplitSpheres = Shader.PropertyToID("_CascadeShadowSplitSpheres");
             public static readonly string MainLightShadowmapTexture = "_MainLightShadowmapTexture";
         }
 
@@ -40,7 +43,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             //TODO URP中 +1 是为什么?
             m_MainLightShadowMatrices = new Matrix4x4[k_MaxCascades];
             m_CascadeSlices = new ShadowSliceData[k_MaxCascades];
-            m_CascadeSplitDistances = new Vector4[k_MaxCascades];
+            m_CascadeShadowSplitSpheres = new Vector4[k_MaxCascades];
 
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             m_MainLightShadowmapID = Shader.PropertyToID(ShaderIDs.MainLightShadowmapTexture);
@@ -76,7 +79,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             //找出与灯光方向匹配的视图和投影矩阵，并为提供一个剪辑空间立方体
             for (int cascadeIndex = 0; cascadeIndex < m_ShadowCasterCascadesCount; ++cascadeIndex)
             {
-                bool success = ShadowUtils.ExtractDirectionalLightMatrix(ref renderingData.cullResults, ref renderingData.shadowData, shadowLightIndex, cascadeIndex, renderTargetWidth, renderTargetHeight, shadowResolution, light.shadowNearPlane, out m_CascadeSlices[cascadeIndex]);
+                bool success = ShadowUtils.ExtractDirectionalLightMatrix(ref renderingData.cullResults, ref renderingData.shadowData, shadowLightIndex, cascadeIndex, renderTargetWidth, renderTargetHeight, shadowResolution, light.shadowNearPlane, out m_CascadeShadowSplitSpheres[cascadeIndex], out m_CascadeSlices[cascadeIndex]);
 
                 if (!success)
                     return false;
@@ -99,7 +102,6 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-
             var cmd = renderingData.commandBuffer;
 
             var cullResults = renderingData.cullResults;
@@ -111,6 +113,8 @@ namespace OpenWorld.RenderPipelines.Runtime
                 return;
 
             VisibleLight shadowLight = cullResults.visibleLights[shadowLightIndex];
+            if (shadowLight.light.shadowStrength <= 0)
+                return;
 
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.MainLightShadow)))
             {
@@ -123,8 +127,12 @@ namespace OpenWorld.RenderPipelines.Runtime
                 }
 
                 SetupMainLightShadowReceiverConstants(cmd, ref shadowLight, ref shadowData);
-            }
 
+                cmd.SetGlobalTexture(m_MainLightShadowmapID, m_MainLightShadowmapTexture.nameID);
+                cmd.SetViewProjectionMatrices(renderingData.cameraData.GetViewMatrix(), renderingData.cameraData.GetProjectionMatrix());
+                context.ExecuteCommandBuffer(cmd);
+                cmd.Clear();
+            }
         }
 
         void SetupMainLightShadowReceiverConstants(CommandBuffer cmd, ref VisibleLight shadowLight, ref ShadowData shadowData)
@@ -133,8 +141,10 @@ namespace OpenWorld.RenderPipelines.Runtime
             for (int i = 0; i < cascadeCount; ++i)
                 m_MainLightShadowMatrices[i] = m_CascadeSlices[i].shadowTransform;
 
-
             cmd.SetGlobalMatrixArray(ShaderIDs.WorldToShadow, m_MainLightShadowMatrices);
+            cmd.SetGlobalVector(ShaderIDs.ShadowParams, new Vector4(shadowLight.light.shadowStrength, 0, 0, 0));
+            cmd.SetGlobalInt(ShaderIDs.CascadeCount, shadowData.mainLightShadowCascadesCount);
+            cmd.SetGlobalVectorArray(ShaderIDs.CascadeShadowSplitSpheres, m_CascadeShadowSplitSpheres);
         }
 
         public void Dispose()

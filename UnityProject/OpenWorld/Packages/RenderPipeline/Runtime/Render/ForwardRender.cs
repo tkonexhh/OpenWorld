@@ -49,14 +49,6 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             if (mainLightShadows) EnqueuePass(m_MainLightShadowCasterPass);
 
-            cmd.BeginSample("SETVP");
-            cmd.SetViewProjectionMatrices(camera.worldToCameraMatrix, camera.projectionMatrix);
-            context.ExecuteCommandBuffer(cmd);
-            cmd.Clear();
-            cmd.EndSample("SETVP");
-
-
-
             EnqueuePass(m_DepthOnlyPass);
             EnqueuePass(m_OpacityPass);
 
