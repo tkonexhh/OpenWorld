@@ -34,6 +34,12 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
+        public void DrawGizmos()
+        {
+            m_Renderer?.DrawGizmos();
+        }
+
+
         void InitRenderingData(ScriptableRenderContext renderContext, out RenderingData renderingData, Camera camera, ref ScriptableCullingParameters cullingParameters)
         {
             cullingParameters.shadowDistance = Mathf.Min(m_ShadowSettings.maxDistance, camera.farClipPlane);
@@ -43,7 +49,9 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             //Shadow Data
             var shadowData = new ShadowData();
+            shadowData.maxShadowDistance = m_ShadowSettings.maxDistance;
             int shadowResolution = (int)m_ShadowSettings.directional.resolution;
+            shadowData.supportsSoftShadows = m_ShadowSettings.softShadow;
             shadowData.mainLightShadowmapWidth = shadowResolution;
             shadowData.mainLightShadowmapHeight = shadowResolution;
             shadowData.mainLightShadowCascadesCount = m_ShadowSettings.directional.cascadeCount;
@@ -62,6 +70,8 @@ namespace OpenWorld.RenderPipelines.Runtime
                     shadowData.mainLightShadowCascadesSplit = m_ShadowSettings.directional.CascadeRatios;
                     break;
             }
+            shadowData.manLightShadowDistanceFade = m_ShadowSettings.distanceFade;
+            shadowData.bias = new Vector4(m_ShadowSettings.depthBias, m_ShadowSettings.normalBias, 0, 0);
             renderingData.shadowData = shadowData;
 
 
@@ -127,6 +137,8 @@ namespace OpenWorld.RenderPipelines.Runtime
 
                 DrawUnsupportdShaders(renderContext, ref renderingData);
                 DrawGizmos(renderContext, ref renderingData);
+
+                m_Renderer.FinishRendering(ref renderingData);
             }
 
             renderContext.ExecuteCommandBuffer(cmd);
@@ -140,8 +152,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderContext.ExecuteCommandBuffer(renderingData.commandBuffer);
             renderingData.commandBuffer.Clear();
         }
-
-
 
         void DrawGizmos(ScriptableRenderContext renderContext, ref RenderingData renderingData)
         {
@@ -158,7 +168,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             RenderingUtils.RenderObjectsWithError(renderContext, ref renderingData.cullResults, renderingData.cameraData.camera, FilteringSettings.defaultValue, SortingCriteria.CommonOpaque);
         }
-
 
         protected override void Dispose(bool disposing)
         {

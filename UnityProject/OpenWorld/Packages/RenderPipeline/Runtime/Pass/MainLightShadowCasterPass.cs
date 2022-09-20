@@ -12,6 +12,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         const int k_MaxCascades = 4;
         const int k_ShadowmapBufferBits = 32;
 
+        float m_MaxShadowDistanceSq;
         int m_ShadowCasterCascadesCount;
         int m_MainLightShadowmapID;
 
@@ -40,8 +41,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         public MainLightShadowCasterPass(RenderPassEvent evt)
         {
             base.profilingSampler = new ProfilingSampler(nameof(MainLightShadowCasterPass));
-            //TODO URP中 +1 是为什么?
-            m_MainLightShadowMatrices = new Matrix4x4[k_MaxCascades];
+
+            m_MainLightShadowMatrices = new Matrix4x4[k_MaxCascades + 1];
             m_CascadeSlices = new ShadowSliceData[k_MaxCascades];
             m_CascadeShadowSplitSpheres = new Vector4[k_MaxCascades];
 
@@ -71,7 +72,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 return false;
 
             m_ShadowCasterCascadesCount = renderingData.shadowData.mainLightShadowCascadesCount;
-
+            m_MaxShadowDistanceSq = renderingData.shadowData.maxShadowDistance * renderingData.shadowData.maxShadowDistance;
             renderTargetWidth = renderingData.shadowData.mainLightShadowmapWidth;
             renderTargetHeight = renderingData.shadowData.mainLightShadowmapHeight;
             int shadowResolution = ShadowUtils.GetMaxTileResolutionInAtlas(renderTargetWidth, renderTargetHeight, m_ShadowCasterCascadesCount);
@@ -123,16 +124,18 @@ namespace OpenWorld.RenderPipelines.Runtime
                 for (int cascadeIndex = 0; cascadeIndex < m_ShadowCasterCascadesCount; ++cascadeIndex)
                 {
                     shadowSettings.splitData = m_CascadeSlices[cascadeIndex].splitData;
+                    Vector4 shadowBias = renderingData.shadowData.bias;//ShadowUtils.GetShadowBias(ref shadowLight, shadowLightIndex, ref shadowData, m_CascadeSlices[cascadeIndex].projectionMatrix, m_CascadeSlices[cascadeIndex].resolution);
+                    ShadowUtils.SetupShadowCasterConstantBuffer(cmd, ref shadowLight, shadowBias);
                     ShadowUtils.RenderShadowSlice(cmd, ref context, ref m_CascadeSlices[cascadeIndex], ref shadowSettings);
                 }
 
                 SetupMainLightShadowReceiverConstants(cmd, ref shadowLight, ref shadowData);
 
-                cmd.SetGlobalTexture(m_MainLightShadowmapID, m_MainLightShadowmapTexture.nameID);
                 cmd.SetViewProjectionMatrices(renderingData.cameraData.GetViewMatrix(), renderingData.cameraData.GetProjectionMatrix());
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
+
         }
 
         void SetupMainLightShadowReceiverConstants(CommandBuffer cmd, ref VisibleLight shadowLight, ref ShadowData shadowData)
@@ -141,10 +144,34 @@ namespace OpenWorld.RenderPipelines.Runtime
             for (int i = 0; i < cascadeCount; ++i)
                 m_MainLightShadowMatrices[i] = m_CascadeSlices[i].shadowTransform;
 
+            // We setup and additional a no-op WorldToShadow matrix in the last index
+            // because the ComputeCascadeIndex function in Shadows.hlsl can return an index
+            // out of bounds. (position not inside any cascade) and we want to avoid branching
+            Matrix4x4 noOpShadowMatrix = Matrix4x4.zero;
+            noOpShadowMatrix.m22 = (SystemInfo.usesReversedZBuffer) ? 1.0f : 0.0f;
+            for (int i = cascadeCount; i <= k_MaxCascades; ++i)
+                m_MainLightShadowMatrices[i] = noOpShadowMatrix;
+
             cmd.SetGlobalMatrixArray(ShaderIDs.WorldToShadow, m_MainLightShadowMatrices);
-            cmd.SetGlobalVector(ShaderIDs.ShadowParams, new Vector4(shadowLight.light.shadowStrength, 0, 0, 0));
-            cmd.SetGlobalInt(ShaderIDs.CascadeCount, shadowData.mainLightShadowCascadesCount);
+            cmd.SetGlobalInt(ShaderIDs.CascadeCount, m_ShadowCasterCascadesCount);
             cmd.SetGlobalVectorArray(ShaderIDs.CascadeShadowSplitSpheres, m_CascadeShadowSplitSpheres);
+            cmd.SetGlobalTexture(m_MainLightShadowmapID, m_MainLightShadowmapTexture.nameID);
+
+            ShadowUtils.GetScaleAndBiasForLinearDistanceFade(m_MaxShadowDistanceSq, shadowData.manLightShadowDistanceFade, out float shadowFadeScale, out float shadowFadeBias);
+
+            bool softShadows = shadowLight.light.shadows == LightShadows.Soft && shadowData.supportsSoftShadows;
+            float softShadowsProp = softShadows ? 1.0f : 0.0f;
+            cmd.SetGlobalVector(ShaderIDs.ShadowParams, new Vector4(shadowLight.light.shadowStrength, softShadowsProp, shadowFadeScale, shadowFadeBias));
+        }
+
+        public override void DrawGizmos()
+        {
+            // Gizmos.color = Color.white;
+            // for (int i = 0; i < m_ShadowCasterCascadesCount; i++)
+            // {
+            //     Vector4 spere = m_CascadeShadowSplitSpheres[i];
+            //     Gizmos.DrawWireSphere(spere, spere.w);
+            // }
         }
 
         public void Dispose()

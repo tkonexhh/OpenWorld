@@ -7,6 +7,10 @@ namespace OpenWorld.RenderPipelines.Runtime
     public class ShadowSettings
     {
         [Min(0.001f)] public float maxDistance = 100f;
+        [Range(0.001f, 1f)] public float distanceFade = 0.1f;
+        [Range(0f, 10f)] public float depthBias = 1.0f;
+        [Range(0f, 10f)] public float normalBias = 1.0f;
+        public bool softShadow;
 
         public Directional directional = new Directional
         {
@@ -23,6 +27,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public struct Directional
         {
             public ShadowResolution resolution;
+
             public FilterMode filter;
             [Range(1, 4)] public int cascadeCount;
             [Range(0f, 1f)]

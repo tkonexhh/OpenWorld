@@ -549,6 +549,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             return RenderingUtils.CreateDrawingSettings(shaderTagIdList, ref renderingData, sortingCriteria);
         }
 
+        public virtual void DrawGizmos() { }
+
 
         // static internal int GetRenderPassEventRange(RenderPassEvent renderPassEvent)
         // {

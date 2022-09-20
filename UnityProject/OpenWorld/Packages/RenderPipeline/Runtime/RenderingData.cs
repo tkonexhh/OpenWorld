@@ -94,10 +94,14 @@ namespace OpenWorld.RenderPipelines.Runtime
 
     public struct ShadowData
     {
+        public float maxShadowDistance;
         public int mainLightShadowmapWidth;
         public int mainLightShadowmapHeight;
         public int mainLightShadowCascadesCount;
         public Vector3 mainLightShadowCascadesSplit;
+        public float manLightShadowDistanceFade;
+        public bool supportsSoftShadows;
+        public Vector4 bias;
     }
 
     /// <summary>

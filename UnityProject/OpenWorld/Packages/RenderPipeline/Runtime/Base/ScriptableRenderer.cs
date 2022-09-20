@@ -66,6 +66,11 @@ namespace OpenWorld.RenderPipelines.Runtime
                 }
             }
 
+
+        }
+
+        public void FinishRendering(ref RenderingData renderingData)
+        {
             m_ActiveRenderPassQueue.Clear();
         }
 
@@ -125,6 +130,8 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             // TODO: Add SetPerCameraClippingPlaneProperties here once we are sure it correctly behaves in overlay camera for some time
         }
+
+        public virtual void DrawGizmos() { }
 
 
         public void Dispose()

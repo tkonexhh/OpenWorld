@@ -57,6 +57,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             EnqueuePass(m_TransparentPass);
         }
 
+        public override void DrawGizmos()
+        {
+            m_MainLightShadowCasterPass?.DrawGizmos();
+        }
+
         protected override void Dispose(bool disposing)
         {
             m_MainLightShadowCasterPass?.Dispose();

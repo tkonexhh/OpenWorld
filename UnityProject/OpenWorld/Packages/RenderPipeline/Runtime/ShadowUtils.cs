@@ -63,9 +63,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             bool success = cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(shadowLightIndex, cascadeIndex, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit,
                                shadowResolution, shadowNearPlane, out shadowSliceData.viewMatrix, out shadowSliceData.projectionMatrix, out shadowSliceData.splitData);
 
-            Vector4 cullingSphere = shadowSliceData.splitData.cullingSphere;
-            cullingSphere.w *= cullingSphere.w;
-            cascadeSplitDistance = cullingSphere;
+            cascadeSplitDistance = shadowSliceData.splitData.cullingSphere;
             //暂时定为2*2 大小的4级级联阴影
             shadowSliceData.offsetX = (cascadeIndex % 2) * shadowResolution;
             shadowSliceData.offsetY = (cascadeIndex / 2) * shadowResolution;
@@ -114,8 +112,13 @@ namespace OpenWorld.RenderPipelines.Runtime
         static void ApplySliceTransform(ref ShadowSliceData shadowSliceData, int shadowmapWidth, int shadowmapHeight)
         {
             Matrix4x4 sliceTransform = Matrix4x4.identity;
-            float oneOverAtlasWidth = 1.0f / shadowmapWidth;
-            float oneOverAtlasHeight = 1.0f / shadowmapHeight;
+            float scaleWidth = 1.0f / shadowmapWidth;
+            float scaleHeight = 1.0f / shadowmapHeight;
+
+            sliceTransform.m00 = shadowSliceData.resolution * scaleWidth;
+            sliceTransform.m11 = shadowSliceData.resolution * scaleHeight;
+            sliceTransform.m03 = shadowSliceData.offsetX * scaleWidth;
+            sliceTransform.m13 = shadowSliceData.offsetY * scaleHeight;
 
             // Apply shadow slice scale and offset
             shadowSliceData.shadowTransform = sliceTransform * shadowSliceData.shadowTransform;
@@ -135,6 +138,55 @@ namespace OpenWorld.RenderPipelines.Runtime
             cmd.Clear();
 
             cmd.SetGlobalDepthBias(0.0f, 0.0f); // Restore previous depth bias values
+        }
+
+
+        /// <summary>
+        /// Extract scale and bias from a fade distance to achieve a linear fading of the fade distance.
+        /// </summary>
+        /// <param name="fadeDistance">Distance at which object should be totally fade</param>
+        /// <param name="border">Normalized distance of fade</param>
+        /// <param name="scale">[OUT] Slope of the fading on the fading part</param>
+        /// <param name="bias">[OUT] Ordinate of the fading part at abscissa 0</param>
+        internal static void GetScaleAndBiasForLinearDistanceFade(float fadeDistance, float border, out float scale, out float bias)
+        {
+            // To avoid division from zero
+            // This values ensure that fade within cascade will be 0 and outside 1
+            if (border < 0.0001f)
+            {
+                float multiplier = 1000f; // To avoid blending if difference is in fractions
+                scale = multiplier;
+                bias = -fadeDistance * multiplier;
+                return;
+            }
+
+            border = 1 - border;
+            border *= border;
+
+            // Fade with distance calculation is just a linear fade from 90% of fade distance to fade distance. 90% arbitrarily chosen but should work well enough.
+            float distanceFadeNear = border * fadeDistance;
+            scale = 1.0f / (fadeDistance - distanceFadeNear);
+            bias = -distanceFadeNear / (fadeDistance - distanceFadeNear);
+        }
+
+
+        /// <summary>
+        /// Sets up the shadow bias, light direction and position for rendering.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="shadowLight"></param>
+        /// <param name="shadowBias"></param>
+        public static void SetupShadowCasterConstantBuffer(CommandBuffer cmd, ref VisibleLight shadowLight, Vector4 shadowBias)
+        {
+            cmd.SetGlobalVector(ShaderPropertyId.ShadowBias, shadowBias);
+
+            // Light direction is currently used in shadow caster pass to apply shadow normal offset (normal bias).
+            Vector3 lightDirection = -shadowLight.localToWorldMatrix.GetColumn(2);
+            cmd.SetGlobalVector(ShaderPropertyId.LightDirection, new Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f));
+
+            // For punctual lights, computing light direction at each vertex position provides more consistent results (shadow shape does not change when "rotating the point light" for example)
+            Vector3 lightPosition = shadowLight.localToWorldMatrix.GetColumn(3);
+            cmd.SetGlobalVector(ShaderPropertyId.LightPosition, new Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f));
         }
     }
 }

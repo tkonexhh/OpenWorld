@@ -29,6 +29,10 @@ namespace OpenWorld.RenderPipelines.Runtime
         public static readonly int inverseCameraProjectionMatrix = Shader.PropertyToID("unity_CameraInvProjection");
         public static readonly int worldToCameraMatrix = Shader.PropertyToID("unity_WorldToCamera");
         public static readonly int cameraToWorldMatrix = Shader.PropertyToID("unity_CameraToWorld");
+
+        public static readonly int ShadowBias = Shader.PropertyToID("_ShadowBias");// x: depth bias, y: normal bias
+        public static readonly int LightDirection = Shader.PropertyToID("_LightDirection");
+        public static readonly int LightPosition = Shader.PropertyToID("_LightPosition");
     }
 
     internal static class ShaderTextureId
