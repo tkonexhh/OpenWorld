@@ -77,7 +77,12 @@ namespace OpenWorld.RenderPipelines.Runtime
             var cullingSphere = shadowSliceData.splitData.cullingSphere;
 
             float texelSize = 2f * cullingSphere.w / shadowResolution;
-            float filterSize = texelSize * ((float)shadowData.softShadowsMode);
+            //match bias for PCF fitler size
+            float filterSize = texelSize * (1 + (float)shadowData.softShadowsMode);
+            //avoid sampling regon outside of the cascade's culling sphere
+            cullingSphere.w -= filterSize;
+            //store square radius, so do not have to calculate it in shader
+            cullingSphere.w *= cullingSphere.w;
             cascadeData = new Vector4(1f / cullingSphere.w, filterSize * 1.4142136f, 0, 0);//1.4142136f  √2
 
             cascadeSplitDistance = cullingSphere;

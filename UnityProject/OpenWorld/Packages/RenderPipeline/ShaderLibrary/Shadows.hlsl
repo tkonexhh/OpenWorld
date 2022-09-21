@@ -65,7 +65,7 @@ ShadowSamplingData GetShadowSamplingData(float3 positionWS)
         float3 fromCenter = positionWS - sphere.xyz;
         float distances2 = dot(fromCenter, fromCenter);
 
-        if (distances2 <= sphere.w * sphere.w)
+        if (distances2 <= sphere.w)
         {
             break;
         }
@@ -154,6 +154,10 @@ float3 TransformWorldToShadowCoord(int cascadeIndex, float3 positionWS, float3 n
 
 half MainLightRealtimeShadow(float3 positionSTS, ShadowSamplingData shadowSamplingData)
 {
+    #if !defined(_RECEIVE_SHADOWS)
+        return 1.0;
+    #endif
+
     real attenuation;
     if (SOFT_SHADOW_MODE > SOFT_SHADOW_OFF)
     {

@@ -15,6 +15,7 @@
         [Header(Setting)]
         [Toggle(_ALPHATEST_ON)] _AlphaClip ("AlphaClip", Float) = 0.0
         [HideInInspector] _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
+        [Toggle(_RECEIVE_SHADOWS)] _ReceiveShadows ("Receive Shadows", Float) = 1
         [KeywordEnum(On, Off)]_Shadows ("Shadows", float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1.0
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend", Float) = 0.0
@@ -36,10 +37,17 @@
             
             HLSLPROGRAM
 
+            //--------------------------------------
+            // GPU Instancing
             #pragma multi_compile_instancing
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _RECEIVE_SHADOWS
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
 
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
@@ -68,13 +76,12 @@
 
             HLSLPROGRAM
 
-            // -------------------------------------
-            // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
+            // -------------------------------------
+            // Material Keywords
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
 
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
@@ -89,4 +96,5 @@
         }
     }
     FallBack "Diffuse"
+    CustomEditor "OpenWorld.RenderPipelines.ShaderGUI.LitShader"
 }

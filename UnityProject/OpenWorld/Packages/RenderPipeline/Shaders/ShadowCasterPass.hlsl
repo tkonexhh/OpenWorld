@@ -59,6 +59,12 @@ Varyings ShadowPassVertex(Attributes input)
 
 float4 ShadowPassFragment(Varyings input): SV_Target
 {
+    #ifdef _ALPHATEST_ON
+        half4 baseMap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+        half4 baseColor = baseMap * _BaseColor;
+        clip(baseColor.a - _Cutoff);
+    #endif
+
     return 0;
 }
 

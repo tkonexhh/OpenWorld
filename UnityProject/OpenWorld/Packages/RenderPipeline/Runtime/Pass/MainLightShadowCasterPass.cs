@@ -160,7 +160,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             cmd.SetGlobalVectorArray(ShaderIDs.CascadeDatas, m_CascadeDatas);
             cmd.SetGlobalTexture(m_MainLightShadowmapID, m_MainLightShadowmapTexture.nameID);
 
-
             var maxShadowDistanceSq = shadowData.maxShadowDistance * shadowData.maxShadowDistance;
             ShadowUtils.GetScaleAndBiasForLinearDistanceFade(maxShadowDistanceSq, shadowData.manLightShadowDistanceFade, out float shadowFadeScale, out float shadowFadeBias);
 
@@ -168,7 +167,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             float softShadowsProp = softShadows ? 1.0f : 0.0f;
             softShadowsProp *= 1 + (int)shadowData.softShadowsMode;
             cmd.SetGlobalVector(ShaderIDs.ShadowParams, new Vector4(shadowLight.light.shadowStrength, softShadowsProp, shadowFadeScale, shadowFadeBias));
-
 
             // Inside shader soft shadows are controlled through global keyword.
             // If any additional light has soft shadows it will force soft shadows on main light too.
