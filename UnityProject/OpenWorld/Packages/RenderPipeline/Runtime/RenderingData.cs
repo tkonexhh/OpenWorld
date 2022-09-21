@@ -7,7 +7,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 {
     public struct RenderingData
     {
-        public CullingResults cullResults;
+        public CullingResults cullingResults;
         public CameraData cameraData;
         public ShadowData shadowData;
         public LightData lightData;
@@ -101,7 +101,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         public Vector3 mainLightShadowCascadesSplit;
         public float manLightShadowDistanceFade;
         public bool supportsSoftShadows;
-        public Vector4 bias;
+        public ShadowSettings.FilterMode softShadowsMode;
+        // public Vector4 bias;
+        public List<Vector4> bias;
     }
 
     /// <summary>

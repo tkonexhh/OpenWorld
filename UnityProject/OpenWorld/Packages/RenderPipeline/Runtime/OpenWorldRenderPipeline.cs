@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Unity.Collections;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
@@ -44,7 +45,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             cullingParameters.shadowDistance = Mathf.Min(m_ShadowSettings.maxDistance, camera.farClipPlane);
 
-            renderingData.cullResults = renderContext.Cull(ref cullingParameters);
+            var cullingResults = renderContext.Cull(ref cullingParameters);
+            renderingData.cullingResults = cullingResults;
             renderingData.supportsDynamicBatching = true;
 
             //Shadow Data
@@ -52,6 +54,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             shadowData.maxShadowDistance = m_ShadowSettings.maxDistance;
             int shadowResolution = (int)m_ShadowSettings.directional.resolution;
             shadowData.supportsSoftShadows = m_ShadowSettings.softShadow;
+            shadowData.softShadowsMode = m_ShadowSettings.filter;
             shadowData.mainLightShadowmapWidth = shadowResolution;
             shadowData.mainLightShadowmapHeight = shadowResolution;
             shadowData.mainLightShadowCascadesCount = m_ShadowSettings.directional.cascadeCount;
@@ -71,7 +74,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                     break;
             }
             shadowData.manLightShadowDistanceFade = m_ShadowSettings.distanceFade;
-            shadowData.bias = new Vector4(m_ShadowSettings.depthBias, m_ShadowSettings.normalBias, 0, 0);
+            shadowData.bias = m_ShadowBiasData;// new Vector4(m_ShadowSettings.depthBias, m_ShadowSettings.normalBias, 0, 0);
             renderingData.shadowData = shadowData;
 
 
@@ -101,6 +104,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderingData.cameraData = cameraData;
 
             renderingData.commandBuffer = CommandBufferPool.Get();
+
+            InitializeShadowData(cullingResults.visibleLights);
         }
 
         void RenderSingleCamera(ScriptableRenderContext renderContext, Camera camera)
@@ -166,8 +171,26 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         void DrawUnsupportdShaders(ScriptableRenderContext renderContext, ref RenderingData renderingData)
         {
-            RenderingUtils.RenderObjectsWithError(renderContext, ref renderingData.cullResults, renderingData.cameraData.camera, FilteringSettings.defaultValue, SortingCriteria.CommonOpaque);
+            RenderingUtils.RenderObjectsWithError(renderContext, ref renderingData.cullingResults, renderingData.cameraData.camera, FilteringSettings.defaultValue, SortingCriteria.CommonOpaque);
         }
+
+
+
+        static void InitializeShadowData(NativeArray<VisibleLight> visibleLights)
+        {
+            m_ShadowBiasData.Clear();
+            for (int i = 0; i < visibleLights.Length; ++i)
+            {
+                ref VisibleLight vl = ref visibleLights.UnsafeElementAtMutable(i);
+                Light light = vl.light;
+                float shadowBias = light.shadowBias;
+                float normalBias = light.shadowNormalBias;
+                //URP 使用了一个AdditionalLightData 可以选择是否override设置 决定是否使用管线的bias
+
+                m_ShadowBiasData.Add(new Vector4(shadowBias, normalBias, 0.0f, 0.0f));
+            }
+        }
+
 
         protected override void Dispose(bool disposing)
         {

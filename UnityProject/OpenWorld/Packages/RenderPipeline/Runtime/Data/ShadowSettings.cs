@@ -11,15 +11,17 @@ namespace OpenWorld.RenderPipelines.Runtime
         [Range(0f, 10f)] public float depthBias = 1.0f;
         [Range(0f, 10f)] public float normalBias = 1.0f;
         public bool softShadow;
+        public FilterMode filter = FilterMode.PCF3x3;
 
         public Directional directional = new Directional
         {
             resolution = ShadowResolution._2048,
-            filter = FilterMode.PCF2x2,
             cascadeCount = 4,
             cascadeRatio1 = 0.1f,
             cascadeRatio2 = 0.25f,
             cascadeRatio3 = 0.5f,
+            cascadeFade = 0.1f,
+            cascadeBlend = CascadeBlendMode.Hard,
         };
 
 
@@ -28,11 +30,12 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             public ShadowResolution resolution;
 
-            public FilterMode filter;
             [Range(1, 4)] public int cascadeCount;
             [Range(0f, 1f)]
             public float cascadeRatio1, cascadeRatio2, cascadeRatio3;
-
+            [Range(0.001f, 1f)]
+            public float cascadeFade;
+            public CascadeBlendMode cascadeBlend;
 
             public Vector3 CascadeRatios => new Vector3(cascadeRatio1, cascadeRatio2, cascadeRatio3);
         }
@@ -89,10 +92,17 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public enum FilterMode
         {
-            PCF2x2,
-            PCF3x3,
+            PCF3x3 = 0,
             PCF5x5,
             PCF7x7,
+            PCSS
+        }
+
+        public enum CascadeBlendMode
+        {
+            Hard,
+            // Soft,
+            Dither,
         }
     }
 }

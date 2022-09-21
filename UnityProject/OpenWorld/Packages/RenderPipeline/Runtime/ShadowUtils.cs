@@ -57,18 +57,30 @@ namespace OpenWorld.RenderPipelines.Runtime
             return rtd;
         }
 
-        public static bool ExtractDirectionalLightMatrix(ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, int cascadeIndex, int shadowmapWidth, int shadowmapHeight, int shadowResolution, float shadowNearPlane, out Vector4 cascadeSplitDistance, out ShadowSliceData shadowSliceData)
+        public static bool ExtractDirectionalLightMatrix(ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, int cascadeIndex, int shadowmapWidth, int shadowmapHeight, int shadowResolution, float shadowNearPlane,
+             out Vector4 cascadeSplitDistance, out ShadowSliceData shadowSliceData, out Vector4 cascadeData)
         {
             //如果要突破4级 级联阴影的话 就需要自行实现下列API 计算额外的VP
             bool success = cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(shadowLightIndex, cascadeIndex, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit,
                                shadowResolution, shadowNearPlane, out shadowSliceData.viewMatrix, out shadowSliceData.projectionMatrix, out shadowSliceData.splitData);
 
-            cascadeSplitDistance = shadowSliceData.splitData.cullingSphere;
             //暂时定为2*2 大小的4级级联阴影
             shadowSliceData.offsetX = (cascadeIndex % 2) * shadowResolution;
             shadowSliceData.offsetY = (cascadeIndex / 2) * shadowResolution;
             shadowSliceData.resolution = shadowResolution;
             shadowSliceData.shadowTransform = GetShadowTransform(shadowSliceData.projectionMatrix, shadowSliceData.viewMatrix);
+
+            // It is the culling sphere radius multiplier for shadow cascade blending
+            // If this is less than 1.0, then it will begin to cull castors across cascades
+            shadowSliceData.splitData.shadowCascadeBlendCullingFactor = 1.0f;
+
+            var cullingSphere = shadowSliceData.splitData.cullingSphere;
+
+            float texelSize = 2f * cullingSphere.w / shadowResolution;
+            float filterSize = texelSize * ((float)shadowData.softShadowsMode);
+            cascadeData = new Vector4(1f / cullingSphere.w, filterSize * 1.4142136f, 0, 0);//1.4142136f  √2
+
+            cascadeSplitDistance = cullingSphere;
 
             // If we have shadow cascades baked into the atlas we bake cascade transform
             // in each shadow matrix to save shader ALU and L/S
@@ -122,6 +134,99 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             // Apply shadow slice scale and offset
             shadowSliceData.shadowTransform = sliceTransform * shadowSliceData.shadowTransform;
+        }
+
+        /// <summary>
+        /// Calculates the depth and normal bias from a light.
+        /// </summary>
+        /// <param name="shadowLight"></param>
+        /// <param name="shadowLightIndex"></param>
+        /// <param name="shadowData"></param>
+        /// <param name="lightProjectionMatrix"></param>
+        /// <param name="shadowResolution"></param>
+        /// <returns>The depth and normal bias from a visible light.</returns>
+        public static Vector4 GetShadowBias(ref VisibleLight shadowLight, int shadowLightIndex, ref ShadowData shadowData, Matrix4x4 lightProjectionMatrix, float shadowResolution)
+        {
+            if (shadowLightIndex < 0 || shadowLightIndex >= shadowData.bias.Count)
+            {
+                Debug.LogWarning(string.Format("{0} is not a valid light index.", shadowLightIndex));
+                return Vector4.zero;
+            }
+
+            float frustumSize;
+            if (shadowLight.lightType == LightType.Directional)
+            {
+                // Frustum size is guaranteed to be a cube as we wrap shadow frustum around a sphere
+                frustumSize = 2.0f / lightProjectionMatrix.m00;
+            }
+            else if (shadowLight.lightType == LightType.Spot)
+            {
+                // For perspective projections, shadow texel size varies with depth
+                // It will only work well if done in receiver side in the pixel shader. Currently UniversalRP
+                // do bias on caster side in vertex shader. When we add shader quality tiers we can properly
+                // handle this. For now, as a poor approximation we do a constant bias and compute the size of
+                // the frustum as if it was orthogonal considering the size at mid point between near and far planes.
+                // Depending on how big the light range is, it will be good enough with some tweaks in bias
+                frustumSize = Mathf.Tan(shadowLight.spotAngle * 0.5f * Mathf.Deg2Rad) * shadowLight.range; // half-width (in world-space units) of shadow frustum's "far plane"
+            }
+            // else if (shadowLight.lightType == LightType.Point)
+            // {
+            //     // [Copied from above case:]
+            //     // "For perspective projections, shadow texel size varies with depth
+            //     //  It will only work well if done in receiver side in the pixel shader. Currently UniversalRP
+            //     //  do bias on caster side in vertex shader. When we add shader quality tiers we can properly
+            //     //  handle this. For now, as a poor approximation we do a constant bias and compute the size of
+            //     //  the frustum as if it was orthogonal considering the size at mid point between near and far planes.
+            //     //  Depending on how big the light range is, it will be good enough with some tweaks in bias"
+            //     // Note: HDRP uses normalBias both in HDShadowUtils.CalcGuardAnglePerspective and HDShadowAlgorithms/EvalShadow_NormalBias (receiver bias)
+            //     float fovBias = AdditionalLightsShadowCasterPass.GetPointLightShadowFrustumFovBiasInDegrees((int)shadowResolution, (shadowLight.light.shadows == LightShadows.Soft));
+            //     // Note: the same fovBias was also used to compute ShadowUtils.ExtractPointLightMatrix
+            //     float cubeFaceAngle = 90 + fovBias;
+            //     frustumSize = Mathf.Tan(cubeFaceAngle * 0.5f * Mathf.Deg2Rad) * shadowLight.range; // half-width (in world-space units) of shadow frustum's "far plane"
+            // }
+            else
+            {
+                Debug.LogWarning("Only point, spot and directional shadow casters are supported in universal pipeline");
+                frustumSize = 0.0f;
+            }
+
+            // depth and normal bias scale is in shadowmap texel size in world space
+            float texelSize = frustumSize / shadowResolution;
+            float depthBias = -shadowData.bias[shadowLightIndex].x * texelSize;
+            float normalBias = -shadowData.bias[shadowLightIndex].y * texelSize;
+
+            // The current implementation of NormalBias in Universal RP is the same as in Unity Built-In RP (i.e moving shadow caster vertices along normals when projecting them to the shadow map).
+            // This does not work well with Point Lights, which is why NormalBias value is hard-coded to 0.0 in Built-In RP (see value of unity_LightShadowBias.z in FrameDebugger, and native code that sets it: https://github.cds.internal.unity3d.com/unity/unity/blob/a9c916ba27984da43724ba18e70f51469e0c34f5/Runtime/Camera/Shadows.cpp#L1686 )
+            // We follow the same convention in Universal RP:
+            if (shadowLight.lightType == LightType.Point)
+                normalBias = 0.0f;
+
+            if (shadowData.supportsSoftShadows && shadowLight.light.shadows == LightShadows.Soft)
+            {
+                var filterMode = ShadowSettings.FilterMode.PCF3x3;
+                // if (shadowLight.light.TryGetComponent(out UniversalAdditionalLightData additionalLightData))
+                //     softShadowQuality = additionalLightData.softShadowQuality;
+
+                // TODO: depth and normal bias assume sample is no more than 1 texel away from shadowmap
+                // This is not true with PCF. Ideally we need to do either
+                // cone base bias (based on distance to center sample)
+                // or receiver place bias based on derivatives.
+                // For now we scale it by the PCF kernel size of non-mobile platforms (5x5)
+                float kernelRadius = 2.5f;
+
+                switch (filterMode)
+                {
+                    case ShadowSettings.FilterMode.PCF7x7: kernelRadius = 3.5f; break; // 7x7
+                    case ShadowSettings.FilterMode.PCF5x5: kernelRadius = 2.5f; break; // 5x5
+                    case ShadowSettings.FilterMode.PCF3x3: kernelRadius = 1.5f; break; // 3x3
+                    default: break;
+                }
+
+                depthBias *= kernelRadius;
+                normalBias *= kernelRadius;
+            }
+
+            return new Vector4(depthBias, normalBias, 0.0f, 0.0f);
         }
 
         public static void RenderShadowSlice(CommandBuffer cmd, ref ScriptableRenderContext context, ref ShadowSliceData shadowSliceData, ref ShadowDrawingSettings settings)

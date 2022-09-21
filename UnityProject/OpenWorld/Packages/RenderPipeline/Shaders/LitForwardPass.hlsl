@@ -53,6 +53,7 @@ float4 LitPassFragment(Varyings input): SV_Target
     surfaceData.roughness = _RoughnessScale;
     surfaceData.occlusion = _OcclusionScale;
     surfaceData.emission = _EmissionColor * _EmissionScale;
+    // surfaceData.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
 
     LightingData lightingData = InitLightingData(input.positionWS, normalWS);
 

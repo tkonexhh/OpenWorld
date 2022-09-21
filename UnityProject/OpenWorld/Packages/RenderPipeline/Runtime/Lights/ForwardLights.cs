@@ -25,7 +25,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public void Setup(ref RenderingData renderingData)
         {
-            var visibleLights = renderingData.cullResults.visibleLights;
+            var visibleLights = renderingData.cullingResults.visibleLights;
             renderingData.lightData.mainLightIndex = GetMainLightIndex(visibleLights);
 
             SetupMainLight(renderingData.commandBuffer, ref renderingData.lightData);

@@ -31,7 +31,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 cmd.Clear();
 
                 var drawSettings = CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
-                context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref m_FilteringSettings);
+                context.DrawRenderers(renderingData.cullingResults, ref drawSettings, ref m_FilteringSettings);
             }
         }
     }

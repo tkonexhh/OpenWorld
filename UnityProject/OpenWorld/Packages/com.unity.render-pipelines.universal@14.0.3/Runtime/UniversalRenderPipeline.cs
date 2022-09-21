@@ -77,26 +77,17 @@ namespace UnityEngine.Rendering.Universal
             };
         }
 
-        public static float maxShadowBias
-        {
-            get => 10.0f;
-        }
+        public static float maxShadowBias => 10.0f;
 
         /// <summary>
         /// The minimum value allowed for render scale.
         /// </summary>
-        public static float minRenderScale
-        {
-            get => 0.1f;
-        }
+        public static float minRenderScale => 0.1f;
 
         /// <summary>
         /// The maximum value allowed for render scale.
         /// </summary>
-        public static float maxRenderScale
-        {
-            get => 2.0f;
-        }
+        public static float maxRenderScale => 2.0f;
 
         /// <summary>
         /// The max number of lights that can be shaded per object (in the for loop in the shader).
