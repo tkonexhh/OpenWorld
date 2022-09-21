@@ -48,6 +48,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             var cullingResults = renderContext.Cull(ref cullingParameters);
             renderingData.cullingResults = cullingResults;
             renderingData.supportsDynamicBatching = true;
+            renderingData.perObjectData = GetPerObjectLightFlags(4, false);
 
             //Shadow Data
             var shadowData = new ShadowData();
@@ -189,6 +190,18 @@ namespace OpenWorld.RenderPipelines.Runtime
 
                 m_ShadowBiasData.Add(new Vector4(shadowBias, normalBias, 0.0f, 0.0f));
             }
+        }
+
+        static PerObjectData GetPerObjectLightFlags(int additionalLightsCount, bool clustering)
+        {
+            var configuration = PerObjectData.ReflectionProbes | PerObjectData.Lightmaps | PerObjectData.LightProbe | PerObjectData.LightData | PerObjectData.OcclusionProbe | PerObjectData.ShadowMask;
+
+            if (additionalLightsCount > 0 && !clustering)
+            {
+                configuration |= PerObjectData.LightData;
+            }
+
+            return configuration;
         }
 
 

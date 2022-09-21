@@ -3,9 +3,10 @@
 
 #include "Packages/RenderPipeline/ShaderLibrary/Core.hlsl"
 #include "Packages/RenderPipeline/ShaderLibrary/SurfaceData.hlsl"
-#include "Packages/RenderPipeline/ShaderLibrary/LightingData.hlsl"
+#include "./LightingData.hlsl"
 #include "Packages/RenderPipeline/ShaderLibrary/RealtimeLights.hlsl"
 #include "Packages/RenderPipeline/ShaderLibrary/BRDF.hlsl"
+#include "./GI.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 
 
@@ -20,10 +21,15 @@ half3 ShadeAllLightPBR(SurfaceData surfaceData, LightingData lightingData)
 {
     // ShadowSamplingData shadowSamplingData = GetShadowSamplingData(lightingData.positionWS);
     // return shadowSamplingData.strength;
+    BRDFData brdf = GetBRDF(surfaceData);
+    GI gi = GetGI(lightingData, brdf);
 
     Light mainLight = GetMainLight(lightingData.positionWS, lightingData.normalWS);
-    BRDFData brdf = GetBRDF(surfaceData);
-    return ShadeSingleLightPBR(surfaceData, lightingData, brdf, mainLight);
+    
+    half3 mainLightResult = ShadeSingleLightPBR(surfaceData, lightingData, brdf, mainLight);
+    half3 additionalResult = 0;
+    half3 indirectResult = IndirectBRDF(surfaceData, lightingData, brdf, gi.diffuse, gi.specular);
+    return mainLightResult + additionalResult + indirectResult;
 }
 
 

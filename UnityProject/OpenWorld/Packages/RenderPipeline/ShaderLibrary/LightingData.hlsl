@@ -7,16 +7,19 @@ struct LightingData
 {
     float3 positionWS;
     half3 normalWS;
-    half3 viewDir;
+    half3 viewDirection;
+    float2 lightMapUV;
 };
 
-LightingData InitLightingData(float3 positionWS, half3 normal)
+LightingData InitLightingData(float3 positionWS, half3 normal, float2 lightmapUV)
 {
     LightingData lightingData;
     lightingData.positionWS = positionWS;
     lightingData.normalWS = normalize(normal);
-    lightingData.viewDir = normalize(GetCameraPositionWS() - positionWS);
+    lightingData.viewDirection = normalize(GetCameraPositionWS() - positionWS);
+    lightingData.lightMapUV = lightmapUV;
     return lightingData;
 }
+
 
 #endif

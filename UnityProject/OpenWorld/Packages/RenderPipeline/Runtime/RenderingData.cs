@@ -12,11 +12,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         public ShadowData shadowData;
         public LightData lightData;
 
-        // /// <summary>
-        // /// Holds per-object data that are requested when drawing
-        // /// <see cref="PerObjectData"/>
-        // /// </summary>
-        // public PerObjectData perObjectData;
+
+        public PerObjectData perObjectData;
 
         /// <summary>
         /// True if the pipeline supports dynamic batching.

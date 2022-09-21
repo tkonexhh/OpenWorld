@@ -16,6 +16,7 @@ struct BRDFData
     half3 diffuse;
     half3 specular;
     half roughness;
+    float fresnel;
 };
 
 half OneMinusReflectivityMetallic(half metallic)
@@ -32,12 +33,13 @@ BRDFData GetBRDF(SurfaceData surface)
     brdf.diffuse = surface.albedo * oneMinusReflectivity;
     brdf.specular = lerp(kDielectricSpec.rgb, surface.albedo, surface.metallic);
     brdf.roughness = perceptualRoughness;
+    brdf.fresnel = saturate(1 - surface.roughness + 1.0 - oneMinusReflectivity);
     return brdf;
 }
 
 half SpecularStrength(LightingData lightingData, BRDFData brdf, Light light)
 {
-    float3 H = SafeNormalize(light.direction + lightingData.viewDir);
+    float3 H = SafeNormalize(light.direction + lightingData.viewDirection);
     float NdotH = saturate(dot(float3(lightingData.normalWS), H));
     float LdotH = saturate(dot(light.direction, H));
 
@@ -55,6 +57,15 @@ half SpecularStrength(LightingData lightingData, BRDFData brdf, Light light)
 half3 DirectBDRF(LightingData lightingData, BRDFData brdf, Light light)
 {
     return SpecularStrength(lightingData, brdf, light) * brdf.specular + brdf.diffuse;
+}
+
+half3 IndirectBRDF(SurfaceData surfaceData, LightingData lightingData, BRDFData brdf, half3 diffuse, half3 specular)
+{
+    float fresnelStrength = Pow4(1.0 - saturate(dot(lightingData.normalWS, lightingData.viewDirection)));// * surface.fresnelStrength;
+    float3 reflection = specular * lerp(brdf.specular, brdf.fresnel, fresnelStrength);
+    //high roughness will halve the reflection while low roughness will not matter much
+    reflection /= brdf.roughness * brdf.roughness + 1.0;
+    return(reflection + diffuse * brdf.diffuse) * surfaceData.occlusion;
 }
 
 

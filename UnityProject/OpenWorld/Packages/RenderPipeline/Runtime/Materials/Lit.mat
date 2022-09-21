@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: e00cc6cc97bd6824c80b46f633c187b1, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _RECEIVE_SHADOWS
   m_InvalidKeywords:
   - _SHADOWS_ON
   m_LightmapFlags: 4
@@ -78,6 +79,7 @@ Material:
     - _OcclusionScale: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _ReceiveShadows: 1
     - _RoughnessScale: 1
     - _Shadows: 0
     - _SmoothnessTextureChannel: 0

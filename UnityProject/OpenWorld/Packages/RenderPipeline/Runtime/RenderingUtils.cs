@@ -24,7 +24,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             SortingSettings sortingSettings = new SortingSettings(camera) { criteria = sortingCriteria };
             DrawingSettings settings = new DrawingSettings(shaderTagId, sortingSettings)
             {
-                // perObjectData = renderingData.perObjectData,
+                perObjectData = renderingData.perObjectData,
                 mainLightIndex = renderingData.lightData.mainLightIndex,
                 enableDynamicBatching = renderingData.supportsDynamicBatching,
 

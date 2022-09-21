@@ -152,28 +152,21 @@ float4x4 unity_MatrixInvV;
 float4x4 unity_MatrixInvP;
 float4x4 unity_MatrixVP;
 float4x4 unity_MatrixInvVP;
-// float4 unity_StereoScaleOffset;
-// int unity_StereoEyeIndex;
 
 real4 unity_ShadowColor;
 
 // ----------------------------------------------------------------------------
 
 // Unity specific
-TEXTURECUBE(unity_SpecCube0);
-SAMPLER(samplerunity_SpecCube0);
-TEXTURECUBE(unity_SpecCube1);
-SAMPLER(samplerunity_SpecCube1);
+TEXTURECUBE(unity_SpecCube0);SAMPLER(samplerunity_SpecCube0);
+TEXTURECUBE(unity_SpecCube1);SAMPLER(samplerunity_SpecCube1);
 
 // Main lightmap
-TEXTURE2D(unity_Lightmap);
-SAMPLER(samplerunity_Lightmap);
-TEXTURE2D_ARRAY(unity_Lightmaps);
-SAMPLER(samplerunity_Lightmaps);
+TEXTURE2D(unity_Lightmap);SAMPLER(samplerunity_Lightmap);
+TEXTURE2D_ARRAY(unity_Lightmaps);SAMPLER(samplerunity_Lightmaps);
 
 // Dynamic lightmap
-TEXTURE2D(unity_DynamicLightmap);
-SAMPLER(samplerunity_DynamicLightmap);
+TEXTURE2D(unity_DynamicLightmap);SAMPLER(samplerunity_DynamicLightmap);
 // TODO ENLIGHTEN: Instanced GI
 
 // Dual or directional lightmap (always used with unity_Lightmap, so can share sampler)
@@ -183,10 +176,8 @@ TEXTURE2D(unity_DynamicDirectionality);
 // TODO ENLIGHTEN: Instanced GI
 // TEXTURE2D_ARRAY(unity_DynamicDirectionality);
 
-TEXTURE2D(unity_ShadowMask);
-SAMPLER(samplerunity_ShadowMask);
-TEXTURE2D_ARRAY(unity_ShadowMasks);
-SAMPLER(samplerunity_ShadowMasks);
+TEXTURE2D(unity_ShadowMask);SAMPLER(samplerunity_ShadowMask);
+TEXTURE2D_ARRAY(unity_ShadowMasks);SAMPLER(samplerunity_ShadowMasks);
 
 // ----------------------------------------------------------------------------
 
@@ -228,4 +219,4 @@ float3 GetCameraPositionWS()
 }
 
 
-#endif // UNIVERSAL_SHADER
+#endif // U

@@ -1,11 +1,14 @@
 ﻿#ifndef RENDERPIPELINE_LIT_FORWARD_INCLUDED
 #define RENDERPIPELINE_LIT_FORWARD_INCLUDED
 
+#include "Packages/RenderPipeline/ShaderLibrary/LOD.hlsl"
+
 struct Attributes
 {
     float4 positionOS: POSITION;
     float2 uv: TEXCOORD0;
     float3 normalOS: NORMAL;
+    LIGHTMAP_ATTRIBUTE_DATA
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -16,6 +19,7 @@ struct Varyings
     float3 positionWS: TEXCOORD2;
     float2 uv: TEXCOORD0;
     float3 normalWS: NORMAL;
+    LIGHTMAP_VARYINGS_DATA
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -26,7 +30,7 @@ Varyings LitPassVertex(Attributes input)
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_TRANSFER_INSTANCE_ID(input, output);
-
+    TRANSFER_LIGHTMAP_DATA(input, output);
     output.positionWS = TransformObjectToWorld(input.positionOS);
     output.positionCS = TransformWorldToHClip(output.positionWS);
     output.normalWS = TransformObjectToWorldNormal(input.normalOS);
@@ -38,6 +42,9 @@ Varyings LitPassVertex(Attributes input)
 float4 LitPassFragment(Varyings input): SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
+
+    ClipLOD(input.positionCS, unity_LODFade.x);
+
 
     half4 baseMap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
     half4 baseColor = baseMap * _BaseColor;
@@ -55,7 +62,7 @@ float4 LitPassFragment(Varyings input): SV_Target
     surfaceData.emission = _EmissionColor * _EmissionScale;
     // surfaceData.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
 
-    LightingData lightingData = InitLightingData(input.positionWS, normalWS);
+    LightingData lightingData = InitLightingData(input.positionWS, normalWS, LIGHTMAP_FRAGMENT_DATA(input));
 
 
     half3 finalRGB = ShadeAllLightPBR(surfaceData, lightingData);
