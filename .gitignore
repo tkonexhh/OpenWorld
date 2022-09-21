@@ -11,7 +11,7 @@
 /UnityProject/OpenWorld/Temp/
 /UnityProject/OpenWorld/Temp/UnityLockfile
 
-*Library/
+
 *Temp/
 DesignDocs/
 *Examples/
@@ -45,4 +45,5 @@ sysinfo.txt
 *.unitypackage
 
 *.svn*
+*.vscode*
 

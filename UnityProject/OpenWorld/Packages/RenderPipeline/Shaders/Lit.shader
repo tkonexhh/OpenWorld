@@ -15,6 +15,7 @@
         [Header(Setting)]
         [Toggle(_ALPHATEST_ON)] _AlphaClip ("AlphaClip", Float) = 0.0
         [HideInInspector] _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
+        [KeywordEnum(On, Off)]_Shadows ("Shadows", float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1.0
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend", Float) = 0.0
         [Enum(Off, 0, On, 1)]_ZWrite ("Z Write", float) = 1.0
