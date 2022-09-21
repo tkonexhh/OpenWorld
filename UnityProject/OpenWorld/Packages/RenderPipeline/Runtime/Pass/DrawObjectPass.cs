@@ -14,6 +14,21 @@ namespace OpenWorld.RenderPipelines.Runtime
                     new ShaderTagId("OpenWorldForward")
                  };
 
+        RTHandle m_ColorTargetIndentifier;
+
+        public DrawObjectPass() : base() { }
+
+        // public void Setup(RTHandle color)
+        // {
+        //     m_ColorTargetIndentifier = color;
+        // }
+
+        // public override void Configure(CommandBuffer cmd)
+        // {
+        //     ConfigureTarget(m_ColorTargetIndentifier);
+        //     ConfigureColorStoreAction(RenderBufferStoreAction.Store);
+        // }
+
         // protected abstract RenderQueueRange renderQueueRange;
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) { }
     }

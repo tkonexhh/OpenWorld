@@ -103,9 +103,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// </summary>
         static public RTHandle k_CameraTarget = RTHandles.Alloc(BuiltinRenderTextureType.CameraTarget);
 
-        /// <summary>
-        /// The event when the render pass executes.
-        /// </summary>
         public RenderPassEvent renderPassEvent { get; set; }
 
         /// <summary>
@@ -123,16 +120,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// </summary>
         public RTHandle depthAttachmentHandle => m_DepthAttachment;
 
-        /// <summary>
-        /// The store actions for Color.
-        /// </summary>
+
         public RenderBufferStoreAction[] colorStoreActions => m_ColorStoreActions;
-
         public RenderBufferStoreAction colorStoreAction => m_ColorStoreActions[0];
-
-        /// <summary>
-        /// The store actions for Depth.
-        /// </summary>
         public RenderBufferStoreAction depthStoreAction => m_DepthStoreAction;
 
         // internal bool[] overriddenColorStoreActions
@@ -150,16 +140,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// </summary>
         /// <seealso cref="ConfigureInput"/>
         public ScriptableRenderPassInput input => m_Input;
-
-        /// <summary>
-        /// The flag to use when clearing.
-        /// </summary>
-        /// <seealso cref="ClearFlag"/>
         public ClearFlag clearFlag => m_ClearFlag;
-
-        /// <summary>
-        /// The color value to use when clearing.
-        /// </summary>
         public Color clearColor => m_ClearColor;
 
         RenderBufferStoreAction[] m_ColorStoreActions = new RenderBufferStoreAction[] { RenderBufferStoreAction.Store };
@@ -181,19 +162,19 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         internal bool useNativeRenderPass { get; set; }
 
-        // index to track the position in the current frame
-        internal int renderPassQueueIndex { get; set; }
+
 
         internal NativeArray<int> m_ColorAttachmentIndices;
         internal NativeArray<int> m_InputAttachmentIndices;
 
-        internal GraphicsFormat[] renderTargetFormat { get; set; }
 
-        internal bool m_UsesRTHandles;
+
+        const int MAX_COUNT = 4;
         RTHandle[] m_ColorAttachments;
         RenderTargetIdentifier[] m_ColorAttachmentIds;
-        internal RTHandle[] m_InputAttachments = new RTHandle[8];
-        internal bool[] m_InputAttachmentIsTransient = new bool[8];
+        internal RTHandle[] m_InputAttachments;
+        internal bool[] m_InputAttachmentIsTransient;
+        internal GraphicsFormat[] renderTargetFormat { get; set; }
         RTHandle m_DepthAttachment;
         RenderTargetIdentifier m_DepthAttachmentId;
 
@@ -202,36 +183,28 @@ namespace OpenWorld.RenderPipelines.Runtime
         Color m_ClearColor = Color.black;
 
 
-        /// <summary>
-        /// Creates a new <c>ScriptableRenderPass"</c> instance.
-        /// </summary>
         public ScriptableRenderPass()
         {
-            m_UsesRTHandles = true;
             renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
-            m_ColorAttachments = new RTHandle[] { k_CameraTarget, null, null, null, null, null, null, null };
-            m_InputAttachments = new RTHandle[] { null, null, null, null, null, null, null, null };
-            m_InputAttachmentIsTransient = new bool[] { false, false, false, false, false, false, false, false };
+
+            m_ColorAttachments = new RTHandle[MAX_COUNT] { k_CameraTarget, null, null, null };
+            m_InputAttachments = new RTHandle[MAX_COUNT] { null, null, null, null };
+            m_InputAttachmentIsTransient = new bool[MAX_COUNT] { false, false, false, false };
             m_DepthAttachment = k_CameraTarget;
-            m_ColorStoreActions = new RenderBufferStoreAction[] { RenderBufferStoreAction.Store, 0, 0, 0, 0, 0, 0, 0 };
+            m_ColorStoreActions = new RenderBufferStoreAction[MAX_COUNT] { RenderBufferStoreAction.Store, 0, 0, 0 };
             m_DepthStoreAction = RenderBufferStoreAction.Store;
             // m_OverriddenColorStoreActions = new bool[] { false, false, false, false, false, false, false, false };
             // m_OverriddenDepthStoreAction = false;
             m_DepthAttachment = k_CameraTarget;
             m_DepthAttachmentId = m_DepthAttachment.nameID;
-            m_ColorAttachmentIds = new RenderTargetIdentifier[] { k_CameraTarget.nameID, 0, 0, 0, 0, 0, 0, 0 };
+            m_ColorAttachmentIds = new RenderTargetIdentifier[MAX_COUNT] { k_CameraTarget.nameID, 0, 0, 0 };
             m_ClearFlag = ClearFlag.None;
             m_ClearColor = Color.black;
             overrideCameraTarget = false;
             isBlitRenderPass = false;
             profilingSampler = new ProfilingSampler($"Unnamed_{nameof(ScriptableRenderPass)}");
             useNativeRenderPass = true;
-            renderPassQueueIndex = -1;
-            renderTargetFormat = new GraphicsFormat[]
-            {
-                GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None,
-                GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None
-            };
+            renderTargetFormat = new GraphicsFormat[MAX_COUNT] { GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None };
         }
 
         /// <summary>
@@ -315,7 +288,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         public void ResetTarget()
         {
             overrideCameraTarget = false;
-            m_UsesRTHandles = true;
 
             // Reset depth
             m_DepthAttachmentId = -1;
@@ -357,7 +329,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <seealso cref="Configure"/>
         public void ConfigureTarget(RTHandle[] colorAttachments, RTHandle depthAttachment)
         {
-            m_UsesRTHandles = true;
             overrideCameraTarget = true;
 
             // uint nonNullColorBuffers = RenderingUtils.GetValidColorBufferCount(colorAttachments);
@@ -389,19 +360,20 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <seealso cref="Configure"/>
         public void ConfigureTarget(RTHandle colorAttachment)
         {
-            m_UsesRTHandles = true;
             overrideCameraTarget = true;
-
             m_ColorAttachments[0] = colorAttachment;
             m_ColorAttachmentIds[0] = new RenderTargetIdentifier(colorAttachment.nameID, 0, CubemapFace.Unknown, -1);
             for (int i = 1; i < m_ColorAttachments.Length; ++i)
             {
                 m_ColorAttachments[i] = null;
                 m_ColorAttachmentIds[i] = 0;
+
+            }
+            for (int i = 1; i < m_ColorAttachmentIds.Length; ++i)
+            {
+
             }
         }
-
-
 
         /// <summary>
         /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.

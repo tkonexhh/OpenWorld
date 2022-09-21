@@ -8,18 +8,14 @@ namespace OpenWorld.RenderPipelines.Runtime
 {
     public class DrawOpacityPass : DrawObjectPass
     {
-
-
         FilteringSettings m_FilteringSettings;
 
-        public DrawOpacityPass(RenderPassEvent evt, LayerMask layerMask)
+        public DrawOpacityPass(RenderPassEvent evt, LayerMask layerMask) : base()
         {
             base.profilingSampler = new ProfilingSampler(nameof(DrawOpacityPass));
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             renderPassEvent = evt;
         }
-
-
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {

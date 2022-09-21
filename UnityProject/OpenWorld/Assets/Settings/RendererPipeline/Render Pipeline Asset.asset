@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: Render Pipeline Asset
   m_EditorClassIdentifier: 
   shadowSettings:
-    maxDistance: 100
+    maxDistance: 30
+    distanceFade: 0.2
+    depthBias: 1
+    normalBias: 1
+    softShadow: 1
+    filter: 1
     directional:
-      resolution: 2048
-      filter: 0
+      resolution: 1024
       cascadeCount: 4
       cascadeRatio1: 0.1
       cascadeRatio2: 0.25
       cascadeRatio3: 0.5
+      cascadeFade: 0.2
+      cascadeBlend: 0
   useSRPBatcher: 0

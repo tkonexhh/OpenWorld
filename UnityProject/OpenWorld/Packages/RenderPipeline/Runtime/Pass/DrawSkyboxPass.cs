@@ -19,7 +19,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             var cmd = renderingData.commandBuffer;
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawSkybox)))
             {
-                // ConfigureTarget(renderingData.cameraData.renderer.cameraColorTargetHandle);
+                ConfigureTarget(renderingData.cameraData.renderer.cameraColorTargetHandle);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 

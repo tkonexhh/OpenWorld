@@ -1,9 +1,10 @@
-﻿#ifndef OPENWORLD_BRDF_INCLUDED
-#define OPENWORLD_BRDF_INCLUDED
+﻿#ifndef RENDERPIPELINE_BRDF_INCLUDED
+#define RENDERPIPELINE_BRDF_INCLUDED
 
 // #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/BSDF.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "Packages/RenderPipeline/ShaderLibrary/SurfaceData.hlsl"
+#include "Packages/RenderPipeline/ShaderLibrary/PBREquation.hlsl"
 
 #define MIN_REFLECTIVITY 0.04
 #define kDielectricSpec half4(MIN_REFLECTIVITY, MIN_REFLECTIVITY, MIN_REFLECTIVITY, 1.0 - MIN_REFLECTIVITY) // standard dielectric reflectivity coef at incident angle (= 4%)
@@ -19,11 +20,6 @@ struct BRDFData
 
 half OneMinusReflectivityMetallic(half metallic)
 {
-    // We'll need oneMinusReflectivity, so
-    //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
-    // store (1-dielectricSpec) in kDielectricSpec.a, then
-    //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
-    //                  = alpha - metallic * alpha
     half oneMinusDielectricSpec = kDielectricSpec.a;
     return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }

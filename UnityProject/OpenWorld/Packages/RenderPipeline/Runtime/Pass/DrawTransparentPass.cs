@@ -11,7 +11,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         FilteringSettings m_FilteringSettings;
 
 
-        public DrawTransparentPass(RenderPassEvent evt, LayerMask layerMask)
+        public DrawTransparentPass(RenderPassEvent evt, LayerMask layerMask) : base()
         {
             base.profilingSampler = new ProfilingSampler(nameof(DrawTransparentPass));
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.transparent);

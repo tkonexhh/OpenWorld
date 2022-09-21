@@ -13,8 +13,10 @@ namespace OpenWorld.RenderPipelines.Runtime
         FilteringSettings m_FilteringSettings;
 
 
-        public GBufferPass(RenderPassEvent evt, LayerMask layerMask)
+        public GBufferPass(RenderPassEvent evt)
         {
+            base.profilingSampler = new ProfilingSampler(nameof(GBufferPass));
+            base.renderPassEvent = evt;
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
         }
 

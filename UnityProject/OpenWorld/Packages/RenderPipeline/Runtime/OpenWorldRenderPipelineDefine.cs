@@ -37,5 +37,8 @@ namespace OpenWorld.RenderPipelines.Runtime
     internal static class ShaderTextureId
     {
         public static readonly string OpacityTexture = "_CameraOpaqueTexture";
+        public static readonly string CamearColorTexture = "_CameraColorTexture";
+        public static readonly string CameraDepthTexture = "_CameraDepthTexture";
+
     }
 }
