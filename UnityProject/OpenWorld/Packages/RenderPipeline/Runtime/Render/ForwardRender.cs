@@ -14,7 +14,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         DrawTransparentPass m_TransparentPass;
 
         ForwardLights m_ForwardLights;
+        PostProcessPasses m_PostProcessPasses;
 
+        internal PostProcessPass finalPostProcessPass { get => m_PostProcessPasses.finalPostProcessPass; }
 
         RTHandle m_OpaqueColor;
 
@@ -27,6 +29,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_TransparentPass = new DrawTransparentPass(RenderPassEvent.BeforeRenderingTransparents, -1);
 
             m_ForwardLights = new ForwardLights();
+
+            m_PostProcessPasses = new PostProcessPasses(true);
         }
 
         public override void Setup(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -48,6 +52,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             bool drawSkyBox = renderingData.cameraData.camera.clearFlags == CameraClearFlags.Skybox ? true : false;
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
+            bool enablePostprocessing = renderingData.cameraData.postProcessEnabled;
 
             if (mainLightShadows) EnqueuePass(m_MainLightShadowCasterPass);
 
@@ -57,7 +62,9 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             if (drawSkyBox) EnqueuePass(m_SkyboxPass);
 
-            // EnqueuePass(m_TransparentPass);
+            EnqueuePass(m_TransparentPass);
+
+            if (enablePostprocessing) EnqueuePass(finalPostProcessPass);
         }
 
         public override void DrawGizmos()

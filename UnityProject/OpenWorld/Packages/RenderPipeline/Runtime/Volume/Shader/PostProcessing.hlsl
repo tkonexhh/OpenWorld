@@ -26,7 +26,24 @@ struct VaryingsDefault
     float4 positionCS: SV_POSITION;
     float2 uv: TEXCOORD0;
 };
-
+VaryingsDefault VertDefault1(uint vertexID: SV_VERTEXID)
+{
+    VaryingsDefault output;
+    //make the [-1, 1] NDC, visible UV coordinates cover the 0-1 range
+    output.positionCS = float4(
+        vertexID <= 1 ? - 1.0: 3.0,
+        vertexID == 1 ? 3.0: - 1.0,
+        0.0, 1.0);
+    output.uv = float2(
+        vertexID <= 1 ? 0.0: 2.0,
+        vertexID == 1 ? 2.0: 0.0);
+    //some graphics APIs have the texture V coordinate start at the top while others have it start at the bottom
+    if (_ProjectionParams.x < 0.0)
+    {
+        output.screenUV.y = 1.0 - output.screenUV.y;
+        return output;
+    }
+}
 
 VaryingsDefault VertDefault(AttributesDefault input)
 {

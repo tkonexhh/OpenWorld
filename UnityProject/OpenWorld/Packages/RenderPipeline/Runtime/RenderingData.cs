@@ -86,6 +86,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public RenderTextureDescriptor cameraTargetDescriptor;
         public float aspectRatio;
         public Vector3 worldSpaceCameraPos;
+        public bool postProcessEnabled;
 
 
     }

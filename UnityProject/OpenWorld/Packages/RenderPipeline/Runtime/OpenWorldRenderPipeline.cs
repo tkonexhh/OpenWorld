@@ -92,6 +92,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             cameraData.worldSpaceCameraPos = camera.transform.position;
             cameraData.cameraType = camera.cameraType;
             cameraData.aspectRatio = camera.aspect;
+            cameraData.postProcessEnabled = CoreUtils.ArePostProcessesEnabled(camera);
 
             Matrix4x4 projectionMatrix = camera.projectionMatrix;
             if (!camera.orthographic)
