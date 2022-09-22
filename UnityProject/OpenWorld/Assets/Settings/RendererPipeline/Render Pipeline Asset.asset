@@ -18,7 +18,7 @@ MonoBehaviour:
     depthBias: 1
     normalBias: 1
     softShadow: 1
-    filter: 1
+    filter: 2
     directional:
       resolution: 1024
       cascadeCount: 4
@@ -27,4 +27,7 @@ MonoBehaviour:
       cascadeRatio3: 0.5
       cascadeFade: 0.2
       cascadeBlend: 0
+  lightingSettings:
+    enableAdditionalLighting: 1
+    additionalLightsCount: 4
   useSRPBatcher: 0
