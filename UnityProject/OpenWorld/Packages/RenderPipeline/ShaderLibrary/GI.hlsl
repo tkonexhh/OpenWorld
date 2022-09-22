@@ -1,8 +1,9 @@
 ﻿#ifndef RENDERPIPELINE_GI_INCLUDED
 #define RENDERPIPELINE_GI_INCLUDED
 
-#include "Packages/RenderPipeline/ShaderLibrary/LightingData.hlsl"
+#include "./LightingData.hlsl"
 #include "./ImageBasedLighting.hlsl"
+#include "./BRDF.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
 
 #if defined(LIGHTMAP_ON)
@@ -87,7 +88,7 @@ float3 SampleLightProbe(LightingData lightingData)
 float3 SampleEnvironment(LightingData lightingData, BRDFData brdf)
 {
     float3 uvw = reflect(-lightingData.viewDirection, lightingData.normalWS);
-    float mip = 0;//PerceptualRoughnessToMipmapLevel(brdf.perceptualRoughness);
+    float mip = CubeMapMip(brdf.roughness);
     float4 environment = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, uvw, mip);
     //return enviroment.rgb;
     return DecodeHDREnvironment(environment, unity_SpecCube0_HDR);

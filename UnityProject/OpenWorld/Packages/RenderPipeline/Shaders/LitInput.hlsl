@@ -10,6 +10,7 @@ half4 _BaseColor;
 half _MetallicScale;
 half _RoughnessScale;
 half _OcclusionScale;
+half _NormalScale;
 
 half3 _EmissionColor;
 half _EmissionScale;
@@ -21,5 +22,6 @@ CBUFFER_END
 
 
 TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
+TEXTURE2D(_NormalMap);SAMPLER(sampler_NormalMap);
 
 #endif

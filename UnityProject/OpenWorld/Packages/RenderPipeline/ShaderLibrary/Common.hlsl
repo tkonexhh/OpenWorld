@@ -4,6 +4,7 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
 #include "./Input.hlsl"
 
 float Square(float v)
@@ -112,6 +113,22 @@ float4 pow5(float4 x)
 {
     float4 xx = x * x;
     return xx * xx * x;
+}
+
+
+float3 DecodeNormal(float4 sample, float scale)
+{
+    #if defined(UNITY_NO_DXT5nm)
+        return UnpackNormalRGB(sample, scale);
+    #else
+        return UnpackNormalmapRGorAG(sample, scale);
+    #endif
+}
+
+float3 NormalTangentToWorld(float3 normalTS, float3 normalWS, float4 tangentWS)
+{
+    float3x3 tangentToWorld = CreateTangentToWorld(normalize(normalWS), normalize(tangentWS.xyz), tangentWS.w);
+    return TransformTangentToWorld(normalTS, tangentToWorld);
 }
 
 

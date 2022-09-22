@@ -11,11 +11,13 @@ namespace OpenWorld.RenderPipelines.Runtime
         ScriptableRenderer m_Renderer;
 
         ShadowSettings m_ShadowSettings;
+        LightingSettings m_LightingSettings;
 
         public OpenWorldRenderPipeline(OpenWorldRenderPipelineAsset asset)
         {
             m_Renderer = new ForwardRender();
             m_ShadowSettings = asset.ShadowSettings;
+            m_LightingSettings = asset.LightingSettings;
 
             GraphicsSettings.useScriptableRenderPipelineBatching = asset.UseSRPBatcher;
             GraphicsSettings.lightsUseLinearIntensity = true;
@@ -48,7 +50,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             var cullingResults = renderContext.Cull(ref cullingParameters);
             renderingData.cullingResults = cullingResults;
             renderingData.supportsDynamicBatching = true;
-            renderingData.perObjectData = GetPerObjectLightFlags(4, false);
+            renderingData.perObjectData = GetPerObjectLightFlags(m_LightingSettings.additionalLightsCount, false);
 
             //Shadow Data
             var shadowData = new ShadowData();
@@ -81,6 +83,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             LightData lightData = new LightData();
             lightData.mainLightIndex = -1;
             lightData.visibleLights = cullingResults.visibleLights;
+            lightData.supportsAdditionalLights = m_LightingSettings.enableAdditionalLighting;
+            lightData.maxPerObjectAdditionalLightsCount = m_LightingSettings.additionalLightsCount;
             renderingData.lightData = lightData;
 
             var cameraData = new CameraData();
@@ -197,9 +201,10 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             var configuration = PerObjectData.ReflectionProbes | PerObjectData.Lightmaps | PerObjectData.LightProbe | PerObjectData.LightData | PerObjectData.OcclusionProbe | PerObjectData.ShadowMask;
 
-            if (additionalLightsCount > 0 && !clustering)
+            if (additionalLightsCount > 0 && !clustering)//使用逐对象灯光分配
             {
                 configuration |= PerObjectData.LightData;
+                configuration |= PerObjectData.LightIndices;
             }
 
             return configuration;

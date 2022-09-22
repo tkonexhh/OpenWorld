@@ -43,7 +43,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             var visibleLights = renderingData.lightData.visibleLights;
             renderingData.lightData.mainLightIndex = GetMainLightIndex(visibleLights);
 
-            SetupShaderLightConstants(renderingData.commandBuffer, ref renderingData.lightData);
+            SetupShaderLightConstants(renderingData.commandBuffer, ref renderingData);
         }
 
         int GetMainLightIndex(NativeArray<VisibleLight> visibleLights)
@@ -75,10 +75,10 @@ namespace OpenWorld.RenderPipelines.Runtime
             return brightestDirectionalLightIndex;
         }
 
-        void SetupShaderLightConstants(CommandBuffer cmd, ref LightData lightData)
+        void SetupShaderLightConstants(CommandBuffer cmd, ref RenderingData renderingData)
         {
-            SetupMainLightConstants(cmd, ref lightData);
-            SetupAdditionalLightConstants(cmd, ref lightData);
+            SetupMainLightConstants(cmd, ref renderingData.lightData);
+            SetupAdditionalLightConstants(cmd, ref renderingData);
         }
 
         void SetupMainLightConstants(CommandBuffer cmd, ref LightData lightData)
@@ -95,21 +95,25 @@ namespace OpenWorld.RenderPipelines.Runtime
             cmd.SetGlobalColor(ShaderIDs.MainLightColor, light.color.linear * light.intensity);
         }
 
-        void SetupAdditionalLightConstants(CommandBuffer cmd, ref LightData lightData)
+        void SetupAdditionalLightConstants(CommandBuffer cmd, ref RenderingData renderingData)
         {
-            var lights = lightData.visibleLights;
-            int additionalLightCount = 0;
+            var lights = renderingData.lightData.visibleLights;
+            int additionalLightCount = SetupPerObjectLightIndices(renderingData.cullingResults, ref renderingData.lightData);
             int maxAdditionalLightCount = MAX_ADDITIONAL_LIGHT_COUNT;
-            for (int i = 0; i < lights.Length; i++)
+            if (additionalLightCount > 0)
             {
-                if (i == lightData.mainLightIndex)
-                    continue;
+                int lightIter = 0;
+                for (int i = 0; i < lights.Length; i++)
+                {
+                    if (i == renderingData.lightData.mainLightIndex)
+                        continue;
 
-                var visibleLight = lights[i];
-                if (additionalLightCount >= maxAdditionalLightCount)
-                    break;
+                    var visibleLight = lights[i];
+                    if (lightIter >= maxAdditionalLightCount)
+                        break;
 
-                InitAdditionalLightConstants(additionalLightCount++, ref visibleLight);
+                    InitAdditionalLightConstants(lightIter++, ref visibleLight);
+                }
             }
 
             cmd.SetGlobalVector(ShaderIDs.AdditionalLightCount, new Vector4(additionalLightCount, 0, 0, 0));
@@ -118,6 +122,50 @@ namespace OpenWorld.RenderPipelines.Runtime
             cmd.SetGlobalVectorArray(ShaderIDs.AdditionalLightsAttenuation, m_AdditionalLightAttenuations);
             cmd.SetGlobalVectorArray(ShaderIDs.AdditionalLightsSpotDir, m_AdditionalLightSpotDirections);
         }
+
+        //返回分配到额外光源数量
+        int SetupPerObjectLightIndices(CullingResults cullResults, ref LightData lightData)
+        {
+            if (!lightData.supportsAdditionalLights)
+                return 0;
+
+            var perObjectLightIndexMap = cullResults.GetLightIndexMap(Allocator.Temp);
+
+            int globalDirectionalLightsCount = 0;
+            int additionalLightsCount = 0;
+            int maxVisibleAdditionalLightsCount = MAX_ADDITIONAL_LIGHT_COUNT;
+            int len = lightData.visibleLights.Length;
+
+            // Disable all directional lights from the perobject light indices
+            // Pipeline handles main light globally and there's no support for additional directional lights atm.
+            for (int i = 0; i < len; ++i)
+            {
+                if (additionalLightsCount >= maxVisibleAdditionalLightsCount)
+                    break;
+
+                if (i == lightData.mainLightIndex)
+                {
+                    perObjectLightIndexMap[i] = -1;
+                    ++globalDirectionalLightsCount;
+                }
+                else
+                {
+                    perObjectLightIndexMap[i] -= globalDirectionalLightsCount;
+                    ++additionalLightsCount;
+                }
+            }
+
+            // Disable all remaining lights we cannot fit into the global light buffer.
+            for (int i = globalDirectionalLightsCount + additionalLightsCount; i < perObjectLightIndexMap.Length; ++i)
+                perObjectLightIndexMap[i] = -1;
+
+            cullResults.SetLightIndexMap(perObjectLightIndexMap);
+
+            perObjectLightIndexMap.Dispose();
+
+            return additionalLightsCount;
+        }
+
 
         internal static void GetPunctualLightDistanceAttenuation(float lightRange, ref Vector4 lightAttenuation)
         {

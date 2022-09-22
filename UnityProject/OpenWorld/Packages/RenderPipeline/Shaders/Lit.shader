@@ -8,6 +8,10 @@
         _RoughnessScale ("RoughnessScale", range(0, 1)) = 1
         _OcclusionScale ("OcclusionScale", range(0, 1)) = 1
 
+        [Toggle(_NORMALMAP)]_NormalMapToggle ("Use Normal map", float) = 0
+        [Normal] _NormalMap ("Normal map", 2D) = "bump" { }
+        _NormalScale ("Normal Scale", Range(0, 3)) = 1
+
         [Header(Emission)]
         _EmissionColor ("Emission Color", Color) = (1, 1, 1, 1)
         _EmissionScale ("Emission Scale", range(0, 1)) = 1
@@ -48,12 +52,12 @@
             // Unity defined keywords
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ LOD_FADE_CROSSFADE
+            #pragma shader_feature_local_fragment _NORMALMAP
 
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
-            #include "Packages/RenderPipeline/ShaderLibrary/Lighting.hlsl"
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
+            
 
             #include "./LitInput.hlsl"
             #include "./LitForwardPass.hlsl"

@@ -12,7 +12,6 @@
 
 struct BRDFData
 {
-    // half3 albedo;
     half3 diffuse;
     half3 specular;
     half roughness;

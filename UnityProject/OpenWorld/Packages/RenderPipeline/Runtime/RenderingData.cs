@@ -112,5 +112,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public int mainLightIndex;
         public NativeArray<VisibleLight> visibleLights;
+        public bool supportsAdditionalLights;
+        public int maxPerObjectAdditionalLightsCount;
     }
 }

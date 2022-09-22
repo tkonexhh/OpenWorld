@@ -83,16 +83,27 @@ int GetAdditionalLightsCount()
     // TODO: we need to expose in SRP api an ability for the pipeline cap the amount of lights
     // in the culling. This way we could do the loop branch with an uniform
     // This would be helpful to support baking exceeding lights in SH as well
+    //尽管如此最大的树木还是8
     return int(min(_AdditionalLightsCount.x, unity_LightData.y));
+}
+
+// Returns a per-object index given a loop index.
+// This abstract the underlying data implementation for storing lights/light indices
+int GetPerObjectLightIndex(uint index)
+{
+    float4 tmp = unity_LightIndices[index / 4];
+    return int(tmp[index % 4]);
 }
 
 
 Light GetAdditionalLight(uint i, float3 positionWS)
 {
-    float4 lightPositionWS = _AdditionalLightsPosition[i];
-    half3 color = _AdditionalLightsColor[i].rgb;
-    half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[i];
-    half4 spotDirection = _AdditionalLightsSpotDir[i];
+    int lightIndex = GetPerObjectLightIndex(i);
+
+    float4 lightPositionWS = _AdditionalLightsPosition[lightIndex];
+    half3 color = _AdditionalLightsColor[lightIndex].rgb;
+    half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[lightIndex];
+    half4 spotDirection = _AdditionalLightsSpotDir[lightIndex];
 
     // Directional lights store direction in lightPosition.xyz and have .w set to 0.0.
     // This way the following code will work for both directional and punctual lights.
