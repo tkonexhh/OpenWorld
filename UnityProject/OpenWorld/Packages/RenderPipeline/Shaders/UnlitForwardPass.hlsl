@@ -36,7 +36,7 @@ float4 UnlitPassFragment(Varyings input): SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
 
-    half4 baseMap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+    half4 baseMap = SAMPLE_TEXTURE2D(_BaseTex, sampler_BaseTex, input.uv);
     half4 baseColor = baseMap * _BaseColor;
     
     #ifdef _ALPHATEST_ON

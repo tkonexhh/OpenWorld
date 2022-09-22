@@ -4,7 +4,7 @@ Shader "OpenWorld/Unlit"
 {
     Properties
     {
-        _MainTex ("MainTex", 2D) = "white" { }
+        [MainTexture]_BaseTex ("BaseTex", 2D) = "white" { }
         _BaseColor ("Base Color", Color) = (1, 1, 1, 1)
         [Header(Setting)]
         [Toggle(_ALPHATEST_ON)] _AlphaClip ("AlphaClip", Float) = 0.0

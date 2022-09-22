@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Unity.Collections;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
@@ -108,11 +109,8 @@ namespace OpenWorld.RenderPipelines.Runtime
     /// </summary>
     public struct LightData
     {
-        /// <summary>
-        /// Holds the main light index from the <c>VisibleLight</c> list returned by culling. If there's no main light in the scene, <c>mainLightIndex</c> is set to -1.
-        /// The main light is the directional light assigned as Sun source in light settings or the brightest directional light.
-        /// <seealso cref="CullingResults"/>
-        /// </summary>
+
         public int mainLightIndex;
+        public NativeArray<VisibleLight> visibleLights;
     }
 }

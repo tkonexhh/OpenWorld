@@ -2,7 +2,7 @@
 {
     Properties
     {
-        _MainTex ("MainTex", 2D) = "white" { }
+        [MainTexture] _BaseMap ("MainTex", 2D) = "white" { }
         _BaseColor ("Base Color", Color) = (1, 1, 1, 1)
         _MetallicScale ("MetallicScale", range(0, 1)) = 1
         _RoughnessScale ("RoughnessScale", range(0, 1)) = 1
@@ -86,8 +86,6 @@
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
-
             #include "./LitInput.hlsl"
             #include "./ShadowCasterPass.hlsl"
             
@@ -109,7 +107,8 @@
             #pragma vertex MetaPassVertex
             #pragma fragment MetaPassFragment
             
-            #include "./MetaPass.hlsl"
+            #include "./LitInput.hlsl"
+            #include "./LitMetaPass.hlsl"
 
             ENDHLSL
 

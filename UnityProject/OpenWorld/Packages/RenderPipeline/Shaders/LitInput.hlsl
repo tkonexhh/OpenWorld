@@ -1,8 +1,8 @@
 ﻿#ifndef RENDERPIPELINE_LIT_INPUT_INCLUDED
 #define RENDERPIPELINE_LIT_INPUT_INCLUDED
 
+#include "Packages/RenderPipeline/ShaderLibrary/Common.hlsl"
 #include "Packages/RenderPipeline/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
 
 CBUFFER_START(UnityPerMaterial)
@@ -16,14 +16,10 @@ half _EmissionScale;
 
 real _Cutoff;
 
-float4 _MainTex_ST;
+float4 _BaseMap_ST;
 CBUFFER_END
 
 
-// UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
-// UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
-// UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
-
-TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
+TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
 
 #endif

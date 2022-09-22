@@ -1,7 +1,7 @@
 ﻿#ifndef RENDERPIPELINE_LIT_FORWARD_INCLUDED
 #define RENDERPIPELINE_LIT_FORWARD_INCLUDED
 
-#include "Packages/RenderPipeline/ShaderLibrary/LOD.hlsl"
+#include "Packages/RenderPipeline/ShaderLibrary/LODCrossFade.hlsl"
 
 struct Attributes
 {
@@ -34,7 +34,7 @@ Varyings LitPassVertex(Attributes input)
     output.positionWS = TransformObjectToWorld(input.positionOS);
     output.positionCS = TransformWorldToHClip(output.positionWS);
     output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-    output.uv = input.uv;
+    output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
     return output;
 }
 
@@ -46,7 +46,7 @@ float4 LitPassFragment(Varyings input): SV_Target
     ClipLOD(input.positionCS, unity_LODFade.x);
 
 
-    half4 baseMap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+    half4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
     half4 baseColor = baseMap * _BaseColor;
     float3 normalWS = normalize(input.normalWS);
     #ifdef _ALPHATEST_ON

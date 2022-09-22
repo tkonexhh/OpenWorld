@@ -1,11 +1,11 @@
 ﻿#ifndef RENDERPIPELINE_LIGHTING_INCLUDED
 #define RENDERPIPELINE_LIGHTING_INCLUDED
 
-#include "Packages/RenderPipeline/ShaderLibrary/Core.hlsl"
-#include "Packages/RenderPipeline/ShaderLibrary/SurfaceData.hlsl"
+#include "./Core.hlsl"
+#include "./SurfaceData.hlsl"
 #include "./LightingData.hlsl"
-#include "Packages/RenderPipeline/ShaderLibrary/RealtimeLights.hlsl"
-#include "Packages/RenderPipeline/ShaderLibrary/BRDF.hlsl"
+#include "./RealtimeLights.hlsl"
+#include "./BRDF.hlsl"
 #include "./GI.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 
@@ -28,6 +28,12 @@ half3 ShadeAllLightPBR(SurfaceData surfaceData, LightingData lightingData)
     
     half3 mainLightResult = ShadeSingleLightPBR(surfaceData, lightingData, brdf, mainLight);
     half3 additionalResult = 0;
+    for (int i = 0; i < GetAdditionalLightsCount(); i++)
+    {
+        Light light = GetAdditionalLight(i, lightingData.positionWS);
+        additionalResult += ShadeSingleLightPBR(surfaceData, lightingData, brdf, light) * light.distanceAttenuation;
+    }
+
     half3 indirectResult = IndirectBRDF(surfaceData, lightingData, brdf, gi.diffuse, gi.specular);
     return mainLightResult + additionalResult + indirectResult;
 }

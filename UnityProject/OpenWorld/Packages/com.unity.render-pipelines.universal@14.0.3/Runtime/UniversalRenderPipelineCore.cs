@@ -952,27 +952,6 @@ namespace UnityEngine.Rendering.Universal
 #endif
         };
 
-        public static void GetLightAttenuationAndSpotDirection(
-            LightType lightType, float lightRange, Matrix4x4 lightLocalToWorldMatrix,
-            float spotAngle, float? innerSpotAngle,
-            out Vector4 lightAttenuation, out Vector4 lightSpotDir)
-        {
-            // Default is directional
-            lightAttenuation = k_DefaultLightAttenuation;
-            lightSpotDir = k_DefaultLightSpotDirection;
-
-            if (lightType != LightType.Directional)
-            {
-                GetPunctualLightDistanceAttenuation(lightRange, ref lightAttenuation);
-
-                if (lightType == LightType.Spot)
-                {
-                    GetSpotDirection(ref lightLocalToWorldMatrix, out lightSpotDir);
-                    GetSpotAngleAttenuation(spotAngle, innerSpotAngle, ref lightAttenuation);
-                }
-            }
-        }
-
         internal static void GetPunctualLightDistanceAttenuation(float lightRange, ref Vector4 lightAttenuation)
         {
             // Light attenuation in universal matches the unity vanilla one (HINT_NICE_QUALITY).

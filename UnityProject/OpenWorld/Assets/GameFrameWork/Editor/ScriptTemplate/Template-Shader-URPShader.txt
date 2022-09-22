@@ -4,7 +4,7 @@ Shader "XHH/#SHADERNAME#"
 {
     Properties
     {
-        _MainTex ("MainTex", 2D) = "white" { }
+        _BaseTex ("BaseTex", 2D) = "white" { }
     }
     SubShader
     {
@@ -31,7 +31,7 @@ Shader "XHH/#SHADERNAME#"
 
             CBUFFER_END
 
-            TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
+            TEXTURE2D(_BaseTex);SAMPLER(sampler_BaseTex);
             
             struct Attributes
             {
@@ -64,7 +64,7 @@ Shader "XHH/#SHADERNAME#"
 
             float4 frag(Varyings input): SV_Target
             {
-                half4 var_MainTex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+                half4 var_MainTex = SAMPLE_TEXTURE2D(_BaseTex, sampler_BaseTex, input.uv);
                 return var_MainTex;
             }
             

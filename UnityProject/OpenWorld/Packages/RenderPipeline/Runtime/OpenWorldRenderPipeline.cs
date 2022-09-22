@@ -78,9 +78,10 @@ namespace OpenWorld.RenderPipelines.Runtime
             shadowData.bias = m_ShadowBiasData;// new Vector4(m_ShadowSettings.depthBias, m_ShadowSettings.normalBias, 0, 0);
             renderingData.shadowData = shadowData;
 
-
-            renderingData.lightData = new LightData();
-            renderingData.lightData.mainLightIndex = -1;
+            LightData lightData = new LightData();
+            lightData.mainLightIndex = -1;
+            lightData.visibleLights = cullingResults.visibleLights;
+            renderingData.lightData = lightData;
 
             var cameraData = new CameraData();
             cameraData.camera = camera;
