@@ -32,6 +32,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         {
             if (blitMaterial == null)
                 return false;
+
             return settings.IsActive() && CheckActive(ref renderingData);
         }
 

@@ -15,6 +15,8 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public OpenWorldRenderPipeline(OpenWorldRenderPipelineAsset asset)
         {
+            //初始化blit相关shader
+            Blitter.Initialize(asset.ShaderResources.coreBlitPS, asset.ShaderResources.coreBlitColorAndDepthPS);
             m_Renderer = new ForwardRender();
             m_ShadowSettings = asset.ShadowSettings;
             m_LightingSettings = asset.LightingSettings;
@@ -122,6 +124,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 return;
             }
 
+            UpdateVolumeFramework(camera);
             InitRenderingData(renderContext, out var renderingData, camera, ref cullingParameters);
 
             CommandBuffer cmd = renderingData.commandBuffer;
@@ -157,6 +160,12 @@ namespace OpenWorld.RenderPipelines.Runtime
             CommandBufferPool.Release(cmd);
 
             renderContext.Submit();
+        }
+
+
+        static void UpdateVolumeFramework(Camera camera)
+        {
+            VolumeManager.instance.Update(camera.transform, 1);
         }
 
         void ExecuteCommandBuffer(ScriptableRenderContext renderContext, ref RenderingData renderingData)

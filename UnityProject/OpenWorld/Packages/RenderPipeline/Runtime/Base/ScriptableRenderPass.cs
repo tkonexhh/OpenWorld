@@ -464,23 +464,13 @@ namespace OpenWorld.RenderPipelines.Runtime
         // }
 
 
-        // /// <summary>
-        // /// Add a blit command to the context for execution. This changes the active render target in the ScriptableRenderer to
-        // /// destination.
-        // /// </summary>
-        // /// <param name="cmd">Command buffer to record command for execution.</param>
-        // /// <param name="source">Source texture or target handle to blit from.</param>
-        // /// <param name="destination">Destination texture or target handle to blit into. This becomes the renderer active render target.</param>
-        // /// <param name="material">Material to use.</param>
-        // /// <param name="passIndex">Shader pass to use. Default is 0.</param>
-        // /// <seealso cref="ScriptableRenderer"/>
-        // public void Blit(CommandBuffer cmd, RTHandle source, RTHandle destination, Material material = null, int passIndex = 0)
-        // {
-        //     if (material == null)
-        //         Blitter.BlitCameraTexture(cmd, source, destination, bilinear: source.rt.filterMode == FilterMode.Bilinear);
-        //     else
-        //         Blitter.BlitCameraTexture(cmd, source, destination, material, passIndex);
-        // }
+        public void Blit(CommandBuffer cmd, RTHandle source, RTHandle destination, Material material = null, int passIndex = 0)
+        {
+            if (material == null)
+                Blitter.BlitCameraTexture(cmd, source, destination, bilinear: source.rt.filterMode == FilterMode.Bilinear);
+            else
+                Blitter.BlitCameraTexture(cmd, source, destination, material, passIndex);
+        }
 
         // /// <summary>
         // /// Add a blit command to the context for execution. This applies the material to the color target.

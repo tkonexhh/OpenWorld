@@ -37,6 +37,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             m_ForwardLights.Setup(ref renderingData);
 
+
             var cmd = renderingData.commandBuffer;
             var camera = renderingData.cameraData.camera;
             var cameraTargetDescriptor = renderingData.cameraData.cameraTargetDescriptor;
@@ -47,7 +48,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
 
             ConfigureCameraColorTarget(m_OpaqueColor);
-
+            m_PostProcessPasses.Setup(m_OpaqueColor);
 
 
             bool drawSkyBox = renderingData.cameraData.camera.clearFlags == CameraClearFlags.Skybox ? true : false;

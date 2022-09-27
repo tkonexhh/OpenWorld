@@ -40,7 +40,7 @@ VaryingsDefault VertDefault1(uint vertexID: SV_VERTEXID)
     //some graphics APIs have the texture V coordinate start at the top while others have it start at the bottom
     if (_ProjectionParams.x < 0.0)
     {
-        output.screenUV.y = 1.0 - output.screenUV.y;
+        output.uv.y = 1.0 - output.uv.y;
         return output;
     }
 }

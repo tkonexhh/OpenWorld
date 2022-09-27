@@ -30,4 +30,7 @@ MonoBehaviour:
   lightingSettings:
     enableAdditionalLighting: 1
     additionalLightsCount: 4
-  useSRPBatcher: 0
+  useSRPBatcher: 1
+  shaderResources:
+    coreBlitPS: {fileID: 4800000, guid: c739308ec2747e1419f6a98b2aae725d, type: 3}
+    coreBlitColorAndDepthPS: {fileID: 4800000, guid: 766975cd7bd13d947a6b9c111147cc80, type: 3}

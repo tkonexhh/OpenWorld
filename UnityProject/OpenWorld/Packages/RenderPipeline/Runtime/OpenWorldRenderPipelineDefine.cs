@@ -11,6 +11,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         DrawOpaqueObjects,
         DrawSkybox,
         DrawTransparentObjects,
+        PostProcessing,
     }
 
 
