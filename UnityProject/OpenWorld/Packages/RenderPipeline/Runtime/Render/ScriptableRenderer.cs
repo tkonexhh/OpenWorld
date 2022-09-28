@@ -72,9 +72,22 @@ namespace OpenWorld.RenderPipelines.Runtime
             {
                 using (new ProfilingScope(cmd, pass.profilingSampler))
                 {
-                    if (pass.colorAttachmentHandle != null)
-                        CoreUtils.SetRenderTarget(cmd, pass.colorAttachmentHandle, RenderBufferLoadAction.DontCare, pass.colorStoreAction);
-                    CoreUtils.ClearRenderTarget(cmd, pass.clearFlag, pass.clearColor);
+                    var colorTarget = pass.colorAttachmentHandle ?? cameraColorTargetHandle;
+                    var depthTarget = pass.depthAttachmentHandle ?? cameraDepthTargetHandle;
+
+                    // if (colorTarget != null && depthTarget != null)
+                    // {
+                    //     //TODO 这里有大小不一致的问题
+                    //     CoreUtils.SetRenderTarget(cmd,
+                    //        colorTarget, RenderBufferLoadAction.DontCare, pass.colorStoreAction,
+                    //        depthTarget, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Resolve, pass.clearFlag, pass.clearColor);
+                    // }
+                    // else
+                    {
+                        CoreUtils.SetRenderTarget(cmd, colorTarget, RenderBufferLoadAction.DontCare, pass.colorStoreAction);
+                        CoreUtils.ClearRenderTarget(cmd, pass.clearFlag, pass.clearColor);
+                    }
+
 
                     //TODO 这里的Gizmos设计有问题 
                     bool IsAfterRendering = pass.renderPassEvent >= RenderPassEvent.AfterRendering;
@@ -122,6 +135,11 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             m_CameraColorTexture = colorTarget;
             m_CameraDepthTexture = depthTarget;
+        }
+
+        public void ConfigureCameraTarget(RTHandle colorTarget)
+        {
+            m_CameraColorTexture = colorTarget;
         }
 
         void SetPerCameraShaderVariables(CommandBuffer cmd, ref CameraData cameraData, bool isTargetFlipped)

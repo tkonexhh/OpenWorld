@@ -100,7 +100,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             ConfigureTarget(m_MainLightShadowmapTexture);
-            ConfigureColorStoreAction(RenderBufferStoreAction.Store);
             ConfigureClear(ClearFlag.All, Color.black);
         }
 

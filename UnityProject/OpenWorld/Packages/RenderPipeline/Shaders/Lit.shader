@@ -57,8 +57,6 @@
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
-            
-
             #include "./LitInput.hlsl"
             #include "./LitForwardPass.hlsl"
             
@@ -96,6 +94,40 @@
             ENDHLSL
 
         }
+
+        Pass
+        {
+            Name "DepthOnly"
+            Tags { "LightMode" = "DepthOnly" }
+
+            ZWrite On
+            ColorMask 0
+            Cull[_Cull]
+
+            HLSLPROGRAM
+
+            // #pragma exclude_renderers gles gles3 glcore
+            #pragma target 4.5
+
+            #pragma vertex DepthOnlyVertex
+            #pragma fragment DepthOnlyFragment
+
+            // -------------------------------------
+            // Material Keywords
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
+
+            #include "./LitInput.hlsl"
+            #include "./DepthOnlyPass.hlsl"
+
+            ENDHLSL
+
+        }
+
 
         Pass
         {

@@ -15,6 +15,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public DepthOnlyPass(RenderPassEvent evt, RenderQueueRange renderQueueRange, LayerMask layerMask)
         {
+            base.profilingSampler = new ProfilingSampler(nameof(DepthOnlyPass));
             m_FilteringSettings = new FilteringSettings(renderQueueRange);
             renderPassEvent = evt;
         }
@@ -24,11 +25,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             this.destination = depthAttachmentHandle;
         }
 
-        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-        // {
-        //     ConfigureTarget(destination);
-        //     ConfigureClear(ClearFlag.All, Color.black);
-        // }
+        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        {
+            ConfigureTarget(destination);
+            ConfigureClear(ClearFlag.All, Color.black);
+        }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {

@@ -111,6 +111,52 @@ namespace OpenWorld.RenderPipelines.Runtime
             context.DrawRenderers(cullResults, ref errorSettings, ref filterSettings);
         }
 
+        public static bool ReAllocateIfNeeded(ref RTHandle handle, in RenderTextureDescriptor descriptor, FilterMode filterMode = FilterMode.Point, TextureWrapMode wrapMode = TextureWrapMode.Repeat,
+           bool isShadowMap = false,
+           int anisoLevel = 1,
+           float mipMapBias = 0,
+           string name = "")
+        {
+            if (RTHandleNeedsReAlloc(handle, descriptor, filterMode, wrapMode, isShadowMap, anisoLevel, mipMapBias, name, false))
+            {
+                handle?.Release();
+                handle = RTHandles.Alloc(descriptor, filterMode, wrapMode, isShadowMap, anisoLevel, mipMapBias, name);
+                return true;
+            }
+            return false;
+        }
+
+        internal static bool RTHandleNeedsReAlloc(RTHandle handle, in RenderTextureDescriptor descriptor, FilterMode filterMode, TextureWrapMode wrapMode,
+            bool isShadowMap,
+            int anisoLevel,
+            float mipMapBias,
+            string name,
+            bool scaled)
+        {
+            if (handle == null || handle.rt == null)
+                return true;
+            if (handle.useScaling != scaled)
+                return true;
+            if (!scaled && (handle.rt.width != descriptor.width || handle.rt.height != descriptor.height))
+                return true;
+            return
+                handle.rt.descriptor.depthBufferBits != descriptor.depthBufferBits ||
+                (handle.rt.descriptor.depthBufferBits == (int)DepthBits.None && !isShadowMap && handle.rt.descriptor.graphicsFormat != descriptor.graphicsFormat) ||
+                handle.rt.descriptor.dimension != descriptor.dimension ||
+                handle.rt.descriptor.enableRandomWrite != descriptor.enableRandomWrite ||
+                handle.rt.descriptor.useMipMap != descriptor.useMipMap ||
+                handle.rt.descriptor.autoGenerateMips != descriptor.autoGenerateMips ||
+                handle.rt.descriptor.msaaSamples != descriptor.msaaSamples ||
+                handle.rt.descriptor.bindMS != descriptor.bindMS ||
+                handle.rt.descriptor.useDynamicScale != descriptor.useDynamicScale ||
+                handle.rt.descriptor.memoryless != descriptor.memoryless ||
+                handle.rt.filterMode != filterMode ||
+                handle.rt.wrapMode != wrapMode ||
+                handle.rt.anisoLevel != anisoLevel ||
+                handle.rt.mipMapBias != mipMapBias ||
+                handle.name != name;
+        }
+
         internal static void FinalBlit(CommandBuffer cmd, ref CameraData cameraData, RTHandle source, RTHandle destination, RenderBufferLoadAction loadAction, RenderBufferStoreAction storeAction, Material material, int passIndex)
         {
             bool isRenderToBackBufferTarget = !cameraData.isSceneViewCamera;
@@ -121,7 +167,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             // We y-flip if
             // 1) we are blitting from render texture to back buffer(UV starts at bottom) and
             // 2) renderTexture starts UV at top
-            bool yflip = true;//isRenderToBackBufferTarget && cameraData.targetTexture == null && SystemInfo.graphicsUVStartsAtTop;
+            bool yflip = isRenderToBackBufferTarget && SystemInfo.graphicsUVStartsAtTop;//isRenderToBackBufferTarget && cameraData.targetTexture == null && SystemInfo.graphicsUVStartsAtTop;
             Vector4 scaleBias = yflip ? new Vector4(viewportScale.x, -viewportScale.y, 0, viewportScale.y) : new Vector4(viewportScale.x, viewportScale.y, 0, 0);
             CoreUtils.SetRenderTarget(cmd, destination, loadAction, storeAction, ClearFlag.None, Color.clear);
             if (isRenderToBackBufferTarget)

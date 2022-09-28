@@ -12,6 +12,7 @@ namespace OpenWorld.RenderPipelines.Runtime
     {
         ScriptableRenderer m_Renderer;
 
+        GeneralSettings m_GeneralSettings;
         ShadowSettings m_ShadowSettings;
         LightingSettings m_LightingSettings;
 
@@ -20,6 +21,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             //初始化blit相关shader
             Blitter.Initialize(asset.ShaderResources.coreBlitPS, asset.ShaderResources.coreBlitColorAndDepthPS);
             m_Renderer = new ForwardRender(asset);
+            m_GeneralSettings = asset.GeneralSettings;
             m_ShadowSettings = asset.ShadowSettings;
             m_LightingSettings = asset.LightingSettings;
 
@@ -113,7 +115,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix);
             cameraData.renderer = m_Renderer;
-            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, 1, true, 1, false, true);
+            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, m_GeneralSettings.renderScale, m_GeneralSettings.allowHDR, 1, false, false);
             renderingData.cameraData = cameraData;
 
             renderingData.commandBuffer = CommandBufferPool.Get();
@@ -138,12 +140,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             using (new ProfilingScope(cmdScope, sampler))
             {
                 renderContext.SetupCameraProperties(camera);
-                CameraClearFlags clearFlags = camera.clearFlags;
-                bool clearDepth = camera.clearFlags == CameraClearFlags.Nothing ? false : true;
-                bool clearColor = camera.clearFlags == CameraClearFlags.Color;
-                cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor.linear);
-
-                ExecuteCommandBuffer(renderContext, ref renderingData);
 
                 m_Renderer.Setup(renderContext, ref renderingData);
                 m_Renderer.Render(renderContext, ref renderingData);
@@ -165,16 +161,9 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderContext.Submit();
         }
 
-
         static void UpdateVolumeFramework(Camera camera)
         {
             VolumeManager.instance.Update(camera.transform, 1);
-        }
-
-        void ExecuteCommandBuffer(ScriptableRenderContext renderContext, ref RenderingData renderingData)
-        {
-            renderContext.ExecuteCommandBuffer(renderingData.commandBuffer);
-            renderingData.commandBuffer.Clear();
         }
 
         //为了 Shaded Wireframe

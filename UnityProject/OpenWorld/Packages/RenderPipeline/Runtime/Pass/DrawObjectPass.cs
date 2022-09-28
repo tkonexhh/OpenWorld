@@ -14,18 +14,11 @@ namespace OpenWorld.RenderPipelines.Runtime
                     new ShaderTagId("OpenWorldForward")
                  };
 
-        protected RTHandle destination { get; set; }
 
         public DrawObjectPass(RenderPassEvent evt)
         {
             renderPassEvent = evt;
         }
 
-        public void Setup(RTHandle color)
-        {
-            this.destination = color;
-        }
-
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) { }
     }
 }

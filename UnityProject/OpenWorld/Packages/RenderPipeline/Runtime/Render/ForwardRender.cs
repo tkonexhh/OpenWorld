@@ -53,6 +53,8 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             if (m_OpaqueColor == null) m_OpaqueColor = RTHandles.Alloc(cameraTargetDescriptor.width, cameraTargetDescriptor.height, name: ShaderTextureId.OpacityTexture);
 
+            // RenderingUtils.ReAllocateIfNeeded(ref m_OpaqueColor, cameraTargetDescriptor, name: ShaderTextureId.OpacityTexture);
+
             bool isPreviewCamera = renderingData.cameraData.isPreviewCamera;
             bool isSceneViewCamera = renderingData.cameraData.isSceneViewCamera;
             bool requiresDepthTexture = renderingData.cameraData.requiresDepthTexture;
@@ -61,7 +63,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             requiresDepthPrepass |= isPreviewCamera;
 
             bool createDepthTexture = requiresDepthPrepass;
-            createDepthTexture &= m_DepthTexture == null;
+            // createDepthTexture &= m_DepthTexture == null;
 
             if (createDepthTexture)
             {
@@ -70,7 +72,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 depthDescriptor.depthStencilFormat = GraphicsFormat.D32_SFloat_S8_UInt;
                 depthDescriptor.depthBufferBits = 32;
                 depthDescriptor.msaaSamples = 1;// Depth-Only pass don't use MSAA
-                m_DepthTexture = RTHandles.Alloc(depthDescriptor.width, depthDescriptor.height, name: ShaderTextureId.CameraDepthTexture);
+                RenderingUtils.ReAllocateIfNeeded(ref m_DepthTexture, depthDescriptor, name: ShaderTextureId.CameraDepthTexture);
             }
 
             cmd.SetGlobalTexture(m_DepthTexture.name, m_DepthTexture.nameID);
@@ -80,18 +82,18 @@ namespace OpenWorld.RenderPipelines.Runtime
             // Assign camera targets (color and depth)
             ConfigureCameraTarget(m_OpaqueColor, m_DepthTexture);
 
-            m_DepthPrepass.Setup(m_DepthTexture);
-            m_OpaquePass.Setup(m_OpaqueColor);
-            m_TransparentPass.Setup(m_OpaqueColor);
-            m_PostProcessPasses.Setup(m_OpaqueColor);
-
             bool drawSkyBox = renderingData.cameraData.camera.clearFlags == CameraClearFlags.Skybox ? true : false;
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
             bool enablePostprocessing = renderingData.cameraData.postProcessEnabled;
 
             if (mainLightShadows) EnqueuePass(m_MainLightShadowCasterPass);
 
-            EnqueuePass(m_DepthPrepass);
+            m_DepthPrepass.Setup(m_DepthTexture);
+            if (requiresDepthPrepass) EnqueuePass(m_DepthPrepass);
+
+            m_OpaquePass.ConfigureClear(ClearFlag.All, Color.black);
+            m_OpaquePass.ConfigureColorStoreAction(RenderBufferStoreAction.StoreAndResolve);
+            m_OpaquePass.ConfigureDepthStoreAction(RenderBufferStoreAction.StoreAndResolve);
             EnqueuePass(m_OpaquePass);
 
             if (drawSkyBox) EnqueuePass(m_SkyboxPass);
@@ -101,7 +103,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             if (enablePostprocessing) EnqueuePass(finalPostProcessPass);
 
             m_FinalBlitPass.Setup(m_OpaqueColor);
-            // EnqueuePass(m_FinalBlitPass);
+            EnqueuePass(m_FinalBlitPass);
         }
 
         public override void OnDrawGizmos()
@@ -115,6 +117,10 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_FinalBlitPass?.Dispose();
             m_OpaqueColor?.Release();
             m_DepthTexture?.Release();
+
+            CoreUtils.Destroy(m_BlitMaterial);
+
+            Blitter.Cleanup();
         }
 
     }

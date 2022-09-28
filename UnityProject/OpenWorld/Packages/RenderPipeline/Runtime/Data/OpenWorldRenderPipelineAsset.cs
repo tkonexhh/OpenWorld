@@ -8,18 +8,19 @@ namespace OpenWorld.RenderPipelines.Runtime
     [CreateAssetMenu(menuName = "Rendering/OpenWorld Render Pipeline")]
     public class OpenWorldRenderPipelineAsset : RenderPipelineAsset
     {
-
+        [SerializeField] GeneralSettings generalSettings = default;
         [SerializeField] ShadowSettings shadowSettings = default;
         [SerializeField] LightingSettings lightingSettings = default;
-        [SerializeField] bool useSRPBatcher = true;
+
 
         [SerializeField] ShaderResources shaderResources;
 
+        public GeneralSettings GeneralSettings => generalSettings;
         public ShadowSettings ShadowSettings => shadowSettings;
         public LightingSettings LightingSettings => lightingSettings;
         public ShaderResources ShaderResources => shaderResources;
 
-        public bool UseSRPBatcher => useSRPBatcher;
+        public bool UseSRPBatcher => generalSettings.useSRPBatcher;
 
         protected override RenderPipeline CreatePipeline()
         {

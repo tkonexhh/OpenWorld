@@ -11,8 +11,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public DrawSkyboxPass(RenderPassEvent evt)
         {
             base.profilingSampler = new ProfilingSampler(nameof(DrawSkyboxPass));
-
-            renderPassEvent = evt;
+            base.renderPassEvent = evt;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)

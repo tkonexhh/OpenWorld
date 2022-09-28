@@ -55,6 +55,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.FinalBlit)))
             {
                 var loadAction = RenderBufferLoadAction.DontCare;
+
                 RenderingUtils.FinalBlit(cmd, ref cameraData, m_Source, m_CameraTargetHandle, loadAction, RenderBufferStoreAction.Store, m_BlitMaterial, m_Source.rt?.filterMode == FilterMode.Bilinear ? 1 : 0);
             }
         }

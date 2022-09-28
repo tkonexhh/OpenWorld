@@ -27,11 +27,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_Source = handle;
         }
 
-        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-        {
-            ConfigureTarget(m_Source);
-            ConfigureColorStoreAction(RenderBufferStoreAction.Store);
-        }
+        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        // {
+        //     ConfigureTarget(m_Source);
+        //     ConfigureColorStoreAction(RenderBufferStoreAction.Store);
+        // }
 
         protected void AddEffect(AbstractVolumeRenderer renderer)
         {

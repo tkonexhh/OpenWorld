@@ -105,46 +105,11 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public RenderPassEvent renderPassEvent { get; set; }
 
-        public RTHandle[] colorAttachmentHandles => m_ColorAttachments;
-        public RTHandle colorAttachmentHandle => m_ColorAttachments[0];
-        public RTHandle depthAttachmentHandle => m_DepthAttachment;
-
-
-        public RenderBufferStoreAction[] colorStoreActions => m_ColorStoreActions;
-        public RenderBufferStoreAction colorStoreAction => m_ColorStoreActions[0];
-        public RenderBufferStoreAction depthStoreAction => m_DepthStoreAction;
-
-        // internal bool[] overriddenColorStoreActions
-        // {
-        //     get => m_OverriddenColorStoreActions;
-        // }
-
-        // internal bool overriddenDepthStoreAction
-        // {
-        //     get => m_OverriddenDepthStoreAction;
-        // }
-
-        /// <summary>
-        /// The input requirements for the <c>ScriptableRenderPass</c>, which has been set using <c>ConfigureInput</c>
-        /// </summary>
-        /// <seealso cref="ConfigureInput"/>
-        public ScriptableRenderPassInput input => m_Input;
-        public ClearFlag clearFlag => m_ClearFlag;
-        public Color clearColor => m_ClearColor;
-
         RenderBufferStoreAction[] m_ColorStoreActions = new RenderBufferStoreAction[] { RenderBufferStoreAction.Store };
         RenderBufferStoreAction m_DepthStoreAction = RenderBufferStoreAction.Store;
 
-        // by default all store actions are Store. The overridden flags are used to keep track of explicitly requested store actions, to
-        // help figuring out the correct final store action for merged render passes when using the RenderPass API.
-        // private bool[] m_OverriddenColorStoreActions = new bool[] { false };
-        // private bool m_OverriddenDepthStoreAction = false;
 
-        /// <summary>
-        /// A ProfilingSampler for the entire render pass. Used as a profiling name by <c>ScriptableRenderer</c> when executing the pass.
-        /// Default is <c>Unnamed_ScriptableRenderPass</c>.
-        /// Set <c>base.profilingSampler</c> from the sub-class constructor to set a profiling name for a custom <c>ScriptableRenderPass</c>.
-        /// </summary>
+
         protected internal ProfilingSampler profilingSampler { get; set; }
         internal bool overrideCameraTarget { get; set; }
         internal bool isBlitRenderPass { get; set; }
@@ -152,32 +117,33 @@ namespace OpenWorld.RenderPipelines.Runtime
         internal bool useNativeRenderPass { get; set; }
 
 
-
-        internal NativeArray<int> m_ColorAttachmentIndices;
-        internal NativeArray<int> m_InputAttachmentIndices;
-
-
-
         const int MAX_COUNT = 4;
         RTHandle[] m_ColorAttachments;
         RenderTargetIdentifier[] m_ColorAttachmentIds;
-        internal RTHandle[] m_InputAttachments;
         internal bool[] m_InputAttachmentIsTransient;
         internal GraphicsFormat[] renderTargetFormat { get; set; }
         RTHandle m_DepthAttachment;
         RenderTargetIdentifier m_DepthAttachmentId;
-
-        ScriptableRenderPassInput m_Input = ScriptableRenderPassInput.None;
         ClearFlag m_ClearFlag = ClearFlag.None;
         Color m_ClearColor = Color.black;
+
+
+        public RTHandle[] colorAttachmentHandles => m_ColorAttachments;
+        public RTHandle colorAttachmentHandle => m_ColorAttachments[0];
+        public RTHandle depthAttachmentHandle => m_DepthAttachment;
+        public RenderBufferStoreAction[] colorStoreActions => m_ColorStoreActions;
+        public RenderBufferStoreAction colorStoreAction => m_ColorStoreActions[0];
+        public RenderBufferStoreAction depthStoreAction => m_DepthStoreAction;
+        public ClearFlag clearFlag => m_ClearFlag;
+        public Color clearColor => m_ClearColor;
 
 
         public ScriptableRenderPass()
         {
             renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
 
-            m_ColorAttachments = new RTHandle[MAX_COUNT] { k_CameraTarget, null, null, null };
-            m_InputAttachments = new RTHandle[MAX_COUNT] { null, null, null, null };
+            m_ColorAttachments = new RTHandle[MAX_COUNT] { null, null, null, null };
+            // m_InputAttachments = new RTHandle[MAX_COUNT] { null, null, null, null };
             m_InputAttachmentIsTransient = new bool[MAX_COUNT] { false, false, false, false };
             m_DepthAttachment = k_CameraTarget;
             m_ColorStoreActions = new RenderBufferStoreAction[MAX_COUNT] { RenderBufferStoreAction.Store, 0, 0, 0 };
@@ -186,7 +152,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             // m_OverriddenDepthStoreAction = false;
             m_DepthAttachment = k_CameraTarget;
             m_DepthAttachmentId = m_DepthAttachment.nameID;
-            m_ColorAttachmentIds = new RenderTargetIdentifier[MAX_COUNT] { k_CameraTarget.nameID, 0, 0, 0 };
+            m_ColorAttachmentIds = new RenderTargetIdentifier[MAX_COUNT] { 0, 0, 0, 0 };
             m_ClearFlag = ClearFlag.None;
             m_ClearColor = Color.black;
             overrideCameraTarget = false;
@@ -196,32 +162,13 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderTargetFormat = new GraphicsFormat[MAX_COUNT] { GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None, GraphicsFormat.None };
         }
 
-        /// <summary>
-        /// Configures Input Requirements for this render pass.
-        /// This method should be called inside <c>ScriptableRendererFeature.AddRenderPasses</c>.
-        /// </summary>
-        /// <param name="passInput">ScriptableRenderPassInput containing information about what requirements the pass needs.</param>
-        /// <seealso cref="ScriptableRendererFeature.AddRenderPasses"/>
-        public void ConfigureInput(ScriptableRenderPassInput passInput)
-        {
-            m_Input = passInput;
-        }
 
-        /// <summary>
-        /// Configures the Store Action for a color attachment of this render pass.
-        /// </summary>
-        /// <param name="storeAction">RenderBufferStoreAction to use</param>
-        /// <param name="attachmentIndex">Index of the color attachment</param>
+
         public void ConfigureColorStoreAction(RenderBufferStoreAction storeAction, uint attachmentIndex = 0)
         {
             m_ColorStoreActions[attachmentIndex] = storeAction;
-            // m_OverriddenColorStoreActions[attachmentIndex] = true;
         }
 
-        /// <summary>
-        /// Configures the Store Actions for all the color attachments of this render pass.
-        /// </summary>
-        /// <param name="storeActions">Array of RenderBufferStoreActions to use</param>
         public void ConfigureColorStoreActions(RenderBufferStoreAction[] storeActions)
         {
             int count = Math.Min(storeActions.Length, m_ColorStoreActions.Length);
@@ -232,42 +179,10 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
-        /// <summary>
-        /// Configures the Store Action for the depth attachment of this render pass.
-        /// </summary>
-        /// <param name="storeAction">RenderBufferStoreAction to use</param>
         public void ConfigureDepthStoreAction(RenderBufferStoreAction storeAction)
         {
             m_DepthStoreAction = storeAction;
-            // m_OverriddenDepthStoreAction = true;
         }
-
-        internal void ConfigureInputAttachments(RTHandle input, bool isTransient = false)
-        {
-            m_InputAttachments[0] = input;
-            m_InputAttachmentIsTransient[0] = isTransient;
-        }
-
-        internal void ConfigureInputAttachments(RTHandle[] inputs)
-        {
-            m_InputAttachments = inputs;
-        }
-
-        internal void ConfigureInputAttachments(RTHandle[] inputs, bool[] isTransient)
-        {
-            ConfigureInputAttachments(inputs);
-            m_InputAttachmentIsTransient = isTransient;
-        }
-
-        // internal void SetInputAttachmentTransient(int idx, bool isTransient)
-        // {
-        //     m_InputAttachmentIsTransient[idx] = isTransient;
-        // }
-
-        // internal bool IsInputAttachmentTransient(int idx)
-        // {
-        //     return m_InputAttachmentIsTransient[idx];
-        // }
 
         public void ResetTarget()
         {
@@ -297,10 +212,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         public void ConfigureTarget(RTHandle[] colorAttachments, RTHandle depthAttachment)
         {
             overrideCameraTarget = true;
-
-            // uint nonNullColorBuffers = RenderingUtils.GetValidColorBufferCount(colorAttachments);
-            // if (nonNullColorBuffers > SystemInfo.supportedRenderTargetCount)
-            //     Debug.LogError("Trying to set " + nonNullColorBuffers + " renderTargets, which is more than the maximum supported:" + SystemInfo.supportedRenderTargetCount);
 
             m_ColorAttachments = colorAttachments;
             if (m_ColorAttachmentIds.Length != m_ColorAttachments.Length)

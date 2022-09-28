@@ -16,19 +16,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.transparent);
         }
 
-        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-        // {
-        //     ConfigureTarget(destination);
-        //     ConfigureColorStoreAction(RenderBufferStoreAction.StoreAndResolve);
-        //     ConfigureDepthStoreAction(RenderBufferStoreAction.Store);
-        // }
-
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var cmd = renderingData.commandBuffer;
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawTransparentObjects)))
             {
-                // ConfigureTarget(renderingData.cameraData.renderer.cameraColorTargetHandle);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
