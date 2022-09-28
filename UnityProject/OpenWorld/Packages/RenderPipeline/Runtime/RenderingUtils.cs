@@ -110,5 +110,27 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             context.DrawRenderers(cullResults, ref errorSettings, ref filterSettings);
         }
+
+        internal static void FinalBlit(CommandBuffer cmd, ref CameraData cameraData, RTHandle source, RTHandle destination, RenderBufferLoadAction loadAction, RenderBufferStoreAction storeAction, Material material, int passIndex)
+        {
+            bool isRenderToBackBufferTarget = !cameraData.isSceneViewCamera;
+
+
+            Vector2 viewportScale = source.useScaling ? new Vector2(source.rtHandleProperties.rtHandleScale.x, source.rtHandleProperties.rtHandleScale.y) : Vector2.one;
+
+            // We y-flip if
+            // 1) we are blitting from render texture to back buffer(UV starts at bottom) and
+            // 2) renderTexture starts UV at top
+            bool yflip = true;//isRenderToBackBufferTarget && cameraData.targetTexture == null && SystemInfo.graphicsUVStartsAtTop;
+            Vector4 scaleBias = yflip ? new Vector4(viewportScale.x, -viewportScale.y, 0, viewportScale.y) : new Vector4(viewportScale.x, viewportScale.y, 0, 0);
+            CoreUtils.SetRenderTarget(cmd, destination, loadAction, storeAction, ClearFlag.None, Color.clear);
+            if (isRenderToBackBufferTarget)
+                cmd.SetViewport(cameraData.pixelRect);
+
+            if (source.rt == null)
+                Blitter.BlitTexture(cmd, source.nameID, scaleBias, material, passIndex);  // Obsolete usage of RTHandle aliasing a RenderTargetIdentifier
+            else
+                Blitter.BlitTexture(cmd, source, scaleBias, material, passIndex);
+        }
     }
 }

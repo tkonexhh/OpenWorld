@@ -6,8 +6,11 @@ using UnityEngine.Rendering;
 namespace OpenWorld.RenderPipelines.Runtime
 {
 
-    public class Profiling
+    public static class Profiling
     {
+
+        public static readonly ProfilingSampler drawGizmos = new ProfilingSampler("DrawGizmos");
+
         private static Dictionary<int, ProfilingSampler> s_HashSamplerCache = new Dictionary<int, ProfilingSampler>();
 
         public static ProfilingSampler TryGetOrAddCameraSampler(Camera camera)

@@ -21,11 +21,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// This settings doesn't apply when drawing shadow casters. Dynamic batching is always disabled when drawing shadow casters.
         /// </summary>
         public bool supportsDynamicBatching;
-
-
         public CommandBuffer commandBuffer;
-
-
     }
 
     public struct CameraData
@@ -39,25 +35,9 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_ProjectionMatrix = projectionMatrix;
         }
 
-        /// <summary>
-        /// Returns the camera view matrix.
-        /// </summary>
-        /// <param name="viewIndex"> View index in case of stereo rendering. By default <c>viewIndex</c> is set to 0. </param>
-        /// <returns> The camera view matrix. </returns>
-        public Matrix4x4 GetViewMatrix()
-        {
-            return m_ViewMatrix;
-        }
+        public Matrix4x4 GetViewMatrix() => m_ViewMatrix;
+        public Matrix4x4 GetProjectionMatrix() => m_ProjectionMatrix;
 
-        /// <summary>
-        /// Returns the camera projection matrix.
-        /// </summary>
-        /// <param name="viewIndex"> View index in case of stereo rendering. By default <c>viewIndex</c> is set to 0. </param>
-        /// <returns> The camera projection matrix. </returns>
-        public Matrix4x4 GetProjectionMatrix()
-        {
-            return m_ProjectionMatrix;
-        }
 
         /// <summary>
         /// Returns the camera GPU projection matrix. This contains platform specific changes to handle y-flip and reverse z.
@@ -84,11 +64,14 @@ namespace OpenWorld.RenderPipelines.Runtime
         public CameraType cameraType;
         public ScriptableRenderer renderer;
         public RenderTextureDescriptor cameraTargetDescriptor;
+        public Rect pixelRect;
         public float aspectRatio;
         public Vector3 worldSpaceCameraPos;
         public bool postProcessEnabled;
+        public bool requiresDepthTexture;
 
-
+        public bool isSceneViewCamera => cameraType == CameraType.SceneView;
+        public bool isPreviewCamera => cameraType == CameraType.Preview;
     }
 
     public struct ShadowData

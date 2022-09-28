@@ -51,7 +51,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             if (RenderPipelineManager.currentPipeline is not OpenWorldRenderPipeline pipeline)
                 return;
 
-            pipeline.DrawGizmos();
+            pipeline.OnDrawGizmos();
         }
     }
 }

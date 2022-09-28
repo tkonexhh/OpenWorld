@@ -10,13 +10,18 @@ namespace OpenWorld.RenderPipelines.Runtime
     {
         FilteringSettings m_FilteringSettings;
 
-
-        public DrawTransparentPass(RenderPassEvent evt, LayerMask layerMask) : base()
+        public DrawTransparentPass(RenderPassEvent evt, LayerMask layerMask) : base(evt)
         {
             base.profilingSampler = new ProfilingSampler(nameof(DrawTransparentPass));
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.transparent);
-            renderPassEvent = evt;
         }
+
+        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        // {
+        //     ConfigureTarget(destination);
+        //     ConfigureColorStoreAction(RenderBufferStoreAction.StoreAndResolve);
+        //     ConfigureDepthStoreAction(RenderBufferStoreAction.Store);
+        // }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {

@@ -16,7 +16,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public PostProcessPasses(bool s)
         {
             // m_BeforeTransparentPostProcessPass = new PostProcessPass(RenderPassEvent.AfterRenderingOpaques);
-            m_FinalPostProcessPass = new PostProcessPass(RenderPassEvent.AfterRenderingPostProcessing);
+            m_FinalPostProcessPass = new PostProcessPass(RenderPassEvent.AfterRendering);
         }
 
         public void Setup(RTHandle handle)

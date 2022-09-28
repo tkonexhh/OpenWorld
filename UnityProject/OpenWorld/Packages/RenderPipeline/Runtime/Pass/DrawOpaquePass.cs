@@ -6,23 +6,29 @@ using UnityEngine.Experimental.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
-    public class DrawOpacityPass : DrawObjectPass
+    public class DrawOpaquePass : DrawObjectPass
     {
         FilteringSettings m_FilteringSettings;
 
-        public DrawOpacityPass(RenderPassEvent evt, LayerMask layerMask) : base()
+        public DrawOpaquePass(RenderPassEvent evt, LayerMask layerMask) : base(evt)
         {
-            base.profilingSampler = new ProfilingSampler(nameof(DrawOpacityPass));
+            base.profilingSampler = new ProfilingSampler(nameof(DrawOpaquePass));
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
-            renderPassEvent = evt;
         }
+
+        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        // {
+        //     ConfigureTarget(destination);
+        //     ConfigureColorStoreAction(RenderBufferStoreAction.StoreAndResolve);
+        //     ConfigureDepthStoreAction(RenderBufferStoreAction.Store);
+        //     ConfigureClear(ClearFlag.Color, Color.black);
+        // }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var cmd = renderingData.commandBuffer;
             using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawOpaqueObjects)))
             {
-                // ConfigureTarget(renderingData.cameraData.renderer.cameraColorTargetHandle);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 

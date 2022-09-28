@@ -41,6 +41,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public MainLightShadowCasterPass(RenderPassEvent evt)
         {
+            base.renderPassEvent = evt;
             base.profilingSampler = new ProfilingSampler(nameof(MainLightShadowCasterPass));
 
             m_MainLightShadowMatrices = new Matrix4x4[k_MaxCascades + 1];
@@ -96,7 +97,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             return true;
         }
 
-        public override void Configure(CommandBuffer cmd)
+        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             ConfigureTarget(m_MainLightShadowmapTexture);
             ConfigureColorStoreAction(RenderBufferStoreAction.Store);
@@ -181,7 +182,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
-        public override void DrawGizmos()
+        public override void OnDrawGizmos()
         {
             // Gizmos.color = Color.white;
             // for (int i = 0; i < m_ShadowCasterCascadesCount; i++)

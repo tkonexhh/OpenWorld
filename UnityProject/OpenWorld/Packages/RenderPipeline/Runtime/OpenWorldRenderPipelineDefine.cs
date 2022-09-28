@@ -12,6 +12,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         DrawSkybox,
         DrawTransparentObjects,
         PostProcessing,
+        DrawGizmos,
+        FinalBlit,
     }
 
 

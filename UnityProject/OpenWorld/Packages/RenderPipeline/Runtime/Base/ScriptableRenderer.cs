@@ -18,6 +18,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         bool m_IsPipelineExecuting = false;
 
         RTHandle m_CameraColorTexture;
+        RTHandle m_CameraDepthTexture;
 
 
         public RTHandle cameraColorTargetHandle
@@ -34,11 +35,21 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
+        public RTHandle cameraDepthTargetHandle
+        {
+            get
+            {
+                if (!m_IsPipelineExecuting)
+                {
+                    UnityEngine.Debug.LogError("You can only call cameraDepthTarget inside the scope of a ScriptableRenderPass. Otherwise the pipeline camera target texture might have not been created or might have already been disposed.");
+                    return null;
+                }
 
-        /// <summary>
-        /// Enqueues a render pass for execution.
-        /// </summary>
-        /// <param name="pass">Render pass to be enqueued.</param>
+                return m_CameraDepthTexture;
+            }
+        }
+
+
         public void EnqueuePass(ScriptableRenderPass pass)
         {
             m_ActiveRenderPassQueue.Add(pass);
@@ -50,10 +61,12 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             m_IsPipelineExecuting = true;
 
+            SortPass(m_ActiveRenderPassQueue);
+
             var cmd = renderingData.commandBuffer;
             // SetPerCameraShaderVariables(cmd, ref renderingData.cameraData, true);
             foreach (var pass in m_ActiveRenderPassQueue)
-                pass.Configure(cmd);
+                pass.Configure(cmd, renderingData.cameraData.cameraTargetDescriptor);
 
             foreach (var pass in m_ActiveRenderPassQueue)
             {
@@ -62,11 +75,36 @@ namespace OpenWorld.RenderPipelines.Runtime
                     if (pass.colorAttachmentHandle != null)
                         CoreUtils.SetRenderTarget(cmd, pass.colorAttachmentHandle, RenderBufferLoadAction.DontCare, pass.colorStoreAction);
                     CoreUtils.ClearRenderTarget(cmd, pass.clearFlag, pass.clearColor);
+
+                    //TODO 这里的Gizmos设计有问题 
+                    bool IsAfterRendering = pass.renderPassEvent >= RenderPassEvent.AfterRendering;
+
+                    if (IsAfterRendering) DrawGizmos(context, renderingData.cameraData.camera, GizmoSubset.PreImageEffects, ref renderingData);
                     pass.Execute(context, ref renderingData);
+                    if (IsAfterRendering) DrawGizmos(context, renderingData.cameraData.camera, GizmoSubset.PostImageEffects, ref renderingData);
                 }
             }
+        }
 
+        [Conditional("UNITY_EDITOR")]
+        protected void DrawGizmos(ScriptableRenderContext renderContext, Camera camera, GizmoSubset gizmoSubset, ref RenderingData renderingData)
+        {
+#if UNITY_EDITOR
+            if (!UnityEditor.Handles.ShouldRenderGizmos() || camera.sceneViewFilterMode == Camera.SceneViewFilterMode.ShowFiltered)
+                return;
 
+            var cmd = renderingData.commandBuffer;
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(ProfileId.DrawGizmos)))
+            {
+                renderContext.ExecuteCommandBuffer(cmd);
+                cmd.Clear();
+
+                renderContext.DrawGizmos(camera, gizmoSubset);
+            }
+
+            renderContext.ExecuteCommandBuffer(cmd);
+            cmd.Clear();
+#endif
         }
 
         public void FinishRendering(ref RenderingData renderingData)
@@ -78,6 +116,12 @@ namespace OpenWorld.RenderPipelines.Runtime
         internal void ConfigureCameraColorTarget(RTHandle colorTarget)
         {
             m_CameraColorTexture = colorTarget;
+        }
+
+        public void ConfigureCameraTarget(RTHandle colorTarget, RTHandle depthTarget)
+        {
+            m_CameraColorTexture = colorTarget;
+            m_CameraDepthTexture = depthTarget;
         }
 
         void SetPerCameraShaderVariables(CommandBuffer cmd, ref CameraData cameraData, bool isTargetFlipped)
@@ -131,8 +175,20 @@ namespace OpenWorld.RenderPipelines.Runtime
             // TODO: Add SetPerCameraClippingPlaneProperties here once we are sure it correctly behaves in overlay camera for some time
         }
 
-        public virtual void DrawGizmos() { }
+        internal static void SortPass(List<ScriptableRenderPass> list)
+        {
+            int j;
+            for (int i = 1; i < list.Count; ++i)
+            {
+                ScriptableRenderPass curr = list[i];
 
+                j = i - 1;
+                for (; j >= 0 && curr < list[j]; --j)
+                    list[j + 1] = list[j];
+
+                list[j + 1] = curr;
+            }
+        }
 
         public void Dispose()
         {
@@ -149,8 +205,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-        }
+        protected virtual void Dispose(bool disposing) { }
+
+        public virtual void OnDrawGizmos() { }
     }
 }

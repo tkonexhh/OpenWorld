@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Diagnostics;
 using UnityEngine.Rendering;
 using Unity.Collections;
 
@@ -17,7 +19,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             //初始化blit相关shader
             Blitter.Initialize(asset.ShaderResources.coreBlitPS, asset.ShaderResources.coreBlitColorAndDepthPS);
-            m_Renderer = new ForwardRender();
+            m_Renderer = new ForwardRender(asset);
             m_ShadowSettings = asset.ShadowSettings;
             m_LightingSettings = asset.LightingSettings;
 
@@ -39,9 +41,9 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
-        public void DrawGizmos()
+        public void OnDrawGizmos()
         {
-            m_Renderer?.DrawGizmos();
+            m_Renderer?.OnDrawGizmos();
         }
 
 
@@ -95,6 +97,8 @@ namespace OpenWorld.RenderPipelines.Runtime
             cameraData.cameraType = camera.cameraType;
             cameraData.aspectRatio = camera.aspect;
             cameraData.postProcessEnabled = CoreUtils.ArePostProcessesEnabled(camera);
+            cameraData.requiresDepthTexture = true;
+            cameraData.pixelRect = camera.pixelRect;
 
             Matrix4x4 projectionMatrix = camera.projectionMatrix;
             if (!camera.orthographic)
@@ -151,8 +155,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 #endif
 
                 DrawUnsupportdShaders(renderContext, ref renderingData);
-                DrawGizmos(renderContext, ref renderingData);
-
+                DrawWireOverlay(renderContext, camera);
                 m_Renderer.FinishRendering(ref renderingData);
             }
 
@@ -174,15 +177,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             renderingData.commandBuffer.Clear();
         }
 
-        void DrawGizmos(ScriptableRenderContext renderContext, ref RenderingData renderingData)
+        //为了 Shaded Wireframe
+        [Conditional("UNITY_EDITOR")]
+        void DrawWireOverlay(ScriptableRenderContext context, Camera camera)
         {
-#if UNITY_EDITOR
-            if (UnityEditor.Handles.ShouldRenderGizmos())
-            {
-                renderContext.DrawGizmos(renderingData.cameraData.camera, GizmoSubset.PreImageEffects);
-                renderContext.DrawGizmos(renderingData.cameraData.camera, GizmoSubset.PostImageEffects);
-            }
-#endif
+            context.DrawWireOverlay(camera);
         }
 
         void DrawUnsupportdShaders(ScriptableRenderContext renderContext, ref RenderingData renderingData)

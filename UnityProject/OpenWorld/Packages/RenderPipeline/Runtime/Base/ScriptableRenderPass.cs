@@ -105,19 +105,8 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public RenderPassEvent renderPassEvent { get; set; }
 
-        /// <summary>
-        /// List for the g-buffer attachment handles.
-        /// </summary>
         public RTHandle[] colorAttachmentHandles => m_ColorAttachments;
-
-        /// <summary>
-        /// The main color attachment handle.
-        /// </summary>
         public RTHandle colorAttachmentHandle => m_ColorAttachments[0];
-
-        /// <summary>
-        /// The depth attachment handle.
-        /// </summary>
         public RTHandle depthAttachmentHandle => m_DepthAttachment;
 
 
@@ -280,11 +269,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         //     return m_InputAttachmentIsTransient[idx];
         // }
 
-        /// <summary>
-        /// Resets render targets to default.
-        /// This method effectively reset changes done by ConfigureTarget.
-        /// </summary>
-        /// <seealso cref="ConfigureTarget"/>
         public void ResetTarget()
         {
             overrideCameraTarget = false;
@@ -303,14 +287,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             }
         }
 
-
-        /// <summary>
-        /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.
-        /// This method should be called inside Configure.
-        /// </summary>
-        /// <param name="colorAttachment">Color attachment handle.</param>
-        /// <param name="depthAttachment">Depth attachment handle.</param>
-        /// <seealso cref="Configure"/>
         public void ConfigureTarget(RTHandle colorAttachment, RTHandle depthAttachment)
         {
             m_DepthAttachment = depthAttachment;
@@ -318,15 +294,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             ConfigureTarget(colorAttachment);
         }
 
-
-
-        /// <summary>
-        /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.
-        /// This method should be called inside Configure.
-        /// </summary>
-        /// <param name="colorAttachments">Color attachment handle.</param>
-        /// <param name="depthAttachment">Depth attachment handle.</param>
-        /// <seealso cref="Configure"/>
         public void ConfigureTarget(RTHandle[] colorAttachments, RTHandle depthAttachment)
         {
             overrideCameraTarget = true;
@@ -351,13 +318,6 @@ namespace OpenWorld.RenderPipelines.Runtime
                 renderTargetFormat[i] = formats[i];
         }
 
-
-        /// <summary>
-        /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.
-        /// This method should be called inside Configure.
-        /// </summary>
-        /// <param name="colorAttachment">Color attachment handle.</param>
-        /// <seealso cref="Configure"/>
         public void ConfigureTarget(RTHandle colorAttachment)
         {
             overrideCameraTarget = true;
@@ -367,20 +327,9 @@ namespace OpenWorld.RenderPipelines.Runtime
             {
                 m_ColorAttachments[i] = null;
                 m_ColorAttachmentIds[i] = 0;
-
-            }
-            for (int i = 1; i < m_ColorAttachmentIds.Length; ++i)
-            {
-
             }
         }
 
-        /// <summary>
-        /// Configures render targets for this render pass. Call this instead of CommandBuffer.SetRenderTarget.
-        /// This method should be called inside Configure.
-        /// </summary>
-        /// <param name="colorAttachments">Color attachment handle.</param>
-        /// <seealso cref="Configure"/>
         public void ConfigureTarget(RTHandle[] colorAttachments)
         {
             ConfigureTarget(colorAttachments, k_CameraTarget);
@@ -422,9 +371,6 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// <seealso cref="ConfigureClear"/>
         public virtual void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) { }
 
-        public virtual void Configure(CommandBuffer cmd) { }
-
-
         /// <summary>
         /// Called upon finish rendering a camera. You can use this callback to release any resources created
         /// by this render
@@ -432,9 +378,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// This method be called for all cameras in a camera stack.
         /// </summary>
         /// <param name="cmd">Use this CommandBuffer to cleanup any generated data</param>
-        public virtual void OnCameraCleanup(CommandBuffer cmd)
-        {
-        }
+        public virtual void OnCameraCleanup(CommandBuffer cmd) { }
 
         /// <summary>
         /// Called upon finish rendering a camera stack. You can use this callback to release any resources created
@@ -444,8 +388,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         /// In that case the Base camera is the first and last camera in the stack.
         /// </summary>
         /// <param name="cmd">Use this CommandBuffer to cleanup any generated data</param>
-        public virtual void OnFinishCameraStackRendering(CommandBuffer cmd)
-        { }
+        public virtual void OnFinishCameraStackRendering(CommandBuffer cmd) { }
 
         /// <summary>
         /// Execute the pass. This is where custom rendering occurs. Specific details are left to the implementation
@@ -511,7 +454,17 @@ namespace OpenWorld.RenderPipelines.Runtime
             return RenderingUtils.CreateDrawingSettings(shaderTagIdList, ref renderingData, sortingCriteria);
         }
 
-        public virtual void DrawGizmos() { }
+        public static bool operator <(ScriptableRenderPass lhs, ScriptableRenderPass rhs)
+        {
+            return lhs.renderPassEvent < rhs.renderPassEvent;
+        }
+
+        public static bool operator >(ScriptableRenderPass lhs, ScriptableRenderPass rhs)
+        {
+            return lhs.renderPassEvent > rhs.renderPassEvent;
+        }
+
+        public virtual void OnDrawGizmos() { }
 
 
         // static internal int GetRenderPassEventRange(RenderPassEvent renderPassEvent)

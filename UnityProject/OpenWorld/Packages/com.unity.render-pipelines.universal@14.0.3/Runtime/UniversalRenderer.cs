@@ -589,11 +589,9 @@ namespace UnityEngine.Rendering.Universal
 
             bool hasPassesAfterPostProcessing = activeRenderPassQueue.Find(x => x.renderPassEvent == RenderPassEvent.AfterRendering) != null;
 
-            if (mainLightShadows)
-                EnqueuePass(m_MainLightShadowCasterPass);
+            if (mainLightShadows) EnqueuePass(m_MainLightShadowCasterPass);
 
-            if (additionalLightShadows)
-                EnqueuePass(m_AdditionalLightsShadowCasterPass);
+            if (additionalLightShadows) EnqueuePass(m_AdditionalLightsShadowCasterPass);
 
             bool requiresDepthCopyPass = !requiresDepthPrepass
                 && (renderingData.cameraData.requiresDepthTexture || cameraHasPostProcessingWithDepth || renderPassInputs.requiresDepthTexture)

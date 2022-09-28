@@ -11,12 +11,24 @@ namespace OpenWorld.RenderPipelines.Runtime
         private static readonly ShaderTagId k_ShaderTagId = new ShaderTagId("DepthOnly");
 
         FilteringSettings m_FilteringSettings;
+        private RTHandle destination { get; set; }
 
         public DepthOnlyPass(RenderPassEvent evt, RenderQueueRange renderQueueRange, LayerMask layerMask)
         {
             m_FilteringSettings = new FilteringSettings(renderQueueRange);
             renderPassEvent = evt;
         }
+
+        public void Setup(RTHandle depthAttachmentHandle)
+        {
+            this.destination = depthAttachmentHandle;
+        }
+
+        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        // {
+        //     ConfigureTarget(destination);
+        //     ConfigureClear(ClearFlag.All, Color.black);
+        // }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
