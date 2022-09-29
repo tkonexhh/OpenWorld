@@ -82,6 +82,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             // Assign camera targets (color and depth)
             ConfigureCameraTarget(m_OpaqueColor, m_DepthTexture);
+            m_PostProcessPasses.Setup(m_OpaqueColor);
 
             bool drawSkyBox = renderingData.cameraData.camera.clearFlags == CameraClearFlags.Skybox ? true : false;
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
@@ -118,6 +119,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_FinalBlitPass?.Dispose();
             m_OpaqueColor?.Release();
             m_DepthTexture?.Release();
+            m_PostProcessPasses.Dispose();
 
             CoreUtils.Destroy(m_BlitMaterial);
 

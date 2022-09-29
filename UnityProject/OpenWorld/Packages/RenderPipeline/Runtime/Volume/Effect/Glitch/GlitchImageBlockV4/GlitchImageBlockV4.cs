@@ -29,7 +29,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         }
 
 
-        public override void Render(CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
         {
             blitMaterial.SetVector(ShaderIDs.Params, new Vector4(settings.Speed.value, settings.BlockSize.value, settings.MaxRGBSplitX.value, settings.MaxRGBSplitY.value));
 

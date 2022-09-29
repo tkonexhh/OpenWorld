@@ -81,7 +81,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
             var bytes = _noiseTexture.EncodeToPNG();
         }
 
-        public override void Render(CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
         {
             UpdateNoiseTexture(settings.frequncy.value, settings.noiseTextureWidth.value, settings.noiseTextureHeight.value, settings.stripeLength.value);
 

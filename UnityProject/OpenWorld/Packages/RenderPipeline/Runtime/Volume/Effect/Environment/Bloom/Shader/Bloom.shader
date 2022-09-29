@@ -10,7 +10,8 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
     HLSLINCLUDE
 
     #include "../../../../Shader/PostProcessing.hlsl"
-    // #include "./../../../../../../../Shader/URP/HLSLIncludes/Common/HMK_Common.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
+    
 
     float _Intensity;
     float2 _Params;
@@ -35,6 +36,11 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
     half4 DecodeHDR(half4 c)
     {
         return c;
+    }
+
+    half4 GetScreenColorBicubic(float2 uv)
+    {
+        return SampleTexture2DBicubic(_MainTex, sampler_LinearClamp, uv, _MainTex_TexelSize, 1.0, 0.0);
     }
 
     half4 FragPrefilter(VaryingsDefault input): SV_Target
@@ -124,9 +130,9 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         half3 c7 = DecodeHDR(GetScreenColor(uv + float2(texelSize * 3.0, 0.0)));
         half3 c8 = DecodeHDR(GetScreenColor(uv + float2(texelSize * 4.0, 0.0)));
 
-        half3 color = c0 * 0.01621622 + c1 * 0.05405405 + c2 * 0.12162162 + c3 * 0.19459459
-        + c4 * 0.22702703
-        + c5 * 0.19459459 + c6 * 0.12162162 + c7 * 0.05405405 + c8 * 0.01621622;
+        half3 color = c0 * 0.01621622 + c1 * 0.05405405 + c2 * 0.12162162 +
+        c3 * 0.19459459 + c4 * 0.22702703 + c5 * 0.19459459 +
+        c6 * 0.12162162 + c7 * 0.05405405 + c8 * 0.01621622;
 
         return half4(SafeHDR(color), 1);
     }
@@ -162,6 +168,7 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         //提取高亮区域
         Pass
         {
+            Name "Bloom Prefilter"
             HLSLPROGRAM
 
             #pragma vertex VertDefault
@@ -199,6 +206,7 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         //Combine
         Pass
         {
+            Name "Bloom Combine"
             HLSLPROGRAM
 
             #pragma vertex VertDefault
@@ -209,9 +217,9 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         }
 
 
-        //高质量模糊
         Pass
         {
+            Name "Bloom Horizontal"
             HLSLPROGRAM
 
             #pragma vertex VertDefault
@@ -223,6 +231,7 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
         Pass
         {
+            Name "Bloom Vertical"
             HLSLPROGRAM
 
             #pragma vertex VertDefault

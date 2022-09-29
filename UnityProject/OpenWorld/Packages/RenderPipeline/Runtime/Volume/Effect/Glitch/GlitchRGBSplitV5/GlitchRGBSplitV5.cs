@@ -36,7 +36,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         }
 
 
-        public override void Render(CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
         {
             blitMaterial.SetVector(ShaderIDs.Params, new Vector2(settings.Amplitude.value, settings.Speed.value));
             if (m_NoiseTex != null)

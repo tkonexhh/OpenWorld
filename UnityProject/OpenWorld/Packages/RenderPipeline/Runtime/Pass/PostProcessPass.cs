@@ -27,11 +27,6 @@ namespace OpenWorld.RenderPipelines.Runtime
             m_Source = handle;
         }
 
-        // public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-        // {
-        //     ConfigureTarget(m_Source);
-        //     ConfigureColorStoreAction(RenderBufferStoreAction.Store);
-        // }
 
         protected void AddEffect(AbstractVolumeRenderer renderer)
         {
@@ -41,10 +36,12 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            if (m_TempRT == null)
-            {
-                m_TempRT = RTHandles.Alloc(renderingData.cameraData.cameraTargetDescriptor);
-            }
+            var colorDescriptor = renderingData.cameraData.cameraTargetDescriptor;
+            colorDescriptor.useMipMap = false;
+            colorDescriptor.autoGenerateMips = false;
+            colorDescriptor.depthBufferBits = (int)DepthBits.None;
+            RenderingUtils.ReAllocateIfNeeded(ref m_TempRT, colorDescriptor, name: ShaderTextureId.CamearColorTexture);
+
             // 初始化临时RT
             RTHandle buff0 = m_TempRT;
             RTHandle GetSource() => m_Source;
@@ -77,6 +74,13 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
+        }
+
+
+        public void Dispose()
+        {
+            foreach (var renderer in m_PostProcessingRenderers)
+                renderer.Cleanup();
         }
 
     }

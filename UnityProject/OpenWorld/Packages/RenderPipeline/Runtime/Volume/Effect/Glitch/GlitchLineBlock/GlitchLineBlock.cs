@@ -48,7 +48,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         }
 
 
-        public override void Render(CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
         {
             UpdateFrequency(settings);
 

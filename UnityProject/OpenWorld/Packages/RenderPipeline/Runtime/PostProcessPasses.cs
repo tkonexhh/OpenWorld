@@ -26,6 +26,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public void Dispose()
         {
+            m_FinalPostProcessPass?.Dispose();
         }
     }
 }
