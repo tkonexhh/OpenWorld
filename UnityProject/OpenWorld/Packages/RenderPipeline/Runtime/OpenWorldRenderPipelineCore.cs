@@ -30,6 +30,21 @@ namespace OpenWorld.RenderPipelines.Runtime
         public static OpenWorldRenderPipelineAsset asset => GraphicsSettings.currentRenderPipeline as OpenWorldRenderPipelineAsset;
 
 
+        // internal static GraphicsFormat MakeRenderTextureGraphicsFormat(bool isHdrEnabled, HDRColorBufferPrecision requestHDRColorBufferPrecision, bool needsAlpha)
+        // {
+        //     if (isHdrEnabled)
+        //     {
+        //         // TODO: we need a proper format scoring system. Score formats, sort, pick first or pick first supported (if not in score).
+        //         if (!needsAlpha && requestHDRColorBufferPrecision != HDRColorBufferPrecision._64Bits && RenderingUtils.SupportsGraphicsFormat(GraphicsFormat.B10G11R11_UFloatPack32, FormatUsage.Linear | FormatUsage.Render))
+        //             return GraphicsFormat.B10G11R11_UFloatPack32;
+        //         if (RenderingUtils.SupportsGraphicsFormat(GraphicsFormat.R16G16B16A16_SFloat, FormatUsage.Linear | FormatUsage.Render))
+        //             return GraphicsFormat.R16G16B16A16_SFloat;
+        //         return SystemInfo.GetGraphicsFormat(DefaultFormat.HDR); // This might actually be a LDR format on old devices.
+        //     }
+
+        //     return SystemInfo.GetGraphicsFormat(DefaultFormat.LDR);
+        // }
+
         static RenderTextureDescriptor CreateRenderTextureDescriptor(Camera camera, float renderScale, bool isHdrEnabled, int msaaSamples, bool needsAlpha, bool requiresOpaqueTexture)
         {
             int scaledWidth = (int)((float)camera.pixelWidth * renderScale);

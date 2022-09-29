@@ -51,9 +51,11 @@ namespace OpenWorld.RenderPipelines.Runtime
             var camera = renderingData.cameraData.camera;
             var cameraTargetDescriptor = renderingData.cameraData.cameraTargetDescriptor;
 
-            if (m_OpaqueColor == null) m_OpaqueColor = RTHandles.Alloc(cameraTargetDescriptor.width, cameraTargetDescriptor.height, name: ShaderTextureId.OpacityTexture);
-
-            // RenderingUtils.ReAllocateIfNeeded(ref m_OpaqueColor, cameraTargetDescriptor, name: ShaderTextureId.OpacityTexture);
+            var colorDescriptor = cameraTargetDescriptor;
+            colorDescriptor.useMipMap = false;
+            colorDescriptor.autoGenerateMips = false;
+            colorDescriptor.depthBufferBits = (int)DepthBits.None;
+            RenderingUtils.ReAllocateIfNeeded(ref m_OpaqueColor, colorDescriptor, name: ShaderTextureId.OpacityTexture);
 
             bool isPreviewCamera = renderingData.cameraData.isPreviewCamera;
             bool isSceneViewCamera = renderingData.cameraData.isSceneViewCamera;
@@ -63,14 +65,13 @@ namespace OpenWorld.RenderPipelines.Runtime
             requiresDepthPrepass |= isPreviewCamera;
 
             bool createDepthTexture = requiresDepthPrepass;
-            // createDepthTexture &= m_DepthTexture == null;
 
             if (createDepthTexture)
             {
                 var depthDescriptor = cameraTargetDescriptor;
                 depthDescriptor.graphicsFormat = GraphicsFormat.None;
                 depthDescriptor.depthStencilFormat = GraphicsFormat.D32_SFloat_S8_UInt;
-                depthDescriptor.depthBufferBits = 32;
+                depthDescriptor.depthBufferBits = (int)DepthBits.Depth32;
                 depthDescriptor.msaaSamples = 1;// Depth-Only pass don't use MSAA
                 RenderingUtils.ReAllocateIfNeeded(ref m_DepthTexture, depthDescriptor, name: ShaderTextureId.CameraDepthTexture);
             }
