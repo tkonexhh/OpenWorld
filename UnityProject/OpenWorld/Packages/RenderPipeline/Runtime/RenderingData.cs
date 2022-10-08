@@ -16,6 +16,8 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public PerObjectData perObjectData;
 
+        public bool isHdrEnabled;
+
         /// <summary>
         /// True if the pipeline supports dynamic batching.
         /// This settings doesn't apply when drawing shadow casters. Dynamic batching is always disabled when drawing shadow casters.

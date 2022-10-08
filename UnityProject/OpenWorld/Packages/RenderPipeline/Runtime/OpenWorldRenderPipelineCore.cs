@@ -57,7 +57,7 @@ namespace OpenWorld.RenderPipelines.Runtime
                 desc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
                 desc.width = scaledWidth;
                 desc.height = scaledHeight;
-                desc.graphicsFormat = SystemInfo.GetGraphicsFormat(DefaultFormat.LDR);// MakeRenderTextureGraphicsFormat(isHdrEnabled, requestHDRColorBufferPrecision, needsAlpha);
+                desc.graphicsFormat = isHdrEnabled ? SystemInfo.GetGraphicsFormat(DefaultFormat.HDR) : SystemInfo.GetGraphicsFormat(DefaultFormat.LDR);// MakeRenderTextureGraphicsFormat(isHdrEnabled, requestHDRColorBufferPrecision, needsAlpha);
                 desc.depthBufferBits = 32;
                 desc.msaaSamples = msaaSamples;
                 desc.sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);

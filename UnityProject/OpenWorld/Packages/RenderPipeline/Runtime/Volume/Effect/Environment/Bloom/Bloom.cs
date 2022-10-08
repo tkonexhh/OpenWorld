@@ -29,7 +29,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         public BloomQuailtyParameter BloomQuailty = new BloomQuailtyParameter(BloomQuailtyType.High);
         public MinFloatParameter Intensity = new MinFloatParameter(0f, 0f);
         [Tooltip("Set the radius of the bloom effect.")]
-        public ClampedFloatParameter scatter = new ClampedFloatParameter(0.7f, 0f, 1f);
+        public ClampedFloatParameter Scatter = new ClampedFloatParameter(0.7f, 0f, 1f);
         public ClampedFloatParameter Threshold = new ClampedFloatParameter(0.2f, 0f, 10f);
         public ClampedIntParameter MaxIterations = new ClampedIntParameter(6, 2, 8);
     }
@@ -95,7 +95,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
             // Material setup
             float threshold = Mathf.GammaToLinearSpace(settings.Threshold.value);
             float thresholdKnee = threshold * 0.5f; // Hardcoded soft knee
-            var param = new Vector4(threshold, thresholdKnee, settings.scatter.value, 0);
+            var param = new Vector4(threshold, thresholdKnee, settings.Scatter.value, settings.Intensity.value);
             blitMaterial.SetVector(ShaderIDs.ParamsID, param);
             CoreUtils.SetKeyword(blitMaterial, ShaderKeywords.BloomHQ, settings.BloomQuailty.value == BloomQuailtyType.High);
 
@@ -148,13 +148,12 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
 
                 cmd.SetGlobalTexture(ShaderIDs.SourceTexLowMip, lowMip);
                 Blitter.BlitCameraTexture(cmd, highMip, dst, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, blitMaterial, (int)Pass.Upsample);
+                lastDown = dst;
             }
 
-            cmd.SetGlobalTexture(ShaderIDs.BloomTex, m_BloomMipDown[0]);
-            // cmd.Blit(source, target, blitMaterial, (int)Pass.Combine);
+            cmd.SetGlobalTexture(ShaderIDs.BloomTex, lastDown);
 
             Blitter.BlitCameraTexture(cmd, source, target, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, blitMaterial, (int)Pass.Combine);
-
         }
 
         public override void Cleanup()

@@ -95,6 +95,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public PostProcessPass(RenderPassEvent evt) : base(evt)
         {
             AddEffect(new BloomRenderer());
+            AddEffect(new ToneMappingRenderer());
         }
     }
 }

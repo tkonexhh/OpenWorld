@@ -2,27 +2,21 @@
 
 Shader "Hidden/PostProcessing/Environment/Bloom"
 {
-    Properties
-    {
-        _MainTex ("MainTex", 2D) = "white" { }
-    }
-    
     HLSLINCLUDE
 
     #include "../../../../Shader/PostProcessing.hlsl"
     #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
     
-
-    float _Intensity;
     float4 _Params;
-    float _SamplerScale;
     TEXTURE2D(_SourceTexLowMip); float4 _SourceTexLowMip_TexelSize;
+    TEXTURE2D(_Bloom_Texture);float4 _Bloom_Texture_TexelSize;
 
     #define Threshold           _Params.x
     #define ThresholdKnee       _Params.y
     #define Scatter             _Params.z
+    #define Intensity           _Params.w
 
-    TEXTURE2D(_Bloom_Texture);
+    
 
     half3 SafeHDR(half3 c)
     {
@@ -33,9 +27,9 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         return min(c, 65504.0);
     }
 
-    half4 DecodeHDR(half4 c)
+    half3 DecodeHDR(half4 c)
     {
-        return c;
+        return c.xyz;
     }
 
     half4 GetScreenColorBicubic(float2 uv)
@@ -45,7 +39,38 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
     half4 FragPrefilter(VaryingsDefault input): SV_Target
     {
-        half3 SceneColor = SafeHDR(GetScreenColor(input.uv));
+        float2 uv = input.uv;
+        #if _BLOOM_HQ
+            float texelSize = _BlitTexture_TexelSize.x;
+            half4 A = GetScreenColor(uv + texelSize * float2(-1.0, -1.0));
+            half4 B = GetScreenColor(uv + texelSize * float2(0.0, -1.0));
+            half4 C = GetScreenColor(uv + texelSize * float2(1.0, -1.0));
+            half4 D = GetScreenColor(uv + texelSize * float2(-0.5, -0.5));
+            half4 E = GetScreenColor(uv + texelSize * float2(0.5, -0.5));
+            half4 F = GetScreenColor(uv + texelSize * float2(-1.0, 0.0));
+            half4 G = GetScreenColor(uv);
+            half4 H = GetScreenColor(uv + texelSize * float2(1.0, 0.0));
+            half4 I = GetScreenColor(uv + texelSize * float2(-0.5, 0.5));
+            half4 J = GetScreenColor(uv + texelSize * float2(0.5, 0.5));
+            half4 K = GetScreenColor(uv + texelSize * float2(-1.0, 1.0));
+            half4 L = GetScreenColor(uv + texelSize * float2(0.0, 1.0));
+            half4 M = GetScreenColor(uv + texelSize * float2(1.0, 1.0));
+
+            half2 div = (1.0 / 4.0) * half2(0.5, 0.125);
+
+            half4 o = (D + E + I + J) * div.x;
+            o += (A + B + G + F) * div.y;
+            o += (B + C + H + G) * div.y;
+            o += (F + G + L + K) * div.y;
+            o += (G + H + M + L) * div.y;
+
+            half3 color = o.xyz;
+        #else
+            half3 color = GetScreenColor(uv).xyz;
+        #endif
+
+
+        half3 SceneColor = color;
         half brightness = max(SceneColor.r, max(SceneColor.g, SceneColor.b));
         half softness = clamp(brightness - Threshold + ThresholdKnee, 0.0, 2.0 * ThresholdKnee);
         softness = (softness * softness) / (4.0 * ThresholdKnee + 1e-4);
@@ -104,11 +129,10 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         half3 highMip = DecodeHDR(SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv));
 
         #if _BLOOM_HQ && !defined(SHADER_API_GLES)
-            half3 lowMip = DecodeHDR(SampleTexture2DBicubic((_SourceTexLowMip, sampler_LinearClamp), uv, _SourceTexLowMip_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex));
+            half3 lowMip = DecodeHDR(SampleTexture2DBicubic(_SourceTexLowMip, sampler_LinearClamp, uv, _SourceTexLowMip_TexelSize.zwxy, (1.0).xx, 0.0));
         #else
             half3 lowMip = DecodeHDR(SAMPLE_TEXTURE2D(_SourceTexLowMip, sampler_LinearClamp, uv));
         #endif
-
         return lerp(highMip, lowMip, Scatter);
     }
 
@@ -124,14 +148,14 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         float2 uv = input.uv;
         half3 color = (0.0).xxx;
 
-        color = GetScreenColor(uv);
-        
+        color = GetScreenColor(uv).xyz;
+
         #if _BLOOM_HQ && !defined(SHADER_API_GLES)
-            half3 bloom = DecodeHDR(SampleTexture2DBicubic((_Bloom_Texture, sampler_LinearClamp), uv, _Bloom_Texture_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex));
+            half3 bloom = DecodeHDR(SampleTexture2DBicubic(_Bloom_Texture, sampler_LinearClamp, uv, _Bloom_Texture_TexelSize.zwxy, (1.0).xx, 0.0));
         #else
             half3 bloom = DecodeHDR(SAMPLE_TEXTURE2D(_Bloom_Texture, sampler_LinearClamp, uv));
         #endif
-
+        bloom *= Intensity;
         color += bloom;
         return half4(color, 1);
     }
@@ -141,7 +165,8 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
     SubShader
     {
         Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Opaque" }
-
+        LOD 100
+        ZTest Always ZWrite Off Cull Off
 
         //提取高亮区域
         Pass
@@ -151,6 +176,8 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
             #pragma vertex VertDefault
             #pragma fragment FragPrefilter
+
+            #pragma multi_compile_local _ _BLOOM_HQ
 
             ENDHLSL
 
@@ -189,6 +216,8 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
             #pragma vertex VertDefault
             #pragma fragment FragUpsample
 
+            #pragma multi_compile_local _ _BLOOM_HQ
+
             ENDHLSL
 
         }
@@ -201,6 +230,8 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
             #pragma vertex VertDefault
             #pragma fragment FragCombine
+
+            #pragma multi_compile_local _ _BLOOM_HQ
 
             ENDHLSL
 

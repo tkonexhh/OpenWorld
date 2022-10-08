@@ -14,7 +14,7 @@
 
         [Header(Emission)]
         _EmissionColor ("Emission Color", Color) = (1, 1, 1, 1)
-        _EmissionScale ("Emission Scale", range(0, 1)) = 1
+        _EmissionScale ("Emission Scale", range(0, 5)) = 1
 
         [Header(Setting)]
         [Toggle(_ALPHATEST_ON)] _AlphaClip ("AlphaClip", Float) = 0.0

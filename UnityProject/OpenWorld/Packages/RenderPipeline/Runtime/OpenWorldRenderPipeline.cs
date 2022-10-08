@@ -53,6 +53,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             cullingParameters.shadowDistance = Mathf.Min(m_ShadowSettings.maxDistance, camera.farClipPlane);
 
+            bool isHdrEnabled = m_GeneralSettings.allowHDR && camera.allowHDR;
+
             var cullingResults = renderContext.Cull(ref cullingParameters);
             renderingData.cullingResults = cullingResults;
             renderingData.supportsDynamicBatching = true;
@@ -115,9 +117,10 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix);
             cameraData.renderer = m_Renderer;
-            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, m_GeneralSettings.renderScale, m_GeneralSettings.allowHDR, 1, false, false);
+            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, m_GeneralSettings.renderScale, isHdrEnabled, 1, false, false);
             renderingData.cameraData = cameraData;
 
+            renderingData.isHdrEnabled = isHdrEnabled;
             renderingData.commandBuffer = CommandBufferPool.Get();
 
             InitializeShadowData(cullingResults.visibleLights);
