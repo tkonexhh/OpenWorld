@@ -12,6 +12,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         Reinhard = 0,
         Neutral,
         ACES,
+        GranTurismo,
     }
 
     [System.Serializable]
