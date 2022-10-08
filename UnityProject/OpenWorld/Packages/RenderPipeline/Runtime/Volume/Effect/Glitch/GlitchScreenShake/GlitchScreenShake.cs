@@ -25,7 +25,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         }
 
 
-        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData)
         {
             blitMaterial.SetFloat(ShaderIDs.ScreenShakeIndensity, settings.ScreenShakeIndensity.value * 0.25f);
             cmd.Blit(source, target, blitMaterial, (int)settings.ScreenShakeDirection.value);

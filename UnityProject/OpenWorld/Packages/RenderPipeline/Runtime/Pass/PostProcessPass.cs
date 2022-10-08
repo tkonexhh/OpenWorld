@@ -12,7 +12,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         protected abstract string RenderPostProcessingTag { get; }
         List<AbstractVolumeRenderer> m_PostProcessingRenderers = new List<AbstractVolumeRenderer>();
 
-        static RTHandle m_TempRT;
+        RTHandle m_TempRT;
         RTHandle m_Source;
 
         public AbstractPostProcessPass(RenderPassEvent evt)
@@ -81,6 +81,8 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             foreach (var renderer in m_PostProcessingRenderers)
                 renderer.Cleanup();
+
+            m_TempRT?.Release();
         }
 
     }

@@ -32,9 +32,9 @@ Shader "Hidden/PostProcessing/Glitch/ImageBlockV3"
         float2 block = randomNoise(floor(i.uv * _BlockSize));
         float displaceNoise = pow(block.x, 8.0) * pow(block.x, 3.0);
 
-        half ColorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).r;
-        half ColorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv + float2(displaceNoise * 0.05 * randomNoise(7.0), 0.0)).g;
-        half ColorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv - float2(displaceNoise * 0.05 * randomNoise(13.0), 0.0)).b;
+        half ColorR = GetScreenColor(i.uv).r;
+        half ColorG = GetScreenColor(i.uv + float2(displaceNoise * 0.05 * randomNoise(7.0), 0.0)).g;
+        half ColorB = GetScreenColor(i.uv - float2(displaceNoise * 0.05 * randomNoise(13.0), 0.0)).b;
 
         return half4(ColorR, ColorG, ColorB, 1.0);
     }

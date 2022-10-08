@@ -40,7 +40,7 @@ Shader "Hidden/PostProcessing/Glitch/ScanLineJitter"
         float jitter = randomNoise(i.uv.y, _Time.x) * 2 - 1;
         jitter *= step(_Threshold, abs(jitter)) * _Amount * strength;
         
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, frac(i.uv + float2(jitter, 0)));
+        half4 sceneColor = GetScreenColor(frac(i.uv + float2(jitter, 0)));
         
         return sceneColor;
     }
@@ -57,7 +57,7 @@ Shader "Hidden/PostProcessing/Glitch/ScanLineJitter"
         float jitter = randomNoise(i.uv.x, _Time.x) * 2 - 1;
         jitter *= step(_Threshold, abs(jitter)) * _Amount * strength;
         
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, frac(i.uv + float2(0, jitter)));
+        half4 sceneColor = GetScreenColor(frac(i.uv + float2(0, jitter)));
         
         return sceneColor;
     }

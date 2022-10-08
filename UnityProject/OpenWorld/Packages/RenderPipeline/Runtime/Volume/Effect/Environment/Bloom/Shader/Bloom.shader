@@ -14,15 +14,15 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
     
 
     float _Intensity;
-    float2 _Params;
+    float4 _Params;
     float _SamplerScale;
+    TEXTURE2D(_SourceTexLowMip); float4 _SourceTexLowMip_TexelSize;
 
     #define Threshold           _Params.x
     #define ThresholdKnee       _Params.y
+    #define Scatter             _Params.z
 
-
-    TEXTURE2D(_BloomTex);SAMPLER(sampler_BloomTex);
-    TEXTURE2D(_SourceTex);SAMPLER(sampler_SourceTex);
+    TEXTURE2D(_Bloom_Texture);
 
     half3 SafeHDR(half3 c)
     {
@@ -40,7 +40,7 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
     half4 GetScreenColorBicubic(float2 uv)
     {
-        return SampleTexture2DBicubic(_MainTex, sampler_LinearClamp, uv, _MainTex_TexelSize, 1.0, 0.0);
+        return SampleTexture2DBicubic(_BlitTexture, sampler_LinearClamp, uv, _BlitTexture_TexelSize, 1.0, 0.0);
     }
 
     half4 FragPrefilter(VaryingsDefault input): SV_Target
@@ -51,72 +51,15 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         softness = (softness * softness) / (4.0 * ThresholdKnee + 1e-4);
         half multiplier = max(brightness - Threshold, softness) / max(brightness, 1e-4);
         SceneColor *= multiplier;
-
         SceneColor = max(SceneColor, 0);
         return half4(SceneColor, 1);
     }
 
-    //////////////
 
-    struct VaryingsBlur
-    {
-        float4 positionCS: SV_POSITION;
-        float2 uv: TEXCOORD0;
-        float2 neighbours[4]: TEXCOORD1;
-    };
-
-    VaryingsBlur VertBlur(AttributesDefault input)
-    {
-        VaryingsBlur output;
-        output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-        output.uv = input.uv;
-        output.neighbours[0] = input.uv - float2(_MainTex_TexelSize.x * _SamplerScale, 0.0);
-        output.neighbours[1] = input.uv + float2(_MainTex_TexelSize.x * _SamplerScale, 0.0);
-        output.neighbours[2] = input.uv - float2(0.0, _MainTex_TexelSize.y * _SamplerScale);
-        output.neighbours[3] = input.uv + float2(0.0, _MainTex_TexelSize.y * _SamplerScale);
-        return output;
-    }
-
-    half3 BoxFilter(VaryingsBlur input)
-    {
-        half3 sum;
-        // Box filter
-        half3 s1 = GetScreenColor(input.neighbours[0]).rgb;
-        half3 s2 = GetScreenColor(input.neighbours[1]).rgb;
-        half3 s3 = GetScreenColor(input.neighbours[2]).rgb;
-        half3 s4 = GetScreenColor(input.neighbours[3]).rgb;
-
-        sum = (s1 + s2 + s3 + s4) * 0.25;
-
-        return sum;
-    }
-
-    half4 FragBlur(VaryingsBlur input): SV_Target
-    {
-        return half4(BoxFilter(input), 1);
-    }
-
-
-    /////////////////
-
-    half4 FragFinal(VaryingsBlur input): SV_Target
-    {
-        half3 boxfilter = BoxFilter(input);
-        return half4(boxfilter * _Intensity, 1);
-    }
-
-    //////////
-    half4 FragCombine(VaryingsDefault input): SV_Target
-    {
-        half3 bloom = GetScreenColor(input.uv).rgb;
-        half3 source = SAMPLE_TEXTURE2D(_SourceTex, sampler_SourceTex, input.uv).rgb;
-        // bloom = LinearToGammaSpace(bloom);
-        return half4(source + bloom, 1);
-    }
 
     half4 FragBlurH(VaryingsDefault input): SV_Target
     {
-        float texelSize = _MainTex_TexelSize.x * 2.0;
+        float texelSize = _BlitTexture_TexelSize.x * 2.0;
         float2 uv = input.uv;
 
         // 9-tap gaussian blur on the downsampled source
@@ -139,7 +82,7 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
     half4 FragBlurV(VaryingsDefault input): SV_Target
     {
-        float texelSize = _MainTex_TexelSize.y;
+        float texelSize = _BlitTexture_TexelSize.y;
         float2 uv = input.uv;
 
         // Optimized bilinear 5-tap gaussian on the same-sized source (9-tap equivalent)
@@ -156,7 +99,42 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
         return half4(SafeHDR(color), 1);
     }
 
+    half3 Upsample(float2 uv)
+    {
+        half3 highMip = DecodeHDR(SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv));
 
+        #if _BLOOM_HQ && !defined(SHADER_API_GLES)
+            half3 lowMip = DecodeHDR(SampleTexture2DBicubic((_SourceTexLowMip, sampler_LinearClamp), uv, _SourceTexLowMip_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex));
+        #else
+            half3 lowMip = DecodeHDR(SAMPLE_TEXTURE2D(_SourceTexLowMip, sampler_LinearClamp, uv));
+        #endif
+
+        return lerp(highMip, lowMip, Scatter);
+    }
+
+
+    half4 FragUpsample(VaryingsDefault input): SV_Target
+    {
+        half3 color = Upsample(input.uv);
+        return half4(color, 1);
+    }
+
+    half4 FragCombine(VaryingsDefault input): SV_Target
+    {
+        float2 uv = input.uv;
+        half3 color = (0.0).xxx;
+
+        color = GetScreenColor(uv);
+        
+        #if _BLOOM_HQ && !defined(SHADER_API_GLES)
+            half3 bloom = DecodeHDR(SampleTexture2DBicubic((_Bloom_Texture, sampler_LinearClamp), uv, _Bloom_Texture_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex));
+        #else
+            half3 bloom = DecodeHDR(SAMPLE_TEXTURE2D(_Bloom_Texture, sampler_LinearClamp, uv));
+        #endif
+
+        color += bloom;
+        return half4(color, 1);
+    }
 
     ENDHLSL
 
@@ -178,45 +156,6 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
         }
 
-        //模糊
-        Pass
-        {
-            HLSLPROGRAM
-
-            #pragma vertex VertBlur
-            #pragma fragment FragBlur
-
-            ENDHLSL
-
-        }
-
-        
-        //Final
-        Pass
-        {
-            HLSLPROGRAM
-
-            #pragma vertex VertBlur
-            #pragma fragment FragFinal
-
-            ENDHLSL
-
-        }
-
-        //Combine
-        Pass
-        {
-            Name "Bloom Combine"
-            HLSLPROGRAM
-
-            #pragma vertex VertDefault
-            #pragma fragment FragCombine
-
-            ENDHLSL
-
-        }
-
-
         Pass
         {
             Name "Bloom Horizontal"
@@ -236,6 +175,32 @@ Shader "Hidden/PostProcessing/Environment/Bloom"
 
             #pragma vertex VertDefault
             #pragma fragment FragBlurV
+
+            ENDHLSL
+
+        }
+
+        
+        Pass
+        {
+            Name "Bloom Upsample"
+            HLSLPROGRAM
+
+            #pragma vertex VertDefault
+            #pragma fragment FragUpsample
+
+            ENDHLSL
+
+        }
+
+        Pass
+        {
+            Name "Bloom Combine"
+
+            HLSLPROGRAM
+
+            #pragma vertex VertDefault
+            #pragma fragment FragCombine
 
             ENDHLSL
 

@@ -31,7 +31,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         }
 
 
-        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData)
         {
             ScreenJumpTime += Time.deltaTime * settings.ScreenJumpIndensity.value * 9.8f;
             Vector2 ScreenJumpVector = new Vector2(settings.ScreenJumpIndensity.value, ScreenJumpTime);

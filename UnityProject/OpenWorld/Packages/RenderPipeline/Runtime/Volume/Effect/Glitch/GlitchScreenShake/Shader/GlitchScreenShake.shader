@@ -24,7 +24,7 @@ Shader "Hidden/PostProcessing/Glitch/ScreenShake"
     {
         float shake = (randomNoise(_Time.x, 2) - 0.5) * _ScreenShake;
         
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, frac(float2(i.uv.x + shake, i.uv.y)));
+        half4 sceneColor = GetScreenColor(frac(float2(i.uv.x + shake, i.uv.y)));
         
         return sceneColor;
     }
@@ -34,7 +34,7 @@ Shader "Hidden/PostProcessing/Glitch/ScreenShake"
         
         float shake = (randomNoise(_Time.x, 2) - 0.5) * _ScreenShake;
         
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, frac(float2(i.uv.x, i.uv.y + shake)));
+        half4 sceneColor = GetScreenColor(frac(float2(i.uv.x, i.uv.y + shake)));
         
         return sceneColor;
     }

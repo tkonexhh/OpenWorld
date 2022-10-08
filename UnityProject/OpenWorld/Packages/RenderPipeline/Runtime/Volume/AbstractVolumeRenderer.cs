@@ -10,7 +10,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         public abstract string PROFILER_TAG { get; }
         public abstract bool IsActive(ref RenderingData renderingData);
         public virtual void Init() { }
-        public abstract void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData);
+        public abstract void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData);
         public abstract void Cleanup();
     }
 

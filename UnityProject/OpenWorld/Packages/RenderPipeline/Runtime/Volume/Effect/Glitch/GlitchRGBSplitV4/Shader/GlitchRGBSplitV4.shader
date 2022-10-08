@@ -26,9 +26,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV4"
     {
         float splitAmount = _Indensity * randomNoise(_TimeX, 2);
 
-        half4 ColorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x + splitAmount, i.uv.y));
-        half4 ColorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-        half4 ColorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x - splitAmount, i.uv.y));
+        half4 ColorR = GetScreenColor(float2(i.uv.x + splitAmount, i.uv.y));
+        half4 ColorG = GetScreenColor(i.uv);
+        half4 ColorB = GetScreenColor(float2(i.uv.x - splitAmount, i.uv.y));
 
         return half4(ColorR.r, ColorG.g, ColorB.b, 1);
     }
@@ -38,9 +38,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV4"
 
         float splitAmount = _Indensity * randomNoise(_TimeX, 2);
 
-        half4 ColorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-        half4 ColorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, i.uv.y + splitAmount));
-        half4 ColorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, i.uv.y - splitAmount));
+        half4 ColorR = GetScreenColor(i.uv);
+        half4 ColorG = GetScreenColor(float2(i.uv.x, i.uv.y + splitAmount));
+        half4 ColorB = GetScreenColor(float2(i.uv.x, i.uv.y - splitAmount));
 
         return half4(ColorR.r, ColorG.g, ColorB.b, 1);
     }
@@ -50,9 +50,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV4"
 
         float splitAmount = _Indensity * randomNoise(_TimeX, 2);
 
-        half4 ColorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-        half4 ColorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x + splitAmount, i.uv.y + splitAmount));
-        half4 ColorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x - splitAmount, i.uv.y - splitAmount));
+        half4 ColorR = GetScreenColor(i.uv);
+        half4 ColorG = GetScreenColor(float2(i.uv.x + splitAmount, i.uv.y + splitAmount));
+        half4 ColorB = GetScreenColor(float2(i.uv.x - splitAmount, i.uv.y - splitAmount));
 
         return half4(ColorR.r, ColorG.g, ColorB.b, 1);
     }

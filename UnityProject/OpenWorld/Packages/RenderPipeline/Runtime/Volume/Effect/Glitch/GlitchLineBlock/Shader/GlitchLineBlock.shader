@@ -84,7 +84,7 @@ Shader "Hidden/PostProcessing/Glitch/LineBlock"
         // [3] 生成源色调的blockLine Glitch
         float2 uv_blockLine = uv;
         uv_blockLine = saturate(uv_blockLine + float2(0.1 * blockLine_random, 0));
-        float4 blockLineColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, abs(uv_blockLine));
+        float4 blockLineColor = GetScreenColor(abs(uv_blockLine));
         
         // [4] 将RGB转到YUV空间，并做色调偏移
         // RGB -> YUV
@@ -97,7 +97,7 @@ Shader "Hidden/PostProcessing/Glitch/LineBlock"
         
         
         // [5] 与源场景图进行混合
-        float4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+        float4 sceneColor = GetScreenColor(i.uv);
         return lerp(sceneColor, float4(blockLineColor_rgb, blockLineColor.a), _Alpha);
     }
     
@@ -129,7 +129,7 @@ Shader "Hidden/PostProcessing/Glitch/LineBlock"
         // [3] 生成源色调的blockLine Glitch
         float2 uv_blockLine = uv;
         uv_blockLine = saturate(uv_blockLine + float2(0, 0.1 * blockLine_random));
-        float4 blockLineColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, abs(uv_blockLine));
+        float4 blockLineColor = GetScreenColor(abs(uv_blockLine));
         
         // [4] 将RGB转到YUV空间，并做色调偏移
         // RGB -> YUV
@@ -141,7 +141,7 @@ Shader "Hidden/PostProcessing/Glitch/LineBlock"
         float3 blockLineColor_rgb = yuv2rgb(blockLineColor_yuv);
         
         // [5] 与源场景图进行混合
-        float4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+        float4 sceneColor = GetScreenColor(i.uv);
         return lerp(sceneColor, float4(blockLineColor_rgb, blockLineColor.a), _Alpha);
     }
     

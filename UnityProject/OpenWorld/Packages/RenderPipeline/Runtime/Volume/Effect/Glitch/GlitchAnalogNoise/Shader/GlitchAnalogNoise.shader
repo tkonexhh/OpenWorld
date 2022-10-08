@@ -26,7 +26,7 @@ Shader "Hidden/PostProcessing/Glitch/AnalogNoise"
     half4 Frag(VaryingsDefault i): SV_Target
     {
 
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+        half4 sceneColor = GetScreenColor(i.uv);
         half4 noiseColor = sceneColor;
 
         half luminance = dot(noiseColor.rgb, half3(0.22, 0.707, 0.071));

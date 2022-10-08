@@ -37,9 +37,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplit"
         splitAmount *= _Fading * _Amount;
         splitAmount *= lerp(1, distance, _CenterFading);
 
-        half3 colorR = GetScreenColor(float2(uv.x + splitAmount * _AmountR, uv.y));//SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x + splitAmount * _AmountR, uv.y)).rgb;
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-        half3 colorB = GetScreenColor(float2(uv.x - splitAmount * _AmountB, uv.y));//SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x - splitAmount * _AmountB, uv.y)).rgb;
+        half3 colorR = GetScreenColor(float2(uv.x + splitAmount * _AmountR, uv.y));
+        half4 sceneColor = GetScreenColor(i.uv);
+        half3 colorB = GetScreenColor(float2(uv.x - splitAmount * _AmountB, uv.y));
 
         half3 splitColor = half3(colorR.r, sceneColor.g, colorB.b);
         half3 finalColor = lerp(sceneColor.rgb, splitColor, _Fading);
@@ -62,9 +62,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplit"
         splitAmount *= _Fading * _Amount;
         splitAmount *= _Fading * _Amount;
 
-        half3 colorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x, uv.y + splitAmount * _AmountR)).rgb;
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-        half3 colorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x, uv.y - splitAmount * _AmountB)).rgb;
+        half3 colorR = GetScreenColor(float2(uv.x, uv.y + splitAmount * _AmountR)).rgb;
+        half4 sceneColor = GetScreenColor(uv);
+        half3 colorB = GetScreenColor(float2(uv.x, uv.y - splitAmount * _AmountB)).rgb;
 
         half3 splitColor = half3(colorR.r, sceneColor.g, colorB.b);
         half3 finalColor = lerp(sceneColor.rgb, splitColor, _Fading);
@@ -88,9 +88,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplit"
         float splitAmountR = splitAmount * _AmountR;
         float splitAmountB = splitAmount * _AmountB;
 
-        half3 colorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x + splitAmountR, uv.y + splitAmountR)).rgb;
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-        half3 colorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x - splitAmountB, uv.y - splitAmountB)).rgb;
+        half3 colorR = GetScreenColor(float2(uv.x + splitAmountR, uv.y + splitAmountR)).rgb;
+        half4 sceneColor = GetScreenColor(uv);
+        half3 colorB = GetScreenColor(float2(uv.x - splitAmountB, uv.y - splitAmountB)).rgb;
 
         half3 splitColor = half3(colorR.r, sceneColor.g, colorB.b);
         half3 finalColor = lerp(sceneColor.rgb, splitColor, _Fading);

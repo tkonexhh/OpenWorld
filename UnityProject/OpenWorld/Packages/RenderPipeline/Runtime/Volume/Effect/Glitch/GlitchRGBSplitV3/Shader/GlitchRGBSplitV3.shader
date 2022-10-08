@@ -25,9 +25,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV3"
         splitAmountX.r += sin(time * 0.2) * Amount;
         splitAmountX.g += sin(time * 0.1) * Amount;
         half4 splitColor = half4(0.0, 0.0, 0.0, 0.0);
-        splitColor.r = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(splitAmountX.r, uv.y)).rgb).x;
-        splitColor.g = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(splitAmountX.g, uv.y)).rgb).y;
-        splitColor.b = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(splitAmountX.b, uv.y)).rgb).z;
+        splitColor.r = (GetScreenColor(float2(splitAmountX.r, uv.y)).rgb).x;
+        splitColor.g = (GetScreenColor(float2(splitAmountX.g, uv.y)).rgb).y;
+        splitColor.b = (GetScreenColor(float2(splitAmountX.b, uv.y)).rgb).z;
         splitColor.a = 1;
         return splitColor;
     }
@@ -39,9 +39,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV3"
         splitAmountY.r += sin(time * 0.2) * Amount;
         splitAmountY.g += sin(time * 0.1) * Amount;
         half4 splitColor = half4(0.0, 0.0, 0.0, 0.0);
-        splitColor.r = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x, splitAmountY.r)).rgb).x;
-        splitColor.g = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x, splitAmountY.g)).rgb).y;
-        splitColor.b = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x, splitAmountY.b)).rgb).z;
+        splitColor.r = (GetScreenColor(float2(uv.x, splitAmountY.r)).rgb).x;
+        splitColor.g = (GetScreenColor(float2(uv.x, splitAmountY.g)).rgb).y;
+        splitColor.b = (GetScreenColor(float2(uv.x, splitAmountY.b)).rgb).z;
         splitColor.a = 1;
         return splitColor;
     }
@@ -53,9 +53,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV3"
         float splitAmountR = sin(time * 0.2) * Amount;
         float splitAmountG = sin(time * 0.1) * Amount;
         half4 splitColor = half4(0.0, 0.0, 0.0, 0.0);
-        splitColor.r = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x + splitAmountR, uv.y + splitAmountR)).rgb).x;
-        splitColor.g = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x, uv.y)).rgb).y;
-        splitColor.b = (SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv.x + splitAmountG, uv.y + splitAmountG)).rgb).z;
+        splitColor.r = (GetScreenColor(float2(uv.x + splitAmountR, uv.y + splitAmountR)).rgb).x;
+        splitColor.g = (GetScreenColor(float2(uv.x, uv.y)).rgb).y;
+        splitColor.b = (GetScreenColor(float2(uv.x + splitAmountG, uv.y + splitAmountG)).rgb).z;
         splitColor.a = 1;
         return splitColor;
     }

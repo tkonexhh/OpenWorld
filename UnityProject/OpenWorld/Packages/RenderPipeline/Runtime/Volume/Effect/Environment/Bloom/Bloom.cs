@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Experimental.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
 {
@@ -27,6 +28,8 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         public override bool IsActive() => Intensity.value > 0;
         public BloomQuailtyParameter BloomQuailty = new BloomQuailtyParameter(BloomQuailtyType.High);
         public MinFloatParameter Intensity = new MinFloatParameter(0f, 0f);
+        [Tooltip("Set the radius of the bloom effect.")]
+        public ClampedFloatParameter scatter = new ClampedFloatParameter(0.7f, 0f, 1f);
         public ClampedFloatParameter Threshold = new ClampedFloatParameter(0.2f, 0f, 10f);
         public ClampedIntParameter MaxIterations = new ClampedIntParameter(6, 2, 8);
     }
@@ -44,8 +47,9 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
 
         static class ShaderIDs
         {
-            public static readonly int BloomTex = Shader.PropertyToID("_SourceTex");
+            public static readonly int BloomTex = Shader.PropertyToID("_Bloom_Texture");
             public static readonly int ParamsID = Shader.PropertyToID("_Params");
+            public static readonly int SourceTexLowMip = Shader.PropertyToID("_SourceTexLowMip");
 
             public static int[] _BloomMipUp;
             public static int[] _BloomMipDown;
@@ -60,9 +64,10 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         enum Pass
         {
             Prefilter = 0,
-            Combine = 3,
-            BlurH = 4,
-            BlurV = 5,
+            BlurH = 1,
+            BlurV = 2,
+            Upsample = 3,
+            Combine = 4,
         }
 
         public override void Init()
@@ -85,12 +90,12 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
             }
         }
 
-        public override void Render(CommandBuffer cmd, RTHandle source, RenderTargetIdentifier target, ref RenderingData renderingData)
+        public override void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData)
         {
             // Material setup
             float threshold = Mathf.GammaToLinearSpace(settings.Threshold.value);
             float thresholdKnee = threshold * 0.5f; // Hardcoded soft knee
-            var param = new Vector4(threshold, thresholdKnee, 0, 0);
+            var param = new Vector4(threshold, thresholdKnee, settings.scatter.value, 0);
             blitMaterial.SetVector(ShaderIDs.ParamsID, param);
             CoreUtils.SetKeyword(blitMaterial, ShaderKeywords.BloomHQ, settings.BloomQuailty.value == BloomQuailtyType.High);
 
@@ -108,6 +113,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
             desc.depthBufferBits = (int)DepthBits.None;
             desc.width = RTWidth;
             desc.height = RTHeight;
+            desc.graphicsFormat = GraphicsFormat.B10G11R11_UFloatPack32;
             for (int i = 0; i < mipCount; i++)
             {
                 RenderingUtils.ReAllocateIfNeeded(ref m_BloomMipUp[i], desc, FilterMode.Bilinear, TextureWrapMode.Clamp, name: m_BloomMipUp[i].name);
@@ -139,18 +145,16 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
                 var lowMip = (i == mipCount - 2) ? m_BloomMipDown[i + 1] : m_BloomMipUp[i + 1];
                 var highMip = m_BloomMipDown[i];
                 var dst = m_BloomMipUp[i];
-                Blitter.BlitCameraTexture(cmd, highMip, dst, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, blitMaterial, (int)Pass.BlurV);
-                // lastDown = dst;
+
+                cmd.SetGlobalTexture(ShaderIDs.SourceTexLowMip, lowMip);
+                Blitter.BlitCameraTexture(cmd, highMip, dst, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, blitMaterial, (int)Pass.Upsample);
             }
 
-            cmd.SetGlobalTexture(ShaderIDs.BloomTex, lastDown);
-            cmd.Blit(source, target, blitMaterial, (int)Pass.Combine);
+            cmd.SetGlobalTexture(ShaderIDs.BloomTex, m_BloomMipDown[0]);
+            // cmd.Blit(source, target, blitMaterial, (int)Pass.Combine);
 
-            // for (int i = 0; i < mipCount; i++)
-            // {
-            //     cmd.ReleaseTemporaryRT(m_BloomMipUp[i]);
-            //     cmd.ReleaseTemporaryRT(m_BloomMipDown[i]);
-            // }
+            Blitter.BlitCameraTexture(cmd, source, target, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, blitMaterial, (int)Pass.Combine);
+
         }
 
         public override void Cleanup()

@@ -28,7 +28,7 @@ Shader "Hidden/PostProcessing/Glitch/DigitalStripe"
         // uv偏移
         half uvShift = step(threshold, pow(abs(stripNoise.x), 3));
         float2 uv = frac(i.uv + stripNoise.yz * uvShift);
-        half4 source = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+        half4 source = GetScreenColor(uv);
 
         #ifndef NEED_TRASH_FRAME
             return source;

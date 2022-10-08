@@ -42,8 +42,8 @@ Shader "Hidden/PostProcessing/Glitch/WaveJitter"
         float rgbSplit_uv_x = (_RGBSplit * 50 + (20.0 * strength + 1.0)) * noise_wave_x / _Resolution.x;
 
         // Sample RGB Color-
-        half4 colorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv_x, i.uv.y));
-        half4 colorRB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(uv_x + rgbSplit_uv_x, i.uv.y));
+        half4 colorG = GetScreenColor(float2(uv_x, i.uv.y));
+        half4 colorRB = GetScreenColor(float2(uv_x + rgbSplit_uv_x, i.uv.y));
         
         return half4(colorRB.r, colorG.g, colorRB.b, colorRB.a + colorG.a);
     }
@@ -67,8 +67,8 @@ Shader "Hidden/PostProcessing/Glitch/WaveJitter"
         float rgbSplit_uv_y = (_RGBSplit * 50 + (20.0 * strength + 1.0)) * noise_wave_y / _Resolution.y;
 
         // Sample RGB Color
-        half4 colorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, uv_y));
-        half4 colorRB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, uv_y + rgbSplit_uv_y));
+        half4 colorG = GetScreenColor(float2(i.uv.x, uv_y));
+        half4 colorRB = GetScreenColor(float2(i.uv.x, uv_y + rgbSplit_uv_y));
 
         return half4(colorRB.r, colorG.g, colorRB.b, colorRB.a + colorG.a);
     }

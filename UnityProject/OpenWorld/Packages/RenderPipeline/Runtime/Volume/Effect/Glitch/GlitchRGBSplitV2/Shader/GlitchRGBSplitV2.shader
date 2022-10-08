@@ -29,9 +29,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV2"
         splitAmout *= (0.05 * _Amount);
         
         half3 finalColor;
-        finalColor.r = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x + splitAmout, i.uv.y)).r;
-        finalColor.g = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).g;
-        finalColor.b = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x - splitAmout, i.uv.y)).b;
+        finalColor.r = GetScreenColor(float2(i.uv.x + splitAmout, i.uv.y)).r;
+        finalColor.g = GetScreenColor(i.uv).g;
+        finalColor.b = GetScreenColor(float2(i.uv.x - splitAmout, i.uv.y)).b;
         
         finalColor *= (1.0 - splitAmout * 0.5);
         
@@ -48,9 +48,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV2"
         splitAmout *= (0.05 * _Amount);
         
         half3 finalColor;
-        finalColor.r = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, i.uv.y + splitAmout)).r;
-        finalColor.g = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).g;
-        finalColor.b = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x, i.uv.y - splitAmout)).b;
+        finalColor.r = GetScreenColor(float2(i.uv.x, i.uv.y + splitAmout)).r;
+        finalColor.g = GetScreenColor(i.uv).g;
+        finalColor.b = GetScreenColor(float2(i.uv.x, i.uv.y - splitAmout)).b;
         
         finalColor *= (1.0 - splitAmout * 0.5);
         
@@ -67,9 +67,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV2"
         splitAmout *= (0.05 * _Amount);
 
         half3 finalColor;
-        finalColor.r = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x + splitAmout, i.uv.y + splitAmout)).r;
-        finalColor.g = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).g;
-        finalColor.b = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, float2(i.uv.x - splitAmout, i.uv.y + splitAmout)).b;
+        finalColor.r = GetScreenColor(float2(i.uv.x + splitAmout, i.uv.y + splitAmout)).r;
+        finalColor.g = GetScreenColor(i.uv).g;
+        finalColor.b = GetScreenColor(float2(i.uv.x - splitAmout, i.uv.y + splitAmout)).b;
 
         finalColor *= (1.0 - splitAmout * 0.5);
 

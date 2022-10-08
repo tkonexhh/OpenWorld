@@ -35,9 +35,9 @@ Shader "Hidden/PostProcessing/Glitch/RGBSplitV5"
 
         splitAmount *= 2.0 * splitAmount.w - 1.0;
 
-        half colorR = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, (i.uv.xy + float2(splitAmount.x, -splitAmount.y))).r;
-        half colorG = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, (i.uv.xy + float2(splitAmount.y, -splitAmount.z))).g;
-        half colorB = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, (i.uv.xy + float2(splitAmount.z, -splitAmount.x))).b;
+        half colorR = GetScreenColor((i.uv.xy + float2(splitAmount.x, -splitAmount.y))).r;
+        half colorG = GetScreenColor((i.uv.xy + float2(splitAmount.y, -splitAmount.z))).g;
+        half colorB = GetScreenColor((i.uv.xy + float2(splitAmount.z, -splitAmount.x))).b;
 
         half3 finalColor = half3(colorR, colorG, colorB);
         return half4(finalColor, 1);

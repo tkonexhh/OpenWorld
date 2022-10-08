@@ -51,7 +51,7 @@ Shader "Hidden/PostProcessing/Glitch/TileJitter"
         }
 
         // -------------------------------Final Sample------------------------------
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+        half4 sceneColor = GetScreenColor(uv);
         return sceneColor;
     }
     
@@ -77,7 +77,7 @@ Shader "Hidden/PostProcessing/Glitch/TileJitter"
         }
 
         // -------------------------------Final Sample------------------------------
-        half4 sceneColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+        half4 sceneColor = GetScreenColor(uv);
         return sceneColor;
     }
     ENDHLSL
