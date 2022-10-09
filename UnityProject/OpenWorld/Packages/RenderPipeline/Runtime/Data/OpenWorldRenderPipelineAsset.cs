@@ -11,13 +11,13 @@ namespace OpenWorld.RenderPipelines.Runtime
         [SerializeField] GeneralSettings generalSettings = default;
         [SerializeField] ShadowSettings shadowSettings = default;
         [SerializeField] LightingSettings lightingSettings = default;
-
-
+        [SerializeField] PostProcessingSettings postProcessingSettings = default;
         [SerializeField] ShaderResources shaderResources;
 
         public GeneralSettings GeneralSettings => generalSettings;
         public ShadowSettings ShadowSettings => shadowSettings;
         public LightingSettings LightingSettings => lightingSettings;
+        public PostProcessingSettings PostProcessingSettings => postProcessingSettings;
         public ShaderResources ShaderResources => shaderResources;
 
         public bool UseSRPBatcher => generalSettings.useSRPBatcher;

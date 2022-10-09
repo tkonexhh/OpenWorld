@@ -96,6 +96,11 @@ namespace OpenWorld.RenderPipelines.Runtime
         {
             AddEffect(new BloomRenderer());
             AddEffect(new ToneMappingRenderer());
+            AddEffect(new SplitToningRenderer());
+            AddEffect(new ColorAdjustmentsRenderer());
+            AddEffect(new WhiteBalanceRenderer());
+            AddEffect(new ChannelMixerRenderer());
+            AddEffect(new ShadowsMidtonesHighlightsRenderer());
         }
     }
 }

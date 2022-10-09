@@ -12,18 +12,14 @@ namespace OpenWorld.RenderPipelines.Runtime
     {
         ScriptableRenderer m_Renderer;
 
-        GeneralSettings m_GeneralSettings;
-        ShadowSettings m_ShadowSettings;
-        LightingSettings m_LightingSettings;
+        OpenWorldRenderPipelineAsset m_Asset;
 
         public OpenWorldRenderPipeline(OpenWorldRenderPipelineAsset asset)
         {
             //初始化blit相关shader
             Blitter.Initialize(asset.ShaderResources.coreBlitPS, asset.ShaderResources.coreBlitColorAndDepthPS);
+            m_Asset = asset;
             m_Renderer = new ForwardRender(asset);
-            m_GeneralSettings = asset.GeneralSettings;
-            m_ShadowSettings = asset.ShadowSettings;
-            m_LightingSettings = asset.LightingSettings;
 
             GraphicsSettings.useScriptableRenderPipelineBatching = asset.UseSRPBatcher;
             GraphicsSettings.lightsUseLinearIntensity = true;
@@ -51,48 +47,52 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         void InitRenderingData(ScriptableRenderContext renderContext, out RenderingData renderingData, Camera camera, ref ScriptableCullingParameters cullingParameters)
         {
-            cullingParameters.shadowDistance = Mathf.Min(m_ShadowSettings.maxDistance, camera.farClipPlane);
+            var generalSettings = m_Asset.GeneralSettings;
+            var shadowSettings = m_Asset.ShadowSettings;
+            var lightingSettings = m_Asset.LightingSettings;
 
-            bool isHdrEnabled = m_GeneralSettings.allowHDR && camera.allowHDR;
+            cullingParameters.shadowDistance = Mathf.Min(shadowSettings.maxDistance, camera.farClipPlane);
+
+            bool isHdrEnabled = generalSettings.allowHDR && camera.allowHDR;
 
             var cullingResults = renderContext.Cull(ref cullingParameters);
             renderingData.cullingResults = cullingResults;
             renderingData.supportsDynamicBatching = true;
-            renderingData.perObjectData = GetPerObjectLightFlags(m_LightingSettings.additionalLightsCount, false);
+            renderingData.perObjectData = GetPerObjectLightFlags(lightingSettings.additionalLightsCount, false);
 
             //Shadow Data
             var shadowData = new ShadowData();
-            shadowData.maxShadowDistance = m_ShadowSettings.maxDistance;
-            int shadowResolution = (int)m_ShadowSettings.directional.resolution;
-            shadowData.supportsSoftShadows = m_ShadowSettings.softShadow;
-            shadowData.softShadowsMode = m_ShadowSettings.filter;
+            shadowData.maxShadowDistance = shadowSettings.maxDistance;
+            int shadowResolution = (int)shadowSettings.directional.resolution;
+            shadowData.supportsSoftShadows = shadowSettings.softShadow;
+            shadowData.softShadowsMode = shadowSettings.filter;
             shadowData.mainLightShadowmapWidth = shadowResolution;
             shadowData.mainLightShadowmapHeight = shadowResolution;
-            shadowData.mainLightShadowCascadesCount = m_ShadowSettings.directional.cascadeCount;
+            shadowData.mainLightShadowCascadesCount = shadowSettings.directional.cascadeCount;
             switch (shadowData.mainLightShadowCascadesCount)
             {
                 case 1:
                     shadowData.mainLightShadowCascadesSplit = new Vector3(1.0f, 0.0f, 0.0f);
                     break;
                 case 2:
-                    shadowData.mainLightShadowCascadesSplit = new Vector3(m_ShadowSettings.directional.cascadeRatio1, 1.0f, 0.0f);
+                    shadowData.mainLightShadowCascadesSplit = new Vector3(shadowSettings.directional.cascadeRatio1, 1.0f, 0.0f);
                     break;
                 case 3:
-                    shadowData.mainLightShadowCascadesSplit = new Vector3(m_ShadowSettings.directional.cascadeRatio1, m_ShadowSettings.directional.cascadeRatio2, 0.0f);
+                    shadowData.mainLightShadowCascadesSplit = new Vector3(shadowSettings.directional.cascadeRatio1, shadowSettings.directional.cascadeRatio2, 0.0f);
                     break;
                 default:
-                    shadowData.mainLightShadowCascadesSplit = m_ShadowSettings.directional.CascadeRatios;
+                    shadowData.mainLightShadowCascadesSplit = shadowSettings.directional.CascadeRatios;
                     break;
             }
-            shadowData.manLightShadowDistanceFade = m_ShadowSettings.distanceFade;
+            shadowData.manLightShadowDistanceFade = shadowSettings.distanceFade;
             shadowData.bias = m_ShadowBiasData;// new Vector4(m_ShadowSettings.depthBias, m_ShadowSettings.normalBias, 0, 0);
             renderingData.shadowData = shadowData;
 
             LightData lightData = new LightData();
             lightData.mainLightIndex = -1;
             lightData.visibleLights = cullingResults.visibleLights;
-            lightData.supportsAdditionalLights = m_LightingSettings.enableAdditionalLighting;
-            lightData.maxPerObjectAdditionalLightsCount = m_LightingSettings.additionalLightsCount;
+            lightData.supportsAdditionalLights = lightingSettings.enableAdditionalLighting;
+            lightData.maxPerObjectAdditionalLightsCount = lightingSettings.additionalLightsCount;
             renderingData.lightData = lightData;
 
             var cameraData = new CameraData();
@@ -117,11 +117,15 @@ namespace OpenWorld.RenderPipelines.Runtime
 
             cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix);
             cameraData.renderer = m_Renderer;
-            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, m_GeneralSettings.renderScale, isHdrEnabled, 1, false, false);
+            cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, generalSettings.renderScale, isHdrEnabled, 1, false, false);
             renderingData.cameraData = cameraData;
 
             renderingData.isHdrEnabled = isHdrEnabled;
             renderingData.commandBuffer = CommandBufferPool.Get();
+
+            var postProcessingData = new PostProcessingData();
+            postProcessingData.lutSize = (int)m_Asset.PostProcessingSettings.resolution;
+            renderingData.postProcessingData = postProcessingData;
 
             InitializeShadowData(cullingResults.visibleLights);
         }

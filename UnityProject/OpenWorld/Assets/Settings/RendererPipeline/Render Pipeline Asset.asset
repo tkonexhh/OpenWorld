@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40e34b03261d424da585601de1854ca, type: 3}
   m_Name: Render Pipeline Asset
   m_EditorClassIdentifier: 
+  generalSettings:
+    requireDepthTexture: 0
+    renderScale: 1
+    allowHDR: 1
+    useSRPBatcher: 1
   shadowSettings:
     maxDistance: 30
     distanceFade: 0.2
@@ -30,7 +35,8 @@ MonoBehaviour:
   lightingSettings:
     enableAdditionalLighting: 1
     additionalLightsCount: 4
-  useSRPBatcher: 1
+  postProcessingSettings:
+    resolution: 32
   shaderResources:
     coreBlitPS: {fileID: 4800000, guid: c739308ec2747e1419f6a98b2aae725d, type: 3}
     coreBlitColorAndDepthPS: {fileID: 4800000, guid: 766975cd7bd13d947a6b9c111147cc80, type: 3}

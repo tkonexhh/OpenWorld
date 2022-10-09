@@ -11,6 +11,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public CullingResults cullingResults;
         public CameraData cameraData;
         public ShadowData shadowData;
+        public PostProcessingData postProcessingData;
         public LightData lightData;
 
 
@@ -88,6 +89,11 @@ namespace OpenWorld.RenderPipelines.Runtime
         public ShadowSettings.FilterMode softShadowsMode;
         // public Vector4 bias;
         public List<Vector4> bias;
+    }
+
+    public struct PostProcessingData
+    {
+        public int lutSize;
     }
 
     /// <summary>
