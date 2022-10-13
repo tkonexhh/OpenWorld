@@ -6,6 +6,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 {
     internal enum ProfileId
     {
+        ColorGradingLUT,
         DepthPrepass,
         MainLightShadow,
         DrawOpaqueObjects,
@@ -42,6 +43,18 @@ namespace OpenWorld.RenderPipelines.Runtime
         public static readonly string OpacityTexture = "_CameraOpaqueTexture";
         public static readonly string CamearColorTexture = "_CameraColorTexture";
         public static readonly string CameraDepthTexture = "_CameraDepthTexture";
+
+
+        public static readonly string[] GBufferNames = new string[]
+        {
+            "_GBuffer0",
+            "_GBuffer1",
+            "_GBuffer2",
+            "_GBuffer3",
+            "_GBuffer4",
+            "_GBuffer5",
+            "_GBuffer6"
+        };
 
     }
 }

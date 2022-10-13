@@ -102,7 +102,7 @@
 
             ZWrite On
             ColorMask 0
-            Cull[_Cull]
+            Cull[_CullMode]
 
             HLSLPROGRAM
 
