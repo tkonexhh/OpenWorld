@@ -50,6 +50,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             var generalSettings = m_Asset.GeneralSettings;
             var shadowSettings = m_Asset.ShadowSettings;
             var lightingSettings = m_Asset.LightingSettings;
+            var physicalCameraSettings = m_Asset.PhyscialCameraSettings;
 
             cullingParameters.shadowDistance = Mathf.Min(shadowSettings.maxDistance, camera.farClipPlane);
 
@@ -118,6 +119,13 @@ namespace OpenWorld.RenderPipelines.Runtime
             cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix);
             cameraData.renderer = m_Renderer;
             cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, generalSettings.renderScale, isHdrEnabled, 1, false, false);
+
+            PhyscialCameraData physcialCameraData = new PhyscialCameraData();
+            physcialCameraData.fStop = physicalCameraSettings.fStop;
+            physcialCameraData.shutterSpeed = physicalCameraSettings.shutterSpeed;
+            physcialCameraData.ISO = physicalCameraSettings.ISO;
+            cameraData.physcialCameraData = physcialCameraData;
+
             renderingData.cameraData = cameraData;
 
             renderingData.isHdrEnabled = isHdrEnabled;

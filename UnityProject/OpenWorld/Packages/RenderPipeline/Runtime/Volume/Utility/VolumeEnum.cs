@@ -50,4 +50,6 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
     [System.Serializable]
     public sealed class StringParameter : VolumeParameter<string> { public StringParameter(string value, bool overrideState = true) : base(value, overrideState) { } }
 
+    [System.Serializable]
+    public sealed class ComputeShaderParameter : VolumeParameter<ComputeShader> { public ComputeShaderParameter(ComputeShader value, bool overrideState = true) : base(value, overrideState) { } }
 }

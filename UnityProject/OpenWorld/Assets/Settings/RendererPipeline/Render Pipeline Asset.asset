@@ -17,6 +17,19 @@ MonoBehaviour:
     renderScale: 1
     allowHDR: 1
     useSRPBatcher: 1
+  physcialCameraSettings:
+    sensorSize: {x: 70, y: 51}
+    ISO: 200
+    shutterSpeed: 1
+    gateFit: 2
+    focalLength: 20
+    shift: {x: 0, y: 0}
+    fStop: 1.5
+    focusDistance: 10
+    bladeCount: 8
+    curvature: {x: 2, y: 11}
+    barrelClipping: 0.25
+    anamorphism: 0
   shadowSettings:
     maxDistance: 30
     distanceFade: 0.2

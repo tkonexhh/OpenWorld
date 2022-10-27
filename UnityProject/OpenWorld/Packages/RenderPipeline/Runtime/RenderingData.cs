@@ -73,8 +73,18 @@ namespace OpenWorld.RenderPipelines.Runtime
         public bool postProcessEnabled;
         public bool requiresDepthTexture;
 
+        public PhyscialCameraData physcialCameraData;
+
+
         public bool isSceneViewCamera => cameraType == CameraType.SceneView;
         public bool isPreviewCamera => cameraType == CameraType.Preview;
+    }
+
+    public struct PhyscialCameraData
+    {
+        public float fStop;
+        public float shutterSpeed;
+        public int ISO;
     }
 
     public struct ShadowData

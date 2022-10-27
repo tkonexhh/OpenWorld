@@ -1,0 +1,109 @@
+﻿#include "../../../../Shader/PostProcessing.hlsl"
+#include "./ExposureHistogram.hlsl"
+
+#pragma kernel AutoExposureAvgLuminance_fixed MAIN = AutoExposureAvgLuminance_fixed
+#pragma kernel AutoExposureAvgLuminance_progressive MAIN = AutoExposureAvgLuminance_progressive PROGRESSIVE
+#pragma multi_compile _ PHYSCIAL_BASED
+
+StructuredBuffer<uint> _HistogramBuffer;
+Texture2D<float> _SourceTex;
+RWTexture2D<float> _DestinationTex;
+
+//x: lowPercent, y: highPercent, z: minBrightness, w: maxBrightness
+float4 _Params1;
+//x: speed down, y: speed up, z: exposure compensation, w: delta time
+float4 _Params2;
+//x: aperture, y: shutterSpeed, z: ISO, w: exposureScale
+float4 _Params3;
+float4 _ScaleOffsetRes;
+
+groupshared uint gs_pyramid[HISTOGRAM_REDUCTION_BINS];
+
+//physical methods
+float ComputeEV100(float aperture, float shutterSpeed, float ISO)
+{
+    return log2((aperture * aperture) / shutterSpeed * 100.0 / ISO);
+}
+
+float ConvertEV100ToExposure(float EV100, float exposureScale)
+{
+    //compute the maximum luminance possible with H_sbs sensitivity
+    //maxLum = 78 / ( S * q ) * N^2 / t
+    //       = 78 / ( S * q ) * 2^ EV_100
+    //       = 78 / (100 * s_LensAttenuation) * 2^ EV_100
+    //       = exposureScale * 2^ EV
+    //reference: http://en.wikipedia.org/wiki/Film_speed
+    float maxLuminance = exposureScale * exp2(EV100);
+    return 1.0 / maxLuminance;
+}
+
+float ComputeEV100FromAvgLuminance(float avgLuminance)
+{
+    return log2(avgLuminance * 100.0 / 12.5);
+}
+
+float GetExposureFromLuminance(float avgLuminance)
+{
+    avgLuminance = max(0.00001, avgLuminance);
+    //Krzysztof's method
+    float keyValue = 1.03 - (2.0 / (2.0 + log10(avgLuminance + 1.0)));
+    float compensation = exp2(_Params2.z);
+    //float compensation = _Params2.z;
+    float exposure = keyValue / avgLuminance * compensation;
+    return exposure;
+}
+
+float InterpolateExposure(float newExposure, float oldExposure)
+{
+    float delta = newExposure - oldExposure;
+    float speed = delta > 0.0 ? _Params2.x: _Params2.y;
+    float exposure = oldExposure + delta * (1.0 - exp2(-_Params2.w * speed));
+    return exposure;
+}
+
+[numthreads(HISTOGRAM_REDUCTION_THREAD_X, HISTOGRAM_REDUCTION_THREAD_Y, 1)]
+void MAIN(uint2 groupThreadId: SV_GroupThreadID)
+{
+    const uint thread_id = groupThreadId.y * HISTOGRAM_REDUCTION_THREAD_X + groupThreadId.x;
+    gs_pyramid[thread_id] = _HistogramBuffer[thread_id];
+    GroupMemoryBarrierWithGroupSync();
+    //Faster Method : parallel reduction to find the max value
+    UNITY_UNROLL
+    for (uint i = HISTOGRAM_REDUCTION_BINS >> 1u; i > 0u; i >>= 1u)
+    {
+        if (thread_id < i)
+            gs_pyramid[thread_id] = max(gs_pyramid[thread_id], gs_pyramid[thread_id + i]);
+        GroupMemoryBarrierWithGroupSync();
+    }
+    GroupMemoryBarrierWithGroupSync();
+    if (thread_id == 0u)
+    {
+        //float maxValue = FindMaxHistogramValue(_HistogramBuffer);
+        float maxValue = float(gs_pyramid[0]);
+        #if defined(PROGRESSIVE)
+            //pre-apply last frame EV to prevent sudden changes in exposure and calculation leak
+            float prevExposure = _SourceTex[uint2(0u, 0u)].x;
+            #if defined(PHYSCIAL_BASED)
+                float ev100 = ComputeEV100(_Params3.x, _Params3.y, _Params3.z);
+                ev100 -= _Params2.z;
+                float exposure = ConvertEV100ToExposure(ev100, _Params3.w);
+                exposure = InterpolateExposure(exposure, prevExposure);
+            #else
+                float avgLuminance = GetAverageLuminance(_HistogramBuffer, _Params1, 1 / maxValue, _ScaleOffsetRes.xy);
+                float exposure = GetExposureFromLuminance(avgLuminance);
+                exposure = InterpolateExposure(exposure, prevExposure);
+            #endif
+            _DestinationTex[uint2(0u, 0u)].x = exposure.x;
+        #else
+            #if defined(PHYSCIAL_BASED)
+                float ev100 = ComputeEV100(_Params3.x, _Params3.y, _Params3.z);
+                ev100 -= _Params2.z;
+                float exposure = ConvertEV100ToExposure(ev100, _Params3.w);
+            #else
+                float avgLuminance = GetAverageLuminance(_HistogramBuffer, _Params1, 1 / maxValue, _ScaleOffsetRes.xy);
+                float exposure = GetExposureFromLuminance(avgLuminance);
+            #endif
+            _DestinationTex[uint2(0u, 0u)].x = exposure.x;
+        #endif
+    }
+}

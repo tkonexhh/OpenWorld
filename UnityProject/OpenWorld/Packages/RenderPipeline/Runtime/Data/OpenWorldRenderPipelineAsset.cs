@@ -9,6 +9,7 @@ namespace OpenWorld.RenderPipelines.Runtime
     public class OpenWorldRenderPipelineAsset : RenderPipelineAsset
     {
         [SerializeField] GeneralSettings generalSettings = default;
+        [SerializeField] PhyscialCameraSettings physcialCameraSettings = default;
         // [SerializeField] QualitySetting qualitySetting = default;
         [SerializeField] ShadowSettings shadowSettings = default;
         [SerializeField] LightingSettings lightingSettings = default;
@@ -16,6 +17,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         [SerializeField] ShaderResources shaderResources;
 
         public GeneralSettings GeneralSettings => generalSettings;
+        public PhyscialCameraSettings PhyscialCameraSettings => physcialCameraSettings;
         public ShadowSettings ShadowSettings => shadowSettings;
         public LightingSettings LightingSettings => lightingSettings;
         public PostProcessingSettings PostProcessingSettings => postProcessingSettings;
