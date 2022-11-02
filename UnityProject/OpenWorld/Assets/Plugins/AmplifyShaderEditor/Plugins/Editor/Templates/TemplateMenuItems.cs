@@ -56,11 +56,6 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "e1de45c0d41f68c41b2cc20c8b9c05ef" );
 		}
-		[MenuItem( "Assets/Create/Amplify Shader/ASETemplateShaders/HMKLit", false, 85 )]
-		public static void ApplyTemplateASETemplateShadersHMKLit()
-		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "f7d54362c16073e4e89017941e7fc177" );
-		}
 		[MenuItem( "Assets/Create/Amplify Shader/Legacy/Lit", false, 85 )]
 		public static void ApplyTemplateLegacyLit()
 		{

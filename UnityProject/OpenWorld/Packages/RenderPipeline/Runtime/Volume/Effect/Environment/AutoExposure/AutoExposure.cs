@@ -6,26 +6,12 @@ using UnityEngine.Experimental.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
 {
-    public enum MeteringMode { None, Auto, Curve, Physical }
     public enum MeteringMask { None, Vignette, Custom }
-    public enum AdaptationMode { Fixed, Progressive }
-
-    [System.Serializable]
-    public sealed class MeteringModeParameter : VolumeParameter<MeteringMode>
-    {
-        public MeteringModeParameter(MeteringMode value, bool overrideState = false) : base(value, overrideState) { }
-    }
 
     [System.Serializable]
     public sealed class MeteringMaskParameter : VolumeParameter<MeteringMask>
     {
         public MeteringMaskParameter(MeteringMask value, bool overrideState = false) : base(value, overrideState) { }
-    }
-
-    [System.Serializable]
-    public sealed class AdaptationModeParameter : VolumeParameter<AdaptationMode>
-    {
-        public AdaptationModeParameter(AdaptationMode value, bool overrideState = false) : base(value, overrideState) { }
     }
 
 
@@ -51,6 +37,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         public ClampedFloatParameter maxEV = new ClampedFloatParameter(10, -10, 10);
         public ClampedFloatParameter lowPercent = new ClampedFloatParameter(1, 1, 99);
         public ClampedFloatParameter highPercent = new ClampedFloatParameter(99, 1, 99);
+        [Tooltip("曝光补偿")]
         public FloatParameter compensation = new FloatParameter(0);
         public AdaptationModeParameter adaptation = new AdaptationModeParameter(AdaptationMode.Progressive);
         public MinFloatParameter speedUp = new MinFloatParameter(3, 0);
