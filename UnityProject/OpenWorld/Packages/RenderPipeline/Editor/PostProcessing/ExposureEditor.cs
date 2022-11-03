@@ -13,6 +13,8 @@ namespace OpenWorld.RenderPipelines.Editor.PostProcessing
         SerializedDataParameter m_Mode;
         SerializedDataParameter m_MeteringMode;
 
+        SerializedDataParameter m_FixedExposure;
+        SerializedDataParameter m_Compensation;
         SerializedDataParameter m_LimitMin;
         SerializedDataParameter m_LimitMax;
         SerializedDataParameter m_CurveMap;
@@ -32,6 +34,8 @@ namespace OpenWorld.RenderPipelines.Editor.PostProcessing
             m_Mode = Unpack(o.Find(x => x.mode));
             m_MeteringMode = Unpack(o.Find(x => x.meteringMode));
 
+            m_FixedExposure = Unpack(o.Find(x => x.fixedExposure));
+            m_Compensation = Unpack(o.Find(x => x.compensation));
             m_LimitMin = Unpack(o.Find(x => x.limitMin));
             m_LimitMax = Unpack(o.Find(x => x.limitMax));
             m_CurveMap = Unpack(o.Find(x => x.curveMap));
@@ -52,6 +56,12 @@ namespace OpenWorld.RenderPipelines.Editor.PostProcessing
             if (mode == (int)ExposureMode.UsePhysicalCamera)
             {
 
+            }
+            else if (mode == (int)ExposureMode.Fixed)
+            {
+                // DoExposurePropertyField(m_FixedExposure);
+                PropertyField(m_FixedExposure, EditorGUIUtility.TrTextContent("固定曝光值 (Fixed Exposure)"));
+                PropertyField(m_Compensation, EditorGUIUtility.TrTextContent("曝光补偿 (Compensation)"));
             }
             else
             {
@@ -80,8 +90,12 @@ namespace OpenWorld.RenderPipelines.Editor.PostProcessing
                     PropertyField(m_AdaptationSpeedLightToDark, EditorGUIUtility.TrTextContent("Speed Light to Dark"));
                 }
             }
+        }
 
 
+        void DoExposurePropertyField(SerializedDataParameter exposureProperty)
+        {
+            PropertyField(exposureProperty);
         }
     }
 }

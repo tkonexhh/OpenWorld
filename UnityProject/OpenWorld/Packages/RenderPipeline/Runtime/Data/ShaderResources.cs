@@ -13,5 +13,9 @@ namespace OpenWorld.RenderPipelines.Runtime
         internal Shader coreBlitPS;
         [Reload("Shaders/Utils/CoreBlitColorAndDepth.shader"), SerializeField]
         internal Shader coreBlitColorAndDepthPS;
+
+        // Post-processing
+        public ComputeShader exposureCS;
+
     }
 }

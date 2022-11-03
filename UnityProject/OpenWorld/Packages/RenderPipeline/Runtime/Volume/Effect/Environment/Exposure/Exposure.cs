@@ -23,6 +23,16 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         [Tooltip("计量模式")]
         public MeteringModeParameter meteringMode = new MeteringModeParameter(MeteringMode.None);
 
+        #region ExposureMode.Fixed
+        [Tooltip("固定曝光值")]
+        public ClampedFloatParameter fixedExposure = new ClampedFloatParameter(0f, -5f, 15f);
+
+        [Tooltip("曝光补偿")]
+        public FloatParameter compensation = new FloatParameter(0f);
+        #endregion
+
+
+
         #region ExposureMode.CurveMapping
         /// <summary>
         /// Sets the minimum value that the Scene exposure can be set to.
@@ -72,7 +82,31 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
 
     }
 
-    public enum ExposureMode { None, Automatic, AutomaticHistogram, CurveMapping, UsePhysicalCamera }
+
+    public class ExposureRenderer : VolumeRenderer<Exposure>
+    {
+        public override string PROFILER_TAG => "Exposure";
+        public override string ShaderName => "Hidden/PostProcessing/Environment/Exposure";
+
+        public override void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData)
+        {
+            DoFixedExposure();
+        }
+
+        void DoFixedExposure()
+        {
+
+        }
+    }
+
+
+
+    public enum ExposureMode
+    {
+        None,
+        Fixed, //固定曝光
+        Automatic, AutomaticHistogram, CurveMapping, UsePhysicalCamera
+    }
     public enum MeteringMode { None, Auto, Curve, Physical }
     public enum AdaptationMode { Fixed, Progressive }
 
