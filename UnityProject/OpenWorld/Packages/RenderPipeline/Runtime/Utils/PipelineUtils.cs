@@ -7,6 +7,6 @@ namespace OpenWorld.RenderPipelines.Runtime
 {
     public class PipelineUtils
     {
-        internal static string GetRenderPipelinePath() => "Packages/RenderPipeline/";
+        public static string GetRenderPipelinePath() => "Packages/RenderPipeline/";
     }
 }

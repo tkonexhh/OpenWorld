@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace OpenWorld.RenderPipelines.Runtime
 {
-    [CreateAssetMenu(menuName = "Rendering/OpenWorld Render Pipeline")]
+
     public class OpenWorldRenderPipelineAsset : RenderPipelineAsset
     {
         [SerializeField] GeneralSettings generalSettings = default;
@@ -14,14 +14,14 @@ namespace OpenWorld.RenderPipelines.Runtime
         [SerializeField] ShadowSettings shadowSettings = default;
         [SerializeField] LightingSettings lightingSettings = default;
         [SerializeField] PostProcessingSettings postProcessingSettings = default;
-        [SerializeField] ShaderResources shaderResources;
+        [SerializeField] OpenWorldRenderPipelineRuntimeResources runtimeResources;
 
         public GeneralSettings GeneralSettings => generalSettings;
         public PhyscialCameraSettings PhyscialCameraSettings => physcialCameraSettings;
         public ShadowSettings ShadowSettings => shadowSettings;
         public LightingSettings LightingSettings => lightingSettings;
         public PostProcessingSettings PostProcessingSettings => postProcessingSettings;
-        public ShaderResources ShaderResources => shaderResources;
+        public OpenWorldRenderPipelineRuntimeResources resources => runtimeResources;
 
         public bool UseSRPBatcher => generalSettings.useSRPBatcher;
 

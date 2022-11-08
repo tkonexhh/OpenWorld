@@ -17,7 +17,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         public OpenWorldRenderPipeline(OpenWorldRenderPipelineAsset asset)
         {
             //初始化blit相关shader
-            Blitter.Initialize(asset.ShaderResources.coreBlitPS, asset.ShaderResources.coreBlitColorAndDepthPS);
+            Blitter.Initialize(asset.resources.shaders.coreBlitPS, asset.resources.shaders.coreBlitColorAndDepthPS);
             m_Asset = asset;
             m_Renderer = new ForwardRender(asset);
 

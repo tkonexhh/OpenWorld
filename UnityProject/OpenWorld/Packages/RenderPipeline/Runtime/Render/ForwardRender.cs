@@ -27,7 +27,7 @@ namespace OpenWorld.RenderPipelines.Runtime
 
         public ForwardRender(OpenWorldRenderPipelineAsset asset)
         {
-            m_BlitMaterial = CoreUtils.CreateEngineMaterial(asset.ShaderResources.coreBlitPS);
+            m_BlitMaterial = CoreUtils.CreateEngineMaterial(asset.resources.shaders.coreBlitPS);
 
 
             m_MainLightShadowCasterPass = new MainLightShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);

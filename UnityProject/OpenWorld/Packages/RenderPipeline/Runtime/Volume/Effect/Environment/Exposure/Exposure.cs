@@ -95,7 +95,8 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
 
         void DoFixedExposure()
         {
-
+            ComputeShader cs = OpenWorldRenderPipeline.asset.resources.shaders.exposureCS;
+            int kernel = 0;
         }
     }
 

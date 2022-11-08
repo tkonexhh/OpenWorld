@@ -8,9 +8,5 @@ namespace OpenWorld.RenderPipelines.Runtime
     public class OpenWorldRenderPipelineResources : RenderPipelineResources
     {
         protected override string packagePath => PipelineUtils.GetRenderPipelinePath();
-
-        [SerializeField] ShaderResources shaderResources;
-
-        public ShaderResources ShaderResources => shaderResources;
     }
 }
