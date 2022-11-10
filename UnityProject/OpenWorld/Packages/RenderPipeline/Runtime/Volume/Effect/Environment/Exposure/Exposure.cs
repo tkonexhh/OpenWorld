@@ -16,7 +16,7 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
             this.displayName = title;
         }
 
-        public override bool IsActive() => meteringMode.value != MeteringMode.None;
+        public override bool IsActive() => mode.value != ExposureMode.None;
 
         public ExposureModeParameter mode = new ExposureModeParameter(ExposureMode.None);
 
@@ -88,15 +88,54 @@ namespace OpenWorld.RenderPipelines.Runtime.PostProcessing
         public override string PROFILER_TAG => "Exposure";
         public override string ShaderName => "Hidden/PostProcessing/Environment/Exposure";
 
-        public override void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData)
+
+        RTHandle m_ExposureRT;
+
+        public override void Init()
         {
-            DoFixedExposure();
+            base.Init();
+            m_ExposureRT = RTHandles.Alloc(1, 1, colorFormat: GraphicsFormat.R32_SFloat, enableRandomWrite: true);
         }
 
-        void DoFixedExposure()
+
+        public override void Render(CommandBuffer cmd, RTHandle source, RTHandle target, ref RenderingData renderingData)
+        {
+            if (settings.mode == ExposureMode.Fixed)
+            {
+                DoFixedExposure(cmd);
+            }
+            else
+            {
+                DoDynamicExposure(cmd);
+            }
+            blitMaterial.SetTexture("_ExposureLUT", m_ExposureRT);
+            Blitter.BlitCameraTexture(cmd, source, target, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, blitMaterial, 0);
+        }
+
+        static class ShaderIDs
+        {
+            public static readonly int _ExposureParams = Shader.PropertyToID("_ExposureParams");
+            public static readonly int _ExposureParams2 = Shader.PropertyToID("_ExposureParams2");
+            public static readonly int _OutputTexture = Shader.PropertyToID("_OutputTexture");
+        }
+
+        void DoFixedExposure(CommandBuffer cmd)
         {
             ComputeShader cs = OpenWorldRenderPipeline.asset.resources.shaders.exposureCS;
-            int kernel = 0;
+            int kernel = cs.FindKernel("KFixedExposure");
+            Vector4 exposureParams = new Vector4(settings.compensation.value, settings.fixedExposure.value, 0f, 0f);
+            Vector4 exposureParams2 = new Vector4(0.0f, 0.0f, ColorUtils.lensImperfectionExposureScale, ColorUtils.s_LightMeterCalibrationConstant);
+
+            cmd.SetComputeVectorParam(cs, ShaderIDs._ExposureParams, exposureParams);
+            cmd.SetComputeVectorParam(cs, ShaderIDs._ExposureParams2, exposureParams2);
+
+            cmd.SetComputeTextureParam(cs, kernel, ShaderIDs._OutputTexture, m_ExposureRT);
+            cmd.DispatchCompute(cs, kernel, 1, 1, 1);
+        }
+
+        void DoDynamicExposure(CommandBuffer cmd)
+        {
+            ComputeShader cs = OpenWorldRenderPipeline.asset.resources.shaders.exposureCS;
         }
     }
 

@@ -15,6 +15,7 @@ namespace OpenWorld.RenderPipelines.Runtime
         internal Shader coreBlitColorAndDepthPS;
 
         // Post-processing
+        [Header("Post-processing")]
         public ComputeShader exposureCS;
 
     }

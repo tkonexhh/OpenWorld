@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: RenderPipelineRuntimeResources
   m_EditorClassIdentifier: 
   shaderResources:
-    coreBlitPS: {fileID: 0}
-    coreBlitColorAndDepthPS: {fileID: 0}
-    exposureCS: {fileID: 0}
+    coreBlitPS: {fileID: 4800000, guid: c739308ec2747e1419f6a98b2aae725d, type: 3}
+    coreBlitColorAndDepthPS: {fileID: 4800000, guid: 766975cd7bd13d947a6b9c111147cc80, type: 3}
+    exposureCS: {fileID: 7200000, guid: 6333d17d64043b24ba5a628dd8efa029, type: 3}

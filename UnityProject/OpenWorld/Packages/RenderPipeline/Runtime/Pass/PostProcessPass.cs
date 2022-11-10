@@ -102,6 +102,7 @@ namespace OpenWorld.RenderPipelines.Runtime
             AddEffect(new ChannelMixerRenderer());
             AddEffect(new ShadowsMidtonesHighlightsRenderer());
             AddEffect(new AutoExposureRenderer());
+            AddEffect(new ExposureRenderer());
         }
     }
 }
